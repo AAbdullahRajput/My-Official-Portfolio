@@ -39,7 +39,7 @@ export default function CustomCursor() {
         width: isHovering ? 48 : 12,
         height: isHovering ? 48 : 12,
       }}
-      transition={{ type: "spring", stiffness: 500, damping: 40, mass: 0.5 }}
+      transition={{ type: "spring", stiffness: 1000, damping: 50, mass: 0.2 }}
       style={{
         borderRadius: "50%",
         backgroundColor: "#fff",
