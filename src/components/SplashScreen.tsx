@@ -84,12 +84,12 @@ export default function SplashScreen() {
               className="relative h-[58vh] w-[58vh] max-h-[400px] max-w-[400px] cursor-none overflow-hidden rounded-full border-2 border-[#8a0303]"
             >
               <Image
-                src="/images/profile1.jpeg"
-                alt="Ahmad Abdullah"
-                fill
-                className="object-cover"
-                priority
-              />
+  src="/images/profile1.jpeg"
+  alt="Ahmad Abdullah"
+  fill
+  className="object-cover object-top"
+  priority
+/>
 
               <motion.div
                 animate={{ opacity: hovered ? 1 : 0 }}
