@@ -310,8 +310,8 @@ const WebCastingSpider = () => {
   
   return (
     <motion.div
-      className="pointer-events-none absolute left-0 top-1/2 w-[120%]"
-      style={{ marginTop: -35, marginLeft: -40 }}
+      className="pointer-events-none absolute left-1/2 top-1/2 w-full"
+      style={{ marginTop: -35, marginLeft: -120 }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 1.5 }}
@@ -325,21 +325,18 @@ const WebCastingSpider = () => {
         {/* animated web container — rotates from left (180°) to front (0°) */}
         <motion.g
           style={{ transformOrigin: "20px 35px" }}
-          animate={{ rotate: [180, 0] }}
+          animate={{ rotate: [180, 180] }}
           transition={{
-            duration: 5,
-            delay: 2,
+            duration: 0.1,
+            delay: 0,
             repeat: Infinity,
-            repeatDelay: 3,
-            times: [0, 0.5, 1],
-            ease: "easeInOut",
           }}
         >
-          {/* radial strands shooting from spider's position */}
+          {/* radial strands shooting from spider's back TO the name */}
           {Array.from({ length: radialCount }).map((_, i) => {
             const angle = (i / radialCount) * Math.PI * 2;
-            const x2 = 20 + 65 * Math.cos(angle);
-            const y2 = 35 + 35 * Math.sin(angle);
+            const x2 = 120 + 50 * Math.cos(angle);
+            const y2 = 35 + 40 * Math.sin(angle);
             
             return (
               <motion.line
@@ -348,9 +345,9 @@ const WebCastingSpider = () => {
                 y1="35"
                 x2={x2}
                 y2={y2}
-                stroke="white"
-                strokeWidth="0.3"
-                opacity="0.85"
+                stroke="#8a0303"
+                strokeWidth="0.5"
+                opacity="0.95"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
                 transition={{
@@ -362,19 +359,19 @@ const WebCastingSpider = () => {
             );
           })}
 
-          {/* concentric circles connecting radials */}
+          {/* concentric circles connecting radials onto name */}
           {Array.from({ length: circleCount }).map((_, i) => {
-            const radius = ((i + 1) / circleCount) * 65;
+            const radius = ((i + 1) / circleCount) * 50;
             return (
               <motion.circle
                 key={`circle-${i}`}
-                cx="20"
+                cx="120"
                 cy="35"
                 r={radius}
                 fill="none"
-                stroke="white"
-                strokeWidth="0.25"
-                opacity="0.75"
+                stroke="#8a0303"
+                strokeWidth="0.4"
+                opacity="0.9"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
                 transition={{
@@ -411,15 +408,17 @@ const WebCastingSpider = () => {
         </motion.g>
       </svg>
 
-      {/* spider on the left, animated legs */}
+      {/* spider on left, facing away from name */}
       <motion.div
-        className="absolute left-0 top-1/2"
-        style={{ marginTop: -17, marginLeft: -25 }}
-        initial={{ opacity: 0, x: -40 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, delay: 1.3 }}
+        className="absolute left-1/2 top-1/2"
+        style={{ marginTop: -17, marginLeft: -155 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 1.2 }}
       >
-        <AnimatedSpider size={34} color="#8a0303" legWidth={4} sharp variant="logo" />
+        <div style={{ transform: "rotate(180deg)" }}>
+          <AnimatedSpider size={34} color="#8a0303" legWidth={4} sharp variant="logo" />
+        </div>
       </motion.div>
     </motion.div>
   );
