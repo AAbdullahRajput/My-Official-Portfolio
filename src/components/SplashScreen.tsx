@@ -99,11 +99,11 @@ const SpiderIcon = ({
   </svg>
 );
 
-/* ---------- nest spider: legs morph between resting/lifted shapes (a real walk cycle), body wanders ---------- */
-const NestSpider = ({
-  size = 28,
+/* ---------- spider with continuously animated legs (a real walk/climb cycle) — no built-in drift, safe to drop anywhere ---------- */
+const AnimatedSpider = ({
+  size = 20,
   opacity = 0.9,
-  color = "#8a0303",
+  color = "#0b0e13",
 }: {
   size?: number;
   opacity?: number;
@@ -123,39 +123,52 @@ const NestSpider = ({
   };
 
   return (
-    <motion.div
-      animate={{ x: [0, 6, -5, 3, 0], y: [0, -3, 2, -2, 0] }}
-      transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-    >
-      <svg width={size} height={size} viewBox="0 0 100 100" style={{ opacity }}>
-        <ellipse cx="50" cy="58" rx="16" ry="20" fill={color} />
-        <circle cx="50" cy="32" r="10" fill={color} />
-        {legs.map(([x1, y1, x2, y2], i) => (
-          <motion.path
-            key={i}
-            stroke={color}
-            strokeWidth="3"
-            fill="none"
-            strokeLinecap="round"
-            animate={{
-              d: [
-                legPath(x1, y1, x2, y2, 0),
-                legPath(x1, y1, x2, y2, i % 2 === 0 ? 10 : -10),
-                legPath(x1, y1, x2, y2, 0),
-              ],
-            }}
-            transition={{
-              duration: 0.55,
-              repeat: Infinity,
-              delay: i * 0.09,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </svg>
-    </motion.div>
+    <svg width={size} height={size} viewBox="0 0 100 100" style={{ opacity }}>
+      <ellipse cx="50" cy="58" rx="16" ry="20" fill={color} />
+      <circle cx="50" cy="32" r="10" fill={color} />
+      {legs.map(([x1, y1, x2, y2], i) => (
+        <motion.path
+          key={i}
+          stroke={color}
+          strokeWidth="3"
+          fill="none"
+          strokeLinecap="round"
+          animate={{
+            d: [
+              legPath(x1, y1, x2, y2, 0),
+              legPath(x1, y1, x2, y2, i % 2 === 0 ? 10 : -10),
+              legPath(x1, y1, x2, y2, 0),
+            ],
+          }}
+          transition={{
+            duration: 0.55,
+            repeat: Infinity,
+            delay: i * 0.09,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </svg>
   );
 };
+
+/* ---------- nest spider: AnimatedSpider plus a little wandering drift within the web ---------- */
+const NestSpider = ({
+  size = 28,
+  opacity = 0.9,
+  color = "#8a0303",
+}: {
+  size?: number;
+  opacity?: number;
+  color?: string;
+}) => (
+  <motion.div
+    animate={{ x: [0, 6, -5, 3, 0], y: [0, -3, 2, -2, 0] }}
+    transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+  >
+    <AnimatedSpider size={size} opacity={opacity} color={color} />
+  </motion.div>
+);
 
 /* more roaming spiders, mixed heights/speeds/directions */
 const crawlers = [
@@ -247,7 +260,7 @@ const SwingingSpider = ({
         transition={{ duration: 3.4, delay: 1.6, repeat: Infinity, ease: "easeInOut" }}
       >
         <div className="mx-auto w-px bg-[#8a0303]/70" style={{ height: `${length}px` }} />
-        <SpiderIcon size={18} opacity={0.9} color="#8a0303" />
+        <AnimatedSpider size={18} opacity={0.9} color="#8a0303" />
       </motion.div>
     </motion.div>
   </div>
@@ -369,7 +382,7 @@ export default function SplashScreen() {
               transition={{ duration: c.duration, delay: c.delay, repeat: Infinity, ease: "linear" }}
             >
               <div style={{ transform: c.reverse ? "scaleX(-1)" : undefined }}>
-                <SpiderIcon size={c.size} />
+                <AnimatedSpider size={c.size} />
               </div>
             </motion.div>
           ))}
@@ -448,7 +461,7 @@ export default function SplashScreen() {
                 style={{ marginLeft: "-9px" }}
               >
                 <div style={{ transform: "rotate(90deg)" }}>
-                  <SpiderIcon size={18} opacity={0.95} />
+                  <AnimatedSpider size={18} opacity={0.95} />
                 </div>
               </motion.div>
               <div className="h-1 w-full overflow-hidden rounded-full bg-[#0b0e13]/10">
