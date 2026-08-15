@@ -316,19 +316,25 @@ export default function SplashScreen() {
               </h1>
             </motion.div>
 
-            {/* spider emblem that fills bottom-to-top as the page loads */}
-            <div className="relative mt-6 h-14 w-14">
-              <div className="absolute inset-0">
-                <SpiderIcon size={56} opacity={0.15} />
-              </div>
+            {/* progress bar loader with a spider marker riding the leading edge */}
+            <div className="relative mt-8 w-56">
               <motion.div
-                className="absolute inset-0 overflow-hidden"
-                initial={{ clipPath: "inset(100% 0 0 0)" }}
-                animate={{ clipPath: "inset(0% 0 0 0)" }}
+                className="absolute -top-5"
+                initial={{ left: "0%" }}
+                animate={{ left: "100%" }}
                 transition={{ duration: 3.6, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
+                style={{ marginLeft: "-9px" }}
               >
-                <SpiderIcon size={56} opacity={1} />
+                <SpiderIcon size={18} opacity={0.95} />
               </motion.div>
+              <div className="h-1 w-full overflow-hidden rounded-full bg-[#0b0e13]/10">
+                <motion.div
+                  className="h-full rounded-full bg-[#8a0303]"
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 3.6, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
+                />
+              </div>
             </div>
           </div>
         </motion.div>
