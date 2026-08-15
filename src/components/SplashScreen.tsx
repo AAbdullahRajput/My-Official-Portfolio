@@ -41,6 +41,7 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
           />
         ))}
       </svg>
+      {/* spider resting in the nest, gentle idle bob */}
       <motion.div
         className="absolute"
         style={{ top: "26%", left: "26%" }}
@@ -53,6 +54,7 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
   );
 };
 
+/* ---------- spider silhouette ---------- */
 const SpiderIcon = ({ size = 20, opacity = 0.7 }: { size?: number; opacity?: number }) => (
   <svg width={size} height={size} viewBox="0 0 100 100" style={{ opacity }}>
     <ellipse cx="50" cy="58" rx="16" ry="20" fill="#0b0e13" />
@@ -73,6 +75,7 @@ const SpiderIcon = ({ size = 20, opacity = 0.7 }: { size?: number; opacity?: num
   </svg>
 );
 
+/* more roaming spiders, mixed heights/speeds/directions */
 const crawlers = [
   { top: "6%", duration: 3.2, delay: 0, reverse: false, size: 16 },
   { top: "16%", duration: 4.4, delay: 0.6, reverse: true, size: 12 },
@@ -82,6 +85,7 @@ const crawlers = [
   { top: "94%", duration: 3.4, delay: 1.8, reverse: true, size: 18 },
 ];
 
+/* ---------- web shot: fires from a top corner and lands near the name, then leaves an impact mark ---------- */
 const WebHit = ({
   fromX,
   toX,
@@ -93,7 +97,7 @@ const WebHit = ({
   toY: number;
   delay: number;
 }) => {
-  const cycle = 3.4;
+  const cycle = 3.4; // total loop length, keep in sync with transitions below
   return (
     <svg
       className="pointer-events-none absolute inset-0 z-30 h-full w-full"
@@ -110,6 +114,7 @@ const WebHit = ({
         animate={{ pathLength: [0, 1, 1, 0], opacity: [0, 1, 1, 0] }}
         transition={{ duration: 1, delay, repeat: Infinity, repeatDelay: cycle - 1, ease: "easeOut" }}
       />
+      {/* impact burst on the name */}
       <motion.g
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: [0, 1, 0], scale: [0.2, 1, 1.1] }}
@@ -132,6 +137,7 @@ const WebHit = ({
   );
 };
 
+/* ---------- custom web-shooter cursor that tracks the mouse ---------- */
 const WebCursor = ({ x, y, visible }: { x: number; y: number; visible: boolean }) => (
   <motion.div
     className="pointer-events-none fixed z-[10000]"
@@ -155,9 +161,6 @@ export default function SplashScreen() {
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [cursorVisible, setCursorVisible] = useState(false);
   const [bgLines, setBgLines] = useState<string[]>([]);
-  // position of the reveal "hole" within the frame, in px relative to the frame's
-  // own top-left corner — null means not hovering, so the Spider-Man mask stays solid
-  const [maskPos, setMaskPos] = useState<{ x: number; y: number } | null>(null);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -167,6 +170,11 @@ export default function SplashScreen() {
     };
   }, []);
 
+  // Generate the background scribble lines exactly once, on the client,
+  // after mount. This avoids a server/client mismatch (Math.random() would
+  // differ between the two) and, more importantly, stops the lines from
+  // being recalculated (and jumping around) on every re-render — which is
+  // what was making the background appear to move with the cursor.
   useEffect(() => {
     const lines = Array.from({ length: 40 }).map(
       () =>
@@ -180,24 +188,6 @@ export default function SplashScreen() {
     if (!cursorVisible) setCursorVisible(true);
   }
 
-  function handleFrameMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setMaskPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  }
-
-  function handleFrameMouseLeave() {
-    setMaskPos(null);
-  }
-
-  // radial-gradient mask applied to the Spider-Man layer: transparent near the
-  // cursor (revealing the real photo underneath), solid everywhere else.
-  const spidermanMaskStyle = maskPos
-    ? {
-        WebkitMaskImage: `radial-gradient(circle 85px at ${maskPos.x}px ${maskPos.y}px, transparent 0%, transparent 55%, black 85%)`,
-        maskImage: `radial-gradient(circle 85px at ${maskPos.x}px ${maskPos.y}px, transparent 0%, transparent 55%, black 85%)`,
-      }
-    : undefined;
-
   return (
     <AnimatePresence>
       {visible && (
@@ -210,17 +200,20 @@ export default function SplashScreen() {
         >
           <WebCursor x={cursorPos.x} y={cursorPos.y} visible={cursorVisible} />
 
+          {/* sketchy background texture — generated once on mount, never on re-render */}
           <svg className="absolute inset-0 h-full w-full opacity-[0.07]" viewBox="0 0 100 100" preserveAspectRatio="none">
             {bgLines.map((d, i) => (
               <path key={i} d={d} stroke="#000000" strokeWidth="0.15" />
             ))}
           </svg>
 
+          {/* corner webs, each with a resting spider */}
           <CornerWeb corner="tl" />
           <CornerWeb corner="tr" />
           <CornerWeb corner="bl" />
           <CornerWeb corner="br" />
 
+          {/* roaming spiders */}
           {crawlers.map((c, i) => (
             <motion.div
               key={i}
@@ -236,72 +229,66 @@ export default function SplashScreen() {
             </motion.div>
           ))}
 
+          {/* web shots that travel down and hit near the name */}
           <WebHit fromX={2} toX={40} toY={78} delay={0.5} />
           <WebHit fromX={98} toX={60} toY={78} delay={2.1} />
 
           <div className="relative flex h-full w-full flex-col items-center justify-center">
-            {/* face frame: Spider-Man mask on top, real photo underneath, hover to reveal */}
+            {/* split face / Spiderman frame */}
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              onMouseMove={handleFrameMouseMove}
-              onMouseLeave={handleFrameMouseLeave}
               className="relative h-[52vh] w-[52vh] max-h-[380px] max-w-[380px] overflow-hidden rounded-full border-2 border-[#8a0303]"
             >
-              {/* real photo, full circle, hidden underneath until revealed on hover */}
-              <div className="absolute inset-0 overflow-hidden">
-                <Image
-                  src="/images/Me.jpeg"
-                  alt="Ahmad Abdullah"
-                  fill
-                  className="object-cover object-left grayscale contrast-125"
-                />
+              <div className="absolute inset-0 flex">
+                <div className="relative h-full w-1/2 overflow-hidden">
+                  <motion.div
+                    className="absolute inset-0"
+                    initial={{ x: "-100%" }}
+                    animate={{ x: 0 }}
+                    transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <Image
+                      src="/images/spiderman-right.jpeg"
+                      alt="Spider-Man"
+                      fill
+                      className="object-cover object-center"
+                    />
+                  </motion.div>
+                </div>
+                <div className="relative h-full w-1/2 overflow-hidden">
+                  <motion.div
+                    className="absolute inset-0"
+                    initial={{ x: "100%" }}
+                    animate={{ x: 0 }}
+                    transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <Image
+                      src="/images/Me.jpeg"
+                      alt="Ahmad Abdullah"
+                      fill
+                      className="object-cover object-left grayscale contrast-125"
+                    />
+                  </motion.div>
+                </div>
               </div>
 
-              {/* Spider-Man mask: the source photo mirrored on the left half to complete
-                  a symmetric face, original orientation on the right half. A radial hole
-                  opens at the cursor to reveal the real photo underneath. */}
-              <div className="absolute inset-0 flex" style={spidermanMaskStyle}>
-                <div className="relative h-full w-1/2 overflow-hidden">
-                  <Image
-                    src="/images/spiderman-right.jpeg"
-                    alt=""
-                    fill
-                    className="object-cover object-center scale-x-[-1]"
-                  />
-                </div>
-                <div className="relative h-full w-1/2 overflow-hidden">
-                  <Image
-                    src="/images/spiderman-right.jpeg"
-                    alt="Spider-Man"
-                    fill
-                    className="object-cover object-center"
-                  />
-                </div>
-              </div>
+              
             </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.55 }}
-              transition={{ duration: 0.4, delay: 0.9 }}
-              className="mt-3 font-mono text-[10px] uppercase tracking-widest text-[#0b0e13]"
-            >
-              Hover to reveal
-            </motion.p>
 
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.8 }}
-              className="relative mt-2 text-center"
+              className="relative mt-6 text-center"
             >
               <h1 className="text-2xl font-black uppercase tracking-widest text-[#0b0e13] sm:text-4xl">
                 Ahmad Abdullah
               </h1>
             </motion.div>
 
+            {/* spider-thread loader */}
             <div className="relative mt-6 flex h-16 w-10 flex-col items-center">
               <div className="h-8 w-px bg-[#0b0e13]/50" />
               <motion.div
