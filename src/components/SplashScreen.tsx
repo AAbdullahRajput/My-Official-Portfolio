@@ -36,7 +36,7 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
             y1="0"
             x2={100 * Math.cos((angle * Math.PI) / 180)}
             y2={100 * Math.sin((angle * Math.PI) / 180)}
-            stroke="#3a3a3a"
+            stroke="#8a0303"
             strokeWidth="0.6"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
@@ -47,7 +47,7 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
           <motion.path
             key={r}
             d={`M ${r} 0 A ${r} ${r} 0 0 1 0 ${r}`}
-            stroke="#3a3a3a"
+            stroke="#8a0303"
             strokeWidth="0.5"
             fill="none"
             initial={{ pathLength: 0 }}
@@ -56,14 +56,20 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
           />
         ))}
       </svg>
-      {/* spider resting in the nest, gentle idle bob */}
+      {/* spider thrown into the nest — drops from above with a bounce, then idles */}
       <motion.div
         className="absolute"
         style={{ top: "26%", left: "26%" }}
-        animate={{ y: [0, 2, 0], scale: [1, 1.05, 1] }}
-        transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        initial={{ y: -180, x: 30, rotate: -30, opacity: 0 }}
+        animate={{ y: 0, x: 0, rotate: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 9, delay: 0.4 }}
       >
-        <SpiderIcon size={14} opacity={0.9} />
+        <motion.div
+          animate={{ y: [0, 3, 0], scale: [1, 1.05, 1] }}
+          transition={{ duration: 2.4, delay: 1.4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <SpiderIcon size={28} opacity={0.9} />
+        </motion.div>
       </motion.div>
     </div>
   );
@@ -92,12 +98,12 @@ const SpiderIcon = ({ size = 20, opacity = 0.7 }: { size?: number; opacity?: num
 
 /* more roaming spiders, mixed heights/speeds/directions */
 const crawlers = [
-  { top: "6%", duration: 3.2, delay: 0, reverse: false, size: 16 },
-  { top: "16%", duration: 4.4, delay: 0.6, reverse: true, size: 12 },
-  { top: "34%", duration: 5.2, delay: 1.4, reverse: false, size: 14 },
-  { top: "66%", duration: 4.8, delay: 0.9, reverse: true, size: 13 },
-  { top: "82%", duration: 3.8, delay: 0.3, reverse: false, size: 16 },
-  { top: "94%", duration: 3.4, delay: 1.8, reverse: true, size: 18 },
+  { top: "6%", duration: 3.2, delay: 0, reverse: false, size: 32 },
+  { top: "16%", duration: 4.4, delay: 0.6, reverse: true, size: 24 },
+  { top: "34%", duration: 5.2, delay: 1.4, reverse: false, size: 28 },
+  { top: "66%", duration: 4.8, delay: 0.9, reverse: true, size: 26 },
+  { top: "82%", duration: 3.8, delay: 0.3, reverse: false, size: 32 },
+  { top: "94%", duration: 3.4, delay: 1.8, reverse: true, size: 36 },
 ];
 
 /* ---------- web shot: fires from a top corner and lands near the name, then leaves an impact mark ---------- */
