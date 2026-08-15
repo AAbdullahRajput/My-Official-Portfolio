@@ -171,14 +171,16 @@ const SwingingSpider = ({
   side,
   topPercent,
   length,
+  inset = 4,
 }: {
   side: "left" | "right";
   topPercent: number;
   length: number;
+  inset?: number;
 }) => (
   <div
-    className={`pointer-events-none absolute z-20 ${side === "left" ? "left-[4%]" : "right-[4%]"}`}
-    style={{ top: `${topPercent}%` }}
+    className="pointer-events-none absolute z-20"
+    style={{ top: `${topPercent}%`, [side]: `${inset}%` }}
   >
     {/* drops in from above, bounces, then settles into the pendulum swing */}
     <motion.div
@@ -324,8 +326,8 @@ export default function SplashScreen() {
           <WebHit fromX={98} toX={60} toY={78} delay={2.1} />
 
           {/* spiders swinging on a thread down the sides, pendulum motion */}
-          <SwingingSpider side="left" topPercent={0} length={220} />
-          <SwingingSpider side="right" topPercent={0} length={280} />
+          <SwingingSpider side="left" topPercent={0} length={220} inset={18} />
+          <SwingingSpider side="right" topPercent={0} length={280} inset={18} />
 
           <div className="relative flex h-full w-full flex-col items-center justify-center">
             {/* split face / Spiderman frame */}
