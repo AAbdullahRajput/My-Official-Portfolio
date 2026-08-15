@@ -56,7 +56,7 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
           />
         ))}
       </svg>
-      {/* spider thrown into the nest — drops from above with a bounce, then idles */}
+      {/* spider thrown into the nest — drops from above with a bounce, then walks/wanders with animated legs */}
       <motion.div
         className="absolute"
         style={{ top: "26%", left: "26%" }}
@@ -64,12 +64,7 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
         animate={{ y: 0, x: 0, rotate: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 9, delay: 0.4 }}
       >
-        <motion.div
-          animate={{ y: [0, 3, 0], scale: [1, 1.05, 1] }}
-          transition={{ duration: 2.4, delay: 1.4, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <SpiderIcon size={28} opacity={0.9} />
-        </motion.div>
+        <NestSpider size={28} opacity={0.9} color="#8a0303" />
       </motion.div>
     </div>
   );
@@ -103,6 +98,52 @@ const SpiderIcon = ({
     ))}
   </svg>
 );
+
+/* ---------- nest spider: legs actually swing (alternating walk cycle), body wanders a little ---------- */
+const NestSpider = ({
+  size = 28,
+  opacity = 0.9,
+  color = "#8a0303",
+}: {
+  size?: number;
+  opacity?: number;
+  color?: string;
+}) => {
+  const legs: [number, number, number, number][] = [
+    [30, 45, 5, 30], [30, 55, 2, 65], [30, 65, 8, 85],
+    [70, 45, 95, 30], [70, 55, 98, 65], [70, 65, 92, 85],
+  ];
+  return (
+    <motion.div
+      animate={{ x: [0, 6, -5, 3, 0], y: [0, -3, 2, -2, 0] }}
+      transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <svg width={size} height={size} viewBox="0 0 100 100" style={{ opacity }}>
+        <ellipse cx="50" cy="58" rx="16" ry="20" fill={color} />
+        <circle cx="50" cy="32" r="10" fill={color} />
+        {legs.map(([x1, y1, x2, y2], i) => (
+          <motion.path
+            key={i}
+            d={`M ${x1} ${y1} Q ${x1 > 50 ? x1 + 15 : x1 - 15} ${y1 - 5}, ${x2} ${y2}`}
+            stroke={color}
+            strokeWidth="3"
+            fill="none"
+            strokeLinecap="round"
+            style={{ transformOrigin: `${x1}px ${y1}px` }}
+            animate={{ rotate: [0, i % 2 === 0 ? 12 : -12, 0] }}
+            transition={{
+              duration: 0.5,
+              repeat: Infinity,
+              repeatType: "mirror",
+              delay: i * 0.08,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </svg>
+    </motion.div>
+  );
+};
 
 /* more roaming spiders, mixed heights/speeds/directions */
 const crawlers = [
