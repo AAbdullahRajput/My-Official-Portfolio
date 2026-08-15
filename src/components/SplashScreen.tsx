@@ -76,10 +76,18 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
 };
 
 /* ---------- spider silhouette ---------- */
-const SpiderIcon = ({ size = 20, opacity = 0.7 }: { size?: number; opacity?: number }) => (
+const SpiderIcon = ({
+  size = 20,
+  opacity = 0.7,
+  color = "#0b0e13",
+}: {
+  size?: number;
+  opacity?: number;
+  color?: string;
+}) => (
   <svg width={size} height={size} viewBox="0 0 100 100" style={{ opacity }}>
-    <ellipse cx="50" cy="58" rx="16" ry="20" fill="#0b0e13" />
-    <circle cx="50" cy="32" r="10" fill="#0b0e13" />
+    <ellipse cx="50" cy="58" rx="16" ry="20" fill={color} />
+    <circle cx="50" cy="32" r="10" fill={color} />
     {[
       [30, 45, 5, 30], [30, 55, 2, 65], [30, 65, 8, 85],
       [70, 45, 95, 30], [70, 55, 98, 65], [70, 65, 92, 85],
@@ -87,7 +95,7 @@ const SpiderIcon = ({ size = 20, opacity = 0.7 }: { size?: number; opacity?: num
       <path
         key={i}
         d={`M ${x1} ${y1} Q ${x1 > 50 ? x1 + 15 : x1 - 15} ${y1 - 5}, ${x2} ${y2}`}
-        stroke="#0b0e13"
+        stroke={color}
         strokeWidth="3"
         fill="none"
         strokeLinecap="round"
@@ -172,13 +180,20 @@ const SwingingSpider = ({
     className={`pointer-events-none absolute z-20 ${side === "left" ? "left-[4%]" : "right-[4%]"}`}
     style={{ top: `${topPercent}%` }}
   >
+    {/* drops in from above, bounces, then settles into the pendulum swing */}
     <motion.div
-      style={{ transformOrigin: "top center" }}
-      animate={{ rotate: [side === "left" ? -14 : 14, side === "left" ? 10 : -10, side === "left" ? -14 : 14] }}
-      transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
+      initial={{ y: -260, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ type: "spring", stiffness: 200, damping: 11, delay: side === "left" ? 0.6 : 0.9 }}
     >
-      <div className="mx-auto w-px bg-[#3a3a3a]/50" style={{ height: `${length}px` }} />
-      <SpiderIcon size={18} opacity={0.85} />
+      <motion.div
+        style={{ transformOrigin: "top center" }}
+        animate={{ rotate: [side === "left" ? -14 : 14, side === "left" ? 10 : -10, side === "left" ? -14 : 14] }}
+        transition={{ duration: 3.4, delay: 1.6, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="mx-auto w-px bg-[#8a0303]/70" style={{ height: `${length}px` }} />
+        <SpiderIcon size={18} opacity={0.9} color="#8a0303" />
+      </motion.div>
     </motion.div>
   </div>
 );
