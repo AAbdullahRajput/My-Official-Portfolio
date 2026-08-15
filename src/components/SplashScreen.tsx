@@ -108,10 +108,14 @@ const AnimatedSpider = ({
   size = 20,
   opacity = 0.9,
   color = "#0b0e13",
+  legWidth = 3,
+  sharp = false,
 }: {
   size?: number;
   opacity?: number;
   color?: string;
+  legWidth?: number;
+  sharp?: boolean;
 }) => {
   // each leg: [x1, y1, x2, y2] — shoulder point to foot point
   const legs: [number, number, number, number][] = [
@@ -120,6 +124,13 @@ const AnimatedSpider = ({
   ];
 
   const legPath = (x1: number, y1: number, x2: number, y2: number, lift: number) => {
+    if (sharp) {
+      // jointed leg: shoulder -> angled knee -> foot, for a sharper, more anatomical silhouette
+      const kx = x1 > 50 ? x1 + 24 : x1 - 24;
+      const ky = y1 + 8 - lift * 0.7;
+      const fx = x1 > 50 ? x2 + lift * 0.6 : x2 - lift * 0.6;
+      return `M ${x1} ${y1} L ${kx} ${ky} L ${fx} ${y2}`;
+    }
     const cx = x1 > 50 ? x1 + 15 : x1 - 15;
     const cy = y1 - 5 - lift;
     const fx = x1 > 50 ? x2 + lift * 0.6 : x2 - lift * 0.6;
@@ -134,7 +145,7 @@ const AnimatedSpider = ({
         <motion.path
           key={i}
           stroke={color}
-          strokeWidth="3"
+          strokeWidth={legWidth}
           fill="none"
           strokeLinecap="round"
           animate={{
@@ -384,25 +395,44 @@ export default function SplashScreen() {
           <CornerWeb corner="bl" />
           <CornerWeb corner="br" />
 
-          {/* roaming spiders — drop in from above, then crawl across */}
-          {crawlers.map((c, i) => (
-            <motion.div
-              key={i}
-              className="absolute z-20"
-              style={{ top: c.top }}
-              initial={{ x: c.reverse ? "110vw" : "-10vw", y: -120, opacity: 0 }}
-              animate={{ x: c.reverse ? "-10vw" : "110vw", y: 0, opacity: 1 }}
-              transition={{
-                x: { duration: c.duration, delay: c.delay, repeat: Infinity, ease: "linear" },
-                y: { type: "spring", stiffness: 220, damping: 12, delay: c.delay },
-                opacity: { duration: 0.3, delay: c.delay },
-              }}
-            >
-              <div style={{ transform: c.reverse ? "rotate(-90deg)" : "rotate(90deg)" }}>
-                <AnimatedSpider size={c.size} color="#8a0303" />
-              </div>
-            </motion.div>
-          ))}
+          {/* roaming spiders — fall in at the screen edge, land, THEN crawl across */}
+          {crawlers.map((c, i) => {
+            const entryX = c.reverse ? "100vw" : "0vw"; // on-screen edge, where it lands
+            const exitX = c.reverse ? "-10vw" : "110vw"; // off-screen, where it exits
+            const fallDuration = 0.6;
+            const totalDuration = fallDuration + c.duration + 0.3;
+            const times = [
+              0,
+              fallDuration / totalDuration,
+              (fallDuration + c.duration) / totalDuration,
+              1,
+            ];
+
+            return (
+              <motion.div
+                key={i}
+                className="absolute z-20"
+                style={{ top: c.top }}
+                initial={{ x: entryX, y: -120, opacity: 0 }}
+                animate={{
+                  x: [entryX, entryX, exitX, exitX],
+                  y: [-120, 0, 0, 0],
+                  opacity: [0, 1, 1, 0],
+                }}
+                transition={{
+                  duration: totalDuration,
+                  delay: c.delay,
+                  times,
+                  repeat: Infinity,
+                  ease: ["easeOut", "linear", "easeIn"],
+                }}
+              >
+                <div style={{ transform: c.reverse ? "rotate(-90deg)" : "rotate(90deg)" }}>
+                  <AnimatedSpider size={c.size} color="#8a0303" />
+                </div>
+              </motion.div>
+            );
+          })}
 
           {/* web shots that travel down and hit near the name */}
           <WebHit fromX={2} toX={40} toY={78} delay={0.5} />
@@ -471,14 +501,14 @@ export default function SplashScreen() {
             {/* progress bar loader with a spider marker riding the leading edge, facing its direction of travel */}
             <div className="relative mt-8 w-56">
               <motion.div
-                className="absolute -top-5"
+                className="absolute -top-6"
                 initial={{ left: "0%" }}
                 animate={{ left: "100%" }}
                 transition={{ duration: 3.6, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
-                style={{ marginLeft: "-9px" }}
+                style={{ marginLeft: "-15px" }}
               >
                 <div style={{ transform: "rotate(90deg)" }}>
-                  <AnimatedSpider size={18} opacity={0.95} />
+                  <AnimatedSpider size={30} opacity={0.95} color="#8a0303" legWidth={5} sharp />
                 </div>
               </motion.div>
               <div className="h-1 w-full overflow-hidden rounded-full bg-[#0b0e13]/10">
