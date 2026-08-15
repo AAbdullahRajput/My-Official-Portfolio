@@ -201,7 +201,7 @@ const WebHit = ({
     >
       <motion.path
         d={`M ${fromX} 0 Q ${(fromX + toX) / 2} ${toY * 0.5}, ${toX} ${toY}`}
-        stroke="#2a2a2a"
+        stroke="#8a0303"
         strokeWidth="0.35"
         fill="none"
         strokeDasharray="1.2 1"
@@ -223,7 +223,7 @@ const WebHit = ({
             y1={toY}
             x2={toX + 3.5 * Math.cos((a * Math.PI) / 180)}
             y2={toY + 3.5 * Math.sin((a * Math.PI) / 180)}
-            stroke="#2a2a2a"
+            stroke="#8a0303"
             strokeWidth="0.3"
           />
         ))}
@@ -481,7 +481,7 @@ export default function SplashScreen() {
                   transition={{ duration: 3.6, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
                 />
               </div>
-              <div className="mt-2 text-center font-mono text-xs tracking-widest text-[#0b0e13]/70">
+              <div className="mt-2 text-center font-mono text-xs tracking-widest text-[#8a0303]/70">
                 {loadProgress}%
               </div>
             </div>
