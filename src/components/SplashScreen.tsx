@@ -185,6 +185,7 @@ export default function SplashScreen() {
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [cursorVisible, setCursorVisible] = useState(false);
   const [bgLines, setBgLines] = useState<string[]>([]);
+  const [loadProgress, setLoadProgress] = useState(0);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -205,6 +206,26 @@ export default function SplashScreen() {
         `M ${Math.random() * 100} ${Math.random() * 100} L ${Math.random() * 100} ${Math.random() * 100}`
     );
     setBgLines(lines);
+  }, []);
+
+  // ticks the loader percentage up in lockstep with the progress bar's
+  // own animation (same 300ms delay, 3600ms duration)
+  useEffect(() => {
+    let raf: number;
+    const startTimeout = setTimeout(() => {
+      const start = performance.now();
+      const duration = 3600;
+      function tick(now: number) {
+        const pct = Math.min(100, Math.round(((now - start) / duration) * 100));
+        setLoadProgress(pct);
+        if (pct < 100) raf = requestAnimationFrame(tick);
+      }
+      raf = requestAnimationFrame(tick);
+    }, 300);
+    return () => {
+      clearTimeout(startTimeout);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   function handleMouseMove(e: React.MouseEvent) {
@@ -316,7 +337,7 @@ export default function SplashScreen() {
               </h1>
             </motion.div>
 
-            {/* progress bar loader with a spider marker riding the leading edge */}
+            {/* progress bar loader with a spider marker riding the leading edge, facing its direction of travel */}
             <div className="relative mt-8 w-56">
               <motion.div
                 className="absolute -top-5"
@@ -325,7 +346,9 @@ export default function SplashScreen() {
                 transition={{ duration: 3.6, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
                 style={{ marginLeft: "-9px" }}
               >
-                <SpiderIcon size={18} opacity={0.95} />
+                <div style={{ transform: "rotate(90deg)" }}>
+                  <SpiderIcon size={18} opacity={0.95} />
+                </div>
               </motion.div>
               <div className="h-1 w-full overflow-hidden rounded-full bg-[#0b0e13]/10">
                 <motion.div
@@ -334,6 +357,9 @@ export default function SplashScreen() {
                   animate={{ width: "100%" }}
                   transition={{ duration: 3.6, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
                 />
+              </div>
+              <div className="mt-2 text-center font-mono text-xs tracking-widest text-[#0b0e13]/70">
+                {loadProgress}%
               </div>
             </div>
           </div>
