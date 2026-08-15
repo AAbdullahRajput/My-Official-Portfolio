@@ -4,6 +4,15 @@ import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
+// pulsing glow for the frame border — a plain CSS animation is cheaper here
+// than a framer-motion loop since it never needs to read component state
+const glowPulseStyle = `
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 0px rgba(138, 3, 3, 0); }
+  50% { box-shadow: 0 0 22px rgba(138, 3, 3, 0.45); }
+}
+`;
+
 /* ---------- corner spiderweb with a resting spider in it ---------- */
 const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
   const rotate =
@@ -20,8 +29,8 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
   return (
     <div className={`absolute ${pos} h-24 w-24 sm:h-32 sm:w-32`} style={{ transform: `rotate(${rotate}deg)` }}>
       <svg className="absolute inset-0 h-full w-full opacity-50" viewBox="0 0 100 100" fill="none">
-        {[0, 20, 40, 60, 90].map((angle) => (
-          <line
+        {[0, 20, 40, 60, 90].map((angle, i) => (
+          <motion.line
             key={angle}
             x1="0"
             y1="0"
@@ -29,15 +38,21 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
             y2={100 * Math.sin((angle * Math.PI) / 180)}
             stroke="#3a3a3a"
             strokeWidth="0.6"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.6, delay: i * 0.08, ease: "easeOut" }}
           />
         ))}
-        {[18, 36, 54, 72, 90].map((r) => (
-          <path
+        {[18, 36, 54, 72, 90].map((r, i) => (
+          <motion.path
             key={r}
             d={`M ${r} 0 A ${r} ${r} 0 0 1 0 ${r}`}
             stroke="#3a3a3a"
             strokeWidth="0.5"
             fill="none"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.7, delay: 0.3 + i * 0.1, ease: "easeOut" }}
           />
         ))}
       </svg>
@@ -243,12 +258,21 @@ export default function SplashScreen() {
           onMouseLeave={() => setCursorVisible(false)}
           className="fixed inset-0 z-[9999] overflow-hidden bg-white cursor-none"
         >
+          <style>{glowPulseStyle}</style>
           <WebCursor x={cursorPos.x} y={cursorPos.y} visible={cursorVisible} />
 
           {/* sketchy background texture — generated once on mount, never on re-render */}
           <svg className="absolute inset-0 h-full w-full opacity-[0.07]" viewBox="0 0 100 100" preserveAspectRatio="none">
             {bgLines.map((d, i) => (
-              <path key={i} d={d} stroke="#000000" strokeWidth="0.15" />
+              <motion.path
+                key={i}
+                d={d}
+                stroke="#000000"
+                strokeWidth="0.15"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 1.2, delay: i * 0.02, ease: "easeOut" }}
+              />
             ))}
           </svg>
 
@@ -289,6 +313,7 @@ export default function SplashScreen() {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="relative h-[52vh] w-[52vh] max-h-[380px] max-w-[380px] overflow-hidden rounded-full border-2 border-[#8a0303]"
+              style={{ animation: "glowPulse 2.4s ease-in-out infinite" }}
             >
               <div className="absolute inset-0 flex">
                 <div className="relative h-full w-1/2 overflow-hidden">
