@@ -3,6 +3,10 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { Unbounded, JetBrains_Mono } from "next/font/google";
+
+const displayFont = Unbounded({ subsets: ["latin"], weight: ["700", "800"] });
+const monoFont = JetBrains_Mono({ subsets: ["latin"], weight: ["500"] });
 
 // pulsing glow for the frame border — a plain CSS animation is cheaper here
 // than a framer-motion loop since it never needs to read component state
@@ -455,7 +459,7 @@ export default function SplashScreen() {
               transition={{ duration: 0.5, delay: 0.8 }}
               className="relative mt-6 text-center"
             >
-              <h1 className="text-2xl font-black uppercase tracking-widest text-[#8a0303] sm:text-4xl">
+              <h1 className={`${displayFont.className} text-2xl uppercase tracking-widest text-[#8a0303] sm:text-4xl`}>
   Ahmad Abdullah
 </h1>
             </motion.div>
@@ -481,7 +485,7 @@ export default function SplashScreen() {
                   transition={{ duration: 3.6, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
                 />
               </div>
-              <div className="mt-2 text-center font-mono text-xs tracking-widest text-[#8a0303]/70">
+              <div className={`${monoFont.className} mt-2 text-center text-xs tracking-widest text-[#8a0303]/70`}>
                 {loadProgress}%
               </div>
             </div>
