@@ -138,6 +138,30 @@ const WebHit = ({
 };
 
 /* ---------- custom web-shooter cursor that tracks the mouse ---------- */
+const SwingingSpider = ({
+  side,
+  topPercent,
+  length,
+}: {
+  side: "left" | "right";
+  topPercent: number;
+  length: number;
+}) => (
+  <div
+    className={`pointer-events-none absolute z-20 ${side === "left" ? "left-[4%]" : "right-[4%]"}`}
+    style={{ top: `${topPercent}%` }}
+  >
+    <motion.div
+      style={{ transformOrigin: "top center" }}
+      animate={{ rotate: [side === "left" ? -14 : 14, side === "left" ? 10 : -10, side === "left" ? -14 : 14] }}
+      transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <div className="mx-auto w-px bg-[#3a3a3a]/50" style={{ height: `${length}px` }} />
+      <SpiderIcon size={18} opacity={0.85} />
+    </motion.div>
+  </div>
+);
+
 const WebCursor = ({ x, y, visible }: { x: number; y: number; visible: boolean }) => (
   <motion.div
     className="pointer-events-none fixed z-[10000]"
@@ -232,6 +256,10 @@ export default function SplashScreen() {
           {/* web shots that travel down and hit near the name */}
           <WebHit fromX={2} toX={40} toY={78} delay={0.5} />
           <WebHit fromX={98} toX={60} toY={78} delay={2.1} />
+
+          {/* spiders swinging on a thread down the sides, pendulum motion */}
+          <SwingingSpider side="left" topPercent={0} length={220} />
+          <SwingingSpider side="right" topPercent={0} length={280} />
 
           <div className="relative flex h-full w-full flex-col items-center justify-center">
             {/* split face / Spiderman frame */}
