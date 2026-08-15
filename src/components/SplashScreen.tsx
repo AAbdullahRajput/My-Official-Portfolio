@@ -384,15 +384,19 @@ export default function SplashScreen() {
           <CornerWeb corner="bl" />
           <CornerWeb corner="br" />
 
-          {/* roaming spiders */}
+          {/* roaming spiders — drop in from above, then crawl across */}
           {crawlers.map((c, i) => (
             <motion.div
               key={i}
               className="absolute z-20"
               style={{ top: c.top }}
-              initial={{ x: c.reverse ? "110vw" : "-10vw" }}
-              animate={{ x: c.reverse ? "-10vw" : "110vw" }}
-              transition={{ duration: c.duration, delay: c.delay, repeat: Infinity, ease: "linear" }}
+              initial={{ x: c.reverse ? "110vw" : "-10vw", y: -120, opacity: 0 }}
+              animate={{ x: c.reverse ? "-10vw" : "110vw", y: 0, opacity: 1 }}
+              transition={{
+                x: { duration: c.duration, delay: c.delay, repeat: Infinity, ease: "linear" },
+                y: { type: "spring", stiffness: 220, damping: 12, delay: c.delay },
+                opacity: { duration: 0.3, delay: c.delay },
+              }}
             >
               <div style={{ transform: c.reverse ? "rotate(-90deg)" : "rotate(90deg)" }}>
                 <AnimatedSpider size={c.size} color="#8a0303" />
