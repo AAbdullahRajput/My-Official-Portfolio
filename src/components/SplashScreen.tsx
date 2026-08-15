@@ -99,7 +99,7 @@ const SpiderIcon = ({
   </svg>
 );
 
-/* ---------- nest spider: legs actually swing (alternating walk cycle), body wanders a little ---------- */
+/* ---------- nest spider: legs morph between resting/lifted shapes (a real walk cycle), body wanders ---------- */
 const NestSpider = ({
   size = 28,
   opacity = 0.9,
@@ -109,10 +109,19 @@ const NestSpider = ({
   opacity?: number;
   color?: string;
 }) => {
+  // each leg: [x1, y1, x2, y2] — shoulder point to foot point
   const legs: [number, number, number, number][] = [
     [30, 45, 5, 30], [30, 55, 2, 65], [30, 65, 8, 85],
     [70, 45, 95, 30], [70, 55, 98, 65], [70, 65, 92, 85],
   ];
+
+  const legPath = (x1: number, y1: number, x2: number, y2: number, lift: number) => {
+    const cx = x1 > 50 ? x1 + 15 : x1 - 15;
+    const cy = y1 - 5 - lift;
+    const fx = x1 > 50 ? x2 + lift * 0.6 : x2 - lift * 0.6;
+    return `M ${x1} ${y1} Q ${cx} ${cy}, ${fx} ${y2}`;
+  };
+
   return (
     <motion.div
       animate={{ x: [0, 6, -5, 3, 0], y: [0, -3, 2, -2, 0] }}
@@ -124,18 +133,21 @@ const NestSpider = ({
         {legs.map(([x1, y1, x2, y2], i) => (
           <motion.path
             key={i}
-            d={`M ${x1} ${y1} Q ${x1 > 50 ? x1 + 15 : x1 - 15} ${y1 - 5}, ${x2} ${y2}`}
             stroke={color}
             strokeWidth="3"
             fill="none"
             strokeLinecap="round"
-            style={{ transformOrigin: `${x1}px ${y1}px` }}
-            animate={{ rotate: [0, i % 2 === 0 ? 12 : -12, 0] }}
+            animate={{
+              d: [
+                legPath(x1, y1, x2, y2, 0),
+                legPath(x1, y1, x2, y2, i % 2 === 0 ? 10 : -10),
+                legPath(x1, y1, x2, y2, 0),
+              ],
+            }}
             transition={{
-              duration: 0.5,
+              duration: 0.55,
               repeat: Infinity,
-              repeatType: "mirror",
-              delay: i * 0.08,
+              delay: i * 0.09,
               ease: "easeInOut",
             }}
           />
