@@ -255,12 +255,21 @@ const SwingingSpider = ({
       transition={{ type: "spring", stiffness: 200, damping: 11, delay: side === "left" ? 0.6 : 0.9 }}
     >
       <motion.div
-        style={{ transformOrigin: "top center" }}
+        className="relative mx-auto"
+        style={{ transformOrigin: "top center", height: `${length}px`, width: 1 }}
         animate={{ rotate: [side === "left" ? -14 : 14, side === "left" ? 10 : -10, side === "left" ? -14 : 14] }}
         transition={{ duration: 3.4, delay: 1.6, repeat: Infinity, ease: "easeInOut" }}
       >
-        <div className="mx-auto w-px bg-[#8a0303]/70" style={{ height: `${length}px` }} />
-        <AnimatedSpider size={18} opacity={0.9} color="#8a0303" />
+        <div className="h-full w-px bg-[#8a0303]/70" />
+        {/* spider climbs up and back down the thread, on a loop */}
+        <motion.div
+          className="absolute left-1/2"
+          style={{ marginLeft: -9 }}
+          animate={{ top: [length - 18, length * 0.35, length - 18] }}
+          transition={{ duration: 4.5, delay: side === "left" ? 1.8 : 2.1, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <AnimatedSpider size={18} opacity={0.9} color="#8a0303" />
+        </motion.div>
       </motion.div>
     </motion.div>
   </div>
@@ -381,8 +390,8 @@ export default function SplashScreen() {
               animate={{ x: c.reverse ? "-10vw" : "110vw" }}
               transition={{ duration: c.duration, delay: c.delay, repeat: Infinity, ease: "linear" }}
             >
-              <div style={{ transform: c.reverse ? "scaleX(-1)" : undefined }}>
-                <AnimatedSpider size={c.size} />
+              <div style={{ transform: c.reverse ? "rotate(-90deg)" : "rotate(90deg)" }}>
+                <AnimatedSpider size={c.size} color="#8a0303" />
               </div>
             </motion.div>
           ))}
@@ -446,9 +455,9 @@ export default function SplashScreen() {
               transition={{ duration: 0.5, delay: 0.8 }}
               className="relative mt-6 text-center"
             >
-              <h1 className="text-2xl font-black uppercase tracking-widest text-[#0b0e13] sm:text-4xl">
-                Ahmad Abdullah
-              </h1>
+              <h1 className="text-2xl font-black uppercase tracking-widest text-[#8a0303] sm:text-4xl">
+  Ahmad Abdullah
+</h1>
             </motion.div>
 
             {/* progress bar loader with a spider marker riding the leading edge, facing its direction of travel */}
