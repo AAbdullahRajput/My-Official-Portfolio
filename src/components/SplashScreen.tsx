@@ -27,7 +27,7 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
       : "bottom-0 left-0";
 
   return (
-    <div className={`absolute ${pos} h-24 w-24 sm:h-32 sm:w-32`} style={{ transform: `rotate(${rotate}deg)` }}>
+    <div className={`absolute ${pos} h-40 w-40 sm:h-56 sm:w-56`} style={{ transform: `rotate(${rotate}deg)` }}>
       <svg className="absolute inset-0 h-full w-full opacity-50" viewBox="0 0 100 100" fill="none">
         {[0, 20, 40, 60, 90].map((angle, i) => (
           <motion.line
