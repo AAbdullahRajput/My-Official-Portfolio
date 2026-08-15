@@ -110,12 +110,14 @@ const AnimatedSpider = ({
   color = "#0b0e13",
   legWidth = 3,
   sharp = false,
+  variant = "classic",
 }: {
   size?: number;
   opacity?: number;
   color?: string;
   legWidth?: number;
   sharp?: boolean;
+  variant?: "classic" | "logo";
 }) => {
   // each leg: [x1, y1, x2, y2] — shoulder point to foot point
   const legs: [number, number, number, number][] = [
@@ -139,8 +141,18 @@ const AnimatedSpider = ({
 
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" style={{ opacity }}>
-      <ellipse cx="50" cy="58" rx="16" ry="20" fill={color} />
-      <circle cx="50" cy="32" r="10" fill={color} />
+      {variant === "logo" ? (
+        // single tapered, pointed body — no separate head, closer to the Spider-Man emblem shape
+        <path
+          d="M50 20 C61 20 68 36 68 56 C68 78 59 94 50 106 C41 94 32 78 32 56 C32 36 39 20 50 20 Z"
+          fill={color}
+        />
+      ) : (
+        <>
+          <ellipse cx="50" cy="58" rx="16" ry="20" fill={color} />
+          <circle cx="50" cy="32" r="10" fill={color} />
+        </>
+      )}
       {legs.map(([x1, y1, x2, y2], i) => (
         <motion.path
           key={i}
@@ -289,6 +301,129 @@ const SwingingSpider = ({
     </motion.div>
   </div>
 );
+
+/* ---------- realistic spider web: spider on left, shoots real web geometry left then wraps around ---------- */
+const WebCastingSpider = () => {
+  // realistic web: radial strands + concentric circles
+  const radialCount = 14;
+  const circleCount = 5;
+  
+  return (
+    <motion.div
+      className="pointer-events-none absolute left-0 top-1/2 w-[120%]"
+      style={{ marginTop: -35, marginLeft: -40 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay: 1.5 }}
+    >
+      <svg
+        className="absolute h-[70px] w-full"
+        viewBox="0 0 200 70"
+        preserveAspectRatio="none"
+        style={{ pointerEvents: "none" }}
+      >
+        {/* animated web container — rotates from left (180°) to front (0°) */}
+        <motion.g
+          style={{ transformOrigin: "20px 35px" }}
+          animate={{ rotate: [180, 0] }}
+          transition={{
+            duration: 5,
+            delay: 2,
+            repeat: Infinity,
+            repeatDelay: 3,
+            times: [0, 0.5, 1],
+            ease: "easeInOut",
+          }}
+        >
+          {/* radial strands shooting from spider's position */}
+          {Array.from({ length: radialCount }).map((_, i) => {
+            const angle = (i / radialCount) * Math.PI * 2;
+            const x2 = 20 + 65 * Math.cos(angle);
+            const y2 = 35 + 35 * Math.sin(angle);
+            
+            return (
+              <motion.line
+                key={`radial-${i}`}
+                x1="20"
+                y1="35"
+                x2={x2}
+                y2={y2}
+                stroke="white"
+                strokeWidth="0.3"
+                opacity="0.85"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{
+                  duration: 2,
+                  delay: 2 + (i % 4) * 0.15,
+                  ease: "easeOut",
+                }}
+              />
+            );
+          })}
+
+          {/* concentric circles connecting radials */}
+          {Array.from({ length: circleCount }).map((_, i) => {
+            const radius = ((i + 1) / circleCount) * 65;
+            return (
+              <motion.circle
+                key={`circle-${i}`}
+                cx="20"
+                cy="35"
+                r={radius}
+                fill="none"
+                stroke="white"
+                strokeWidth="0.25"
+                opacity="0.75"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{
+                  duration: 2.2,
+                  delay: 2.3 + i * 0.2,
+                  ease: "easeOut",
+                }}
+              />
+            );
+          })}
+
+          {/* organic droop threads (vertical strands with curves) */}
+          {Array.from({ length: 8 }).map((_, i) => {
+            const xOffset = 20 + (i * 12);
+            const droopAmount = 8 + Math.sin(i) * 3;
+            return (
+              <motion.path
+                key={`droop-${i}`}
+                d={`M ${xOffset} 35 Q ${xOffset + 2} ${35 + droopAmount}, ${xOffset} ${35 + droopAmount * 2}`}
+                stroke="white"
+                strokeWidth="0.2"
+                fill="none"
+                opacity="0.7"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{
+                  duration: 2.4,
+                  delay: 2.5 + i * 0.12,
+                  ease: "easeOut",
+                }}
+              />
+            );
+          })}
+        </motion.g>
+      </svg>
+
+      {/* spider on the left, animated legs */}
+      <motion.div
+        className="absolute left-0 top-1/2"
+        style={{ marginTop: -17, marginLeft: -25 }}
+        initial={{ opacity: 0, x: -40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 1.3 }}
+      >
+        <AnimatedSpider size={34} color="#8a0303" legWidth={4} sharp variant="logo" />
+      </motion.div>
+    </motion.div>
+  );
+};
 
 const WebCursor = ({ x, y, visible }: { x: number; y: number; visible: boolean }) => (
   <motion.div
@@ -483,8 +618,6 @@ export default function SplashScreen() {
                   </motion.div>
                 </div>
               </div>
-
-              
             </motion.div>
 
             <motion.div
@@ -493,9 +626,10 @@ export default function SplashScreen() {
               transition={{ duration: 0.5, delay: 0.8 }}
               className="relative mt-6 text-center"
             >
-              <h1 className={`${displayFont.className} text-2xl uppercase tracking-widest text-[#8a0303] sm:text-4xl`}>
-  Ahmad Abdullah
-</h1>
+              <h1 className={`${displayFont.className} relative z-10 text-2xl uppercase tracking-widest text-[#8a0303] sm:text-4xl`}>
+                Ahmad Abdullah
+              </h1>
+              <WebCastingSpider />
             </motion.div>
 
             {/* progress bar loader with a spider marker riding the leading edge, facing its direction of travel */}
