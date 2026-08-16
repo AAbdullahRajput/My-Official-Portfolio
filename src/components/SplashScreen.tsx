@@ -436,35 +436,84 @@ const SpiderCursor = ({
   </motion.div>
 );
 
-/* ---------- web strand fired from the spider's back on click ---------- */
-const CursorWebShot = ({ x, y, angle }: { x: number; y: number; angle: number }) => {
-  const rad = (angle * Math.PI) / 180;
-  const len = 110;
-  const ex = x + len * Math.cos(rad);
-  const ey = y + len * Math.sin(rad);
+/* ---------- web capture: strand fires from the spider's face to the click point,
+   then a web-net converges around it like it's been wrapped up ---------- */
+const CursorWebCapture = ({
+  originX,
+  originY,
+  targetX,
+  targetY,
+}: {
+  originX: number;
+  originY: number;
+  targetX: number;
+  targetY: number;
+}) => {
+  const netRadius = 34;
+  const spokes = 8;
   return (
     <svg className="pointer-events-none fixed inset-0 z-[9998] h-full w-full">
+      {/* strand travels from the spider's face to the target */}
       <motion.line
-        x1={x}
-        y1={y}
-        x2={ex}
-        y2={ey}
+        x1={originX}
+        y1={originY}
+        x2={targetX}
+        y2={targetY}
         stroke="#8a0303"
         strokeWidth="2"
         strokeDasharray="6 4"
         initial={{ pathLength: 0, opacity: 1 }}
-        animate={{ pathLength: 1, opacity: [1, 1, 0] }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        animate={{ pathLength: 1, opacity: [1, 1, 0.6] }}
+        transition={{ duration: 0.28, ease: "easeOut" }}
       />
-      <motion.circle
-        cx={ex}
-        cy={ey}
-        r="3"
-        fill="#8a0303"
-        initial={{ scale: 0, opacity: 1 }}
-        animate={{ scale: [0, 1.4, 1], opacity: [1, 1, 0] }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      />
+
+      {/* web-net: spokes shoot outward from the target then a ring cinches around them,
+          reading as the target getting wrapped up */}
+      <motion.g initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 1, 0] }} transition={{ duration: 0.9, delay: 0.22, times: [0, 0.15, 0.7, 1] }}>
+        {Array.from({ length: spokes }).map((_, i) => {
+          const a = (i / spokes) * Math.PI * 2;
+          const ex = targetX + netRadius * Math.cos(a);
+          const ey = targetY + netRadius * Math.sin(a);
+          return (
+            <motion.line
+              key={i}
+              x1={targetX}
+              y1={targetY}
+              x2={ex}
+              y2={ey}
+              stroke="#8a0303"
+              strokeWidth="1.4"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.22, delay: 0.22 + i * 0.015, ease: "easeOut" }}
+            />
+          );
+        })}
+        <motion.circle
+          cx={targetX}
+          cy={targetY}
+          r={netRadius}
+          stroke="#8a0303"
+          strokeWidth="1.4"
+          fill="none"
+          initial={{ scale: 0.2, opacity: 0 }}
+          animate={{ scale: [0.2, 1.15, 1], opacity: [0, 1, 1] }}
+          transition={{ duration: 0.32, delay: 0.32, ease: "easeOut" }}
+          style={{ transformOrigin: `${targetX}px ${targetY}px` }}
+        />
+        <motion.circle
+          cx={targetX}
+          cy={targetY}
+          r={netRadius * 0.55}
+          stroke="#8a0303"
+          strokeWidth="1"
+          fill="none"
+          initial={{ scale: 0.2, opacity: 0 }}
+          animate={{ scale: [0.2, 1.15, 1], opacity: [0, 0.8, 0.8] }}
+          transition={{ duration: 0.32, delay: 0.4, ease: "easeOut" }}
+          style={{ transformOrigin: `${targetX}px ${targetY}px` }}
+        />
+      </motion.g>
     </svg>
   );
 };
@@ -481,7 +530,9 @@ export default function SplashScreen() {
   const lastMouseRef = useRef({ x: 0, y: 0 });
   const [cursorVisible, setCursorVisible] = useState(false);
   const [bgLines, setBgLines] = useState<string[]>([]);
-  const [webShots, setWebShots] = useState<{ id: number; x: number; y: number; angle: number }[]>([]);
+const [webCaptures, setWebCaptures] = useState<
+    { id: number; originX: number; originY: number; targetX: number; targetY: number }[]
+  >([]);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -522,12 +573,19 @@ export default function SplashScreen() {
   }
 
   function handleClick(e: React.MouseEvent) {
-    const backAngle = cursorAngle.get() + 180; // web fires from the spider's back, opposite its facing direction
+    // fire from just ahead of the cursor, in the direction the spider is currently facing
+    const angleRad = (cursorAngle.get() * Math.PI) / 180;
+    const faceOffset = 18;
+    const originX = e.clientX + faceOffset * Math.cos(angleRad);
+    const originY = e.clientY + faceOffset * Math.sin(angleRad);
     const id = Date.now() + Math.random();
-    setWebShots((prev) => [...prev, { id, x: e.clientX, y: e.clientY, angle: backAngle }]);
+    setWebCaptures((prev) => [
+      ...prev,
+      { id, originX, originY, targetX: e.clientX, targetY: e.clientY },
+    ]);
     setTimeout(() => {
-      setWebShots((prev) => prev.filter((s) => s.id !== id));
-    }, 650);
+      setWebCaptures((prev) => prev.filter((c) => c.id !== id));
+    }, 1150);
   }
 
   return (
@@ -543,8 +601,14 @@ export default function SplashScreen() {
         >
           <style>{glowPulseStyle}</style>
           <SpiderCursor x={cursorX} y={cursorY} rotate={spiderRotate} visible={cursorVisible} />
-          {webShots.map((s) => (
-            <CursorWebShot key={s.id} x={s.x} y={s.y} angle={s.angle} />
+          {webCaptures.map((c) => (
+            <CursorWebCapture
+              key={c.id}
+              originX={c.originX}
+              originY={c.originY}
+              targetX={c.targetX}
+              targetY={c.targetY}
+            />
           ))}
 
           {/* sketchy background texture — generated once on mount, never on re-render */}
