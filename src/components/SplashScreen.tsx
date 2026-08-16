@@ -70,7 +70,7 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
       >
         <NestSpider size={28} opacity={0.9} color="#8a0303" />
       </motion.div>
-      <ThoughtBubble message={CORNER_MESSAGES[corner]} corner={corner} delay={CORNER_DELAYS[corner]} />
+      {corner !== "bl" && <ThoughtBubble message={CORNER_MESSAGES[corner]} corner={corner} delay={CORNER_DELAYS[corner]} />}
     </div>
   );
 };
@@ -288,10 +288,10 @@ const ThoughtBubbleBottomLeft = ({
 
   return (
     <div
-      className="pointer-events-none absolute z-30"
+      className="pointer-events-none fixed z-30"
       style={{
-        left: "35%",
-        bottom: "26%",
+        left: "8%",
+        bottom: "13%",
       }}
     >
       <div className="absolute" style={{ right: "50%", bottom: "32%", marginLeft: -14, marginTop: -14 }}>
@@ -303,7 +303,7 @@ const ThoughtBubbleBottomLeft = ({
               width: size,
               height: size,
               left: i * 12 + 8,
-              top: i * 12 + 14,
+              top: -i * 12 + 14,
             }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
@@ -321,7 +321,7 @@ const ThoughtBubbleBottomLeft = ({
           className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-6 py-1 shadow-md origin-bottom-left whitespace-nowrap"
           style={{
             left: 60,
-            top: 30,
+            top: -30,
           }}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
@@ -333,7 +333,7 @@ const ThoughtBubbleBottomLeft = ({
             ease: [0.34, 1.56, 0.64, 1],
           }}
         >
-          <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`}>{message}</span>
+          <span className={`${monoFont.className} text-xs leading-none text-[#0b0e13]`}>{message}</span>
         </motion.div>
       </div>
     </div>
@@ -791,6 +791,7 @@ const [webCaptures, setWebCaptures] = useState<
           <CornerWeb corner="tl" />
           <CornerWeb corner="tr" />
           <CornerWeb corner="bl" />
+          <ThoughtBubbleBottomLeft message={CORNER_MESSAGES.bl} delay={CORNER_DELAYS.bl} />
           <CornerWeb corner="br" />
 
           {/* roaming spiders — fall in at the screen edge, land, THEN crawl across */}
