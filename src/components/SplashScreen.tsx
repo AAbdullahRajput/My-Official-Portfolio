@@ -223,62 +223,60 @@ const ThoughtBubble = ({
   corner: "tl" | "tr" | "bl" | "br";
   delay: number;
 }) => {
-  const isRight = corner === "tr" || corner === "br";
-  const isBottom = corner === "bl" || corner === "br";
-  const cycle = 6; // total loop length — visible + pause before repeating
+  if (corner !== "tl") return null;
+
+  const cycle = 6;
 
   return (
     <div
       className="pointer-events-none absolute z-30"
       style={{
-        [isRight ? "right" : "left"]: "38%",
-        [isBottom ? "bottom" : "top"]: "38%",
+        left: "35%",
+        top: "26%",
       }}
     >
-      {/* trailing dots rise diagonally from the spider's head (top of its body), not its side */}
-      {[3, 5, 8].map((size, i) => (
+      <div className="absolute" style={{ right: "50%", top: "32%", marginLeft: -14, marginTop: -14 }}>
+        {[3, 5, 8].map((size, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-[#8a0303]"
+            style={{
+              width: size,
+              height: size,
+              left: i * 12 + 8,
+              top: -i * 12 + 14,
+            }}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
+            transition={{
+              duration: cycle,
+              delay: delay + i * 0.18,
+              repeat: Infinity,
+              times: [0, 0.05, 0.35, 0.42],
+              ease: "easeOut",
+            }}
+          />
+        ))}
+
         <motion.div
-          key={i}
-          className="absolute rounded-full bg-[#8a0303]"
+          className="absolute w-44 rounded-2xl border border-[#8a0303]/40 bg-white px-3.5 py-2 shadow-md origin-bottom-left"
           style={{
-            width: size,
-            height: size,
-            [isRight ? "right" : "left"]: i * 5 + 2,
-            top: -(i * 9 + 6),
+            left: 60,
+            top: -30,
           }}
           initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
+          animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
           transition={{
             duration: cycle,
-            delay: delay + i * 0.18,
+            delay: delay + 0.55,
             repeat: Infinity,
-            times: [0, 0.05, 0.35, 0.42],
-            ease: "easeOut",
+            times: [0, 0.08, 0.85, 1],
+            ease: [0.34, 1.56, 0.64, 1],
           }}
-        />
-      ))}
-
-      {/* the full bubble opens up and inward from the head, like an idea forming above it */}
-      <motion.div
-        className={`absolute w-44 rounded-2xl border border-[#8a0303]/40 bg-white px-3.5 py-2 shadow-md ${
-          isRight ? "origin-bottom-right" : "origin-bottom-left"
-        }`}
-        style={{
-          [isRight ? "right" : "left"]: 14,
-          top: -60,
-        }}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
-        transition={{
-          duration: cycle,
-          delay: delay + 0.55,
-          repeat: Infinity,
-          times: [0, 0.08, 0.85, 1],
-          ease: [0.34, 1.56, 0.64, 1],
-        }}
-      >
-        <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`}>{message}</span>
-      </motion.div>
+        >
+          <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`}>{message}</span>
+        </motion.div>
+      </div>
     </div>
   );
 };
