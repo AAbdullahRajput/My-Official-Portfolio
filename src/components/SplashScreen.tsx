@@ -82,11 +82,12 @@ const CORNER_MESSAGES: Record<"tl" | "tr" | "bl" | "br", string> = {
   br: "Hey, you found the right person.",
 };
 
+// starts after the spider's drop-in spring animation has settled (~1.3s), not during the fall
 const CORNER_DELAYS: Record<"tl" | "tr" | "bl" | "br", number> = {
-  tl: 0.3,
-  tr: 0.9,
-  bl: 1.5,
-  br: 2.1,
+  tl: 1.3,
+  tr: 1.9,
+  bl: 2.5,
+  br: 3.1,
 };
 
 /* ---------- spider silhouette ---------- */
@@ -230,11 +231,11 @@ const ThoughtBubble = ({
     <div
       className="pointer-events-none absolute z-30"
       style={{
-        [isRight ? "right" : "left"]: "30%",
-        [isBottom ? "bottom" : "top"]: "24%",
+        [isRight ? "right" : "left"]: "38%",
+        [isBottom ? "bottom" : "top"]: "38%",
       }}
     >
-      {/* trailing dots, smallest closest to the spider's head, growing as they rise */}
+      {/* trailing dots move sideways, toward where the bubble will open — not upward */}
       {[3, 5, 8].map((size, i) => (
         <motion.div
           key={i}
@@ -242,8 +243,8 @@ const ThoughtBubble = ({
           style={{
             width: size,
             height: size,
-            [isRight ? "right" : "left"]: i * 7,
-            [isBottom ? "bottom" : "top"]: -(i * 10 + 6),
+            [isRight ? "right" : "left"]: i * 10 + 4,
+            top: -size / 2,
           }}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
@@ -257,14 +258,15 @@ const ThoughtBubble = ({
         />
       ))}
 
-      {/* the full bubble with the message */}
+      {/* the full bubble opens to the side, level with the spider — never above it, so it
+          can't crowd the top edge of the screen */}
       <motion.div
-        className={`absolute whitespace-nowrap rounded-2xl border border-[#8a0303]/40 bg-white px-3 py-1.5 shadow-sm ${
-          isRight ? "origin-bottom-right" : "origin-bottom-left"
+        className={`absolute w-44 rounded-2xl border border-[#8a0303]/40 bg-white px-3.5 py-2 shadow-md ${
+          isRight ? "origin-left" : "origin-right"
         }`}
         style={{
-          [isRight ? "right" : "left"]: -6,
-          [isBottom ? "bottom" : "top"]: -46,
+          [isRight ? "right" : "left"]: 40,
+          top: -20,
         }}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
@@ -276,7 +278,7 @@ const ThoughtBubble = ({
           ease: [0.34, 1.56, 0.64, 1],
         }}
       >
-        <span className={`${monoFont.className} text-[10px] text-[#0b0e13]`}>{message}</span>
+        <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`}>{message}</span>
       </motion.div>
     </div>
   );
