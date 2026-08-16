@@ -22,7 +22,7 @@ const fadeUp = {
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-ink">
+    <section className="relative min-h-screen w-full overflow-hidden">
       <div className="absolute inset-0">
         <NodeNetwork />
       </div>
