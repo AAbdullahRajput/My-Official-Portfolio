@@ -594,7 +594,7 @@ const SwingingSpider = ({
 /* ---------- realistic spider web: spider on left, shoots real web geometry left then wraps around ---------- */
 const WebCastingSpider = () => {
   // realistic web: radial strands + concentric circles
-  const radialCount = 14;
+  const radialCount = 22;
   const circleCount = 5;
   
   return (
@@ -615,7 +615,7 @@ const WebCastingSpider = () => {
           {/* radial strands shooting from spider's back TO the name (left-down) */}
           {Array.from({ length: radialCount }).map((_, i) => {
             const angle = (i / radialCount) * Math.PI - Math.PI / 2;
-            const x2 = 40 + 50 * Math.cos(angle);
+            const x2 = 40 + 90 * Math.cos(angle);
             const y2 = 50 + 40 * Math.sin(angle);
             
             return (
@@ -632,7 +632,7 @@ const WebCastingSpider = () => {
                 animate={{ pathLength: 1 }}
                 transition={{
                   duration: 2,
-                  delay: 2 + (i % 4) * 0.15,
+                  delay: 3 + (i % 4) * 0.15,
                   ease: "easeOut",
                 }}
               />
