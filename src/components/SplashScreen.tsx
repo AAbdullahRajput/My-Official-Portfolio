@@ -223,19 +223,20 @@ const ThoughtBubble = ({
   corner: "tl" | "tr" | "bl" | "br";
   delay: number;
 }) => {
-  if (corner !== "tl") return null;
+  if (corner !== "tl" && corner !== "bl") return null;
 
   const cycle = 6;
+  const isBottom = corner === "bl";
 
   return (
     <div
       className="pointer-events-none absolute z-30"
       style={{
         left: "35%",
-        top: "26%",
+        [isBottom ? "bottom" : "top"]: "26%",
       }}
     >
-      <div className="absolute" style={{ right: "50%", top: "32%", marginLeft: -14, marginTop: -14 }}>
+      <div className="absolute" style={{ right: "50%", [isBottom ? "bottom" : "top"]: "32%", marginLeft: -14, marginTop: -14 }}>
         {[3, 5, 8].map((size, i) => (
           <motion.div
             key={i}
@@ -244,7 +245,7 @@ const ThoughtBubble = ({
               width: size,
               height: size,
               left: i * 12 + 8,
-              top: -i * 12 + 14,
+              top: isBottom ? i * 12 + 14 : -i * 12 + 14,
             }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
@@ -259,7 +260,7 @@ const ThoughtBubble = ({
         ))}
 
         <motion.div
-          className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-3.5 py-2 shadow-md origin-bottom-left whitespace-nowrap"
+          className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-6 py-1 shadow-md origin-bottom-left whitespace-nowrap"
           style={{
             left: 60,
             top: -30,
