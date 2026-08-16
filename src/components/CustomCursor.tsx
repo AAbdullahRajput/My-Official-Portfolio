@@ -60,7 +60,6 @@ const AnimatedSpider = ({
   );
 };
 
-
 const CursorWebCapture = ({
   originX,
   originY,
@@ -88,7 +87,11 @@ const CursorWebCapture = ({
         animate={{ pathLength: 1, opacity: [1, 1, 0.6] }}
         transition={{ duration: 0.28, ease: "easeOut" }}
       />
-      <motion.g initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 1, 0] }} transition={{ duration: 0.9, delay: 0.22, times: [0, 0.15, 0.7, 1] }}>
+      <motion.g
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 1, 1, 0] }}
+        transition={{ duration: 0.9, delay: 0.22, times: [0, 0.15, 0.7, 1] }}
+      >
         {Array.from({ length: spokes }).map((_, i) => {
           const a = (i / spokes) * Math.PI * 2;
           const ex = targetX + netRadius * Math.cos(a);
@@ -144,9 +147,8 @@ export default function CustomCursor() {
   const spiderRotate = useTransform(cursorAngle, (a) => a + 90);
   const lastMouseRef = useRef({ x: 0, y: 0 });
   const [visible, setVisible] = useState(false);
-  const [webCaptures, setWebCaptures] = useState
-    { id: number; originX: number; originY: number; targetX: number; targetY: number }[]
-  >([]);
+  type WebCapture = { id: number; originX: number; originY: number; targetX: number; targetY: number };
+  const [webCaptures, setWebCaptures] = useState<WebCapture[]>([]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -167,26 +169,25 @@ export default function CustomCursor() {
     const handleMouseLeave = () => setVisible(false);
     const handleMouseEnter = () => setVisible(true);
 
-    window.addEventListener("mousemove", handleMouseMove);
-    document.documentElement.addEventListener("mouseleave", handleMouseLeave);
-    document.documentElement.addEventListener("mouseenter", handleMouseEnter);
-
     const handleClick = (e: MouseEvent) => {
       const angleRad = (cursorAngle.get() * Math.PI) / 180;
       const faceOffset = 18;
       const originX = e.clientX + faceOffset * Math.cos(angleRad);
       const originY = e.clientY + faceOffset * Math.sin(angleRad);
       const id = Date.now() + Math.random();
-      setWebCaptures((prev) => [
+      setWebCaptures((prev: WebCapture[]) => [
         ...prev,
         { id, originX, originY, targetX: e.clientX, targetY: e.clientY },
       ]);
       setTimeout(() => {
-        setWebCaptures((prev) => prev.filter((c) => c.id !== id));
+        setWebCaptures((prev: WebCapture[]) => prev.filter((c: WebCapture) => c.id !== id));
       }, 1150);
     };
 
+    window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("click", handleClick);
+    document.documentElement.addEventListener("mouseleave", handleMouseLeave);
+    document.documentElement.addEventListener("mouseenter", handleMouseEnter);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
@@ -207,20 +208,20 @@ export default function CustomCursor() {
           targetY={c.targetY}
         />
       ))}
-    <motion.div
-      className="pointer-events-none fixed z-[10000]"
-      style={{
-        left: 0,
-        top: 0,
-        x: cursorX,
-        y: cursorY,
-        opacity: visible ? 1 : 0,
-      }}
-    >
-      <motion.div style={{ rotate: spiderRotate }}>
-        <AnimatedSpider size={50} color="#8a0303" legWidth={3} />
+      <motion.div
+        className="pointer-events-none fixed z-[10000]"
+        style={{
+          left: 0,
+          top: 0,
+          x: cursorX,
+          y: cursorY,
+          opacity: visible ? 1 : 0,
+        }}
+      >
+        <motion.div style={{ rotate: spiderRotate }}>
+          <AnimatedSpider size={50} color="#8a0303" legWidth={3} />
+        </motion.div>
       </motion.div>
-    </motion.div>
     </>
   );
 }

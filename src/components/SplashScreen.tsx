@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform, type MotionValue } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Unbounded, JetBrains_Mono } from "next/font/google";
 
@@ -292,7 +292,7 @@ const ThoughtBubbleBottomLeft = ({
     <div
       className="pointer-events-none fixed z-30"
       style={{
-        left: "8%",
+        left: "5%",
         bottom: "13%",
       }}
     >
@@ -355,7 +355,7 @@ const ThoughtBubbleBottomRight = ({
     <div
       className="pointer-events-none fixed z-30"
       style={{
-        right: "10%",
+        right: "4%",
         bottom: "8%",
       }}
     >
@@ -418,7 +418,7 @@ const ThoughtBubbleTopRight = ({
     <div
       className="pointer-events-none fixed z-30"
       style={{
-        right: "10%",
+        right: "4%",
         top: "10%",
       }}
     >
@@ -703,28 +703,6 @@ const LoadPercent = () => {
   return <>{pct}%</>;
 };
 
-/* ---------- cursor is a running spider: legs always cycling, body rotates to face travel direction ---------- */
-const SpiderCursor = ({
-  x,
-  y,
-  rotate,
-  visible,
-}: {
-  x: MotionValue<number>;
-  y: MotionValue<number>;
-  rotate: MotionValue<number>;
-  visible: boolean;
-}) => (
-  <motion.div
-    className="pointer-events-none fixed z-[10000]"
-    style={{ left: 0, top: 0, x, y, opacity: visible ? 1 : 0 }}
-  >
-    <motion.div style={{ rotate }}>
-      <AnimatedSpider size={30} color="#0b0e13" legWidth={3} />
-    </motion.div>
-  </motion.div>
-);
-
 /* ---------- web capture: strand fires from the spider's face to the click point,
    then a web-net converges around it like it's been wrapped up ---------- */
 const CursorWebCapture = ({
@@ -811,17 +789,7 @@ export default function SplashScreen() {
   const [visible, setVisible] = useState(true);
   // motion values instead of React state — the cursor position now updates
   // the DOM directly on every mousemove without re-rendering the component
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
-  const cursorAngle = useMotionValue(0);
-  // the spider's default artwork faces "up", so add 90° to align angle-0 (facing right) correctly
-  const spiderRotate = useTransform(cursorAngle, (a) => a + 90);
-  const lastMouseRef = useRef({ x: 0, y: 0 });
-  const [cursorVisible, setCursorVisible] = useState(false);
   const [bgLines, setBgLines] = useState<string[]>([]);
-const [webCaptures, setWebCaptures] = useState<
-    { id: number; originX: number; originY: number; targetX: number; targetY: number }[]
-  >([]);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -844,61 +812,15 @@ const [webCaptures, setWebCaptures] = useState<
     setBgLines(lines);
   }, []);
 
-  function handleMouseMove(e: React.MouseEvent) {
-    const nx = e.clientX;
-    const ny = e.clientY;
-    cursorX.set(nx - 15);
-    cursorY.set(ny - 15);
-
-    const dx = nx - lastMouseRef.current.x;
-    const dy = ny - lastMouseRef.current.y;
-    // only update facing direction once there's enough movement to be meaningful —
-    // avoids the spider jittering in place on tiny mouse tremors
-    if (dx * dx + dy * dy > 4) {
-      cursorAngle.set((Math.atan2(dy, dx) * 180) / Math.PI);
-      lastMouseRef.current = { x: nx, y: ny };
-    }
-    if (!cursorVisible) setCursorVisible(true);
-  }
-
-  function handleClick(e: React.MouseEvent) {
-    // fire from just ahead of the cursor, in the direction the spider is currently facing
-    const angleRad = (cursorAngle.get() * Math.PI) / 180;
-    const faceOffset = 18;
-    const originX = e.clientX + faceOffset * Math.cos(angleRad);
-    const originY = e.clientY + faceOffset * Math.sin(angleRad);
-    const id = Date.now() + Math.random();
-    setWebCaptures((prev) => [
-      ...prev,
-      { id, originX, originY, targetX: e.clientX, targetY: e.clientY },
-    ]);
-    setTimeout(() => {
-      setWebCaptures((prev) => prev.filter((c) => c.id !== id));
-    }, 1150);
-  }
-
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
           exit={{ x: "-100%" }}
           transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={() => setCursorVisible(false)}
-          onClick={handleClick}
           className="fixed inset-0 z-[9999] overflow-hidden bg-white cursor-none"
         >
           <style>{glowPulseStyle}</style>
-          <SpiderCursor x={cursorX} y={cursorY} rotate={spiderRotate} visible={cursorVisible} />
-          {webCaptures.map((c) => (
-            <CursorWebCapture
-              key={c.id}
-              originX={c.originX}
-              originY={c.originY}
-              targetX={c.targetX}
-              targetY={c.targetY}
-            />
-          ))}
 
           {/* sketchy background texture — generated once on mount, never on re-render */}
           <svg className="absolute inset-0 h-full w-full opacity-[0.07]" viewBox="0 0 100 100" preserveAspectRatio="none">
