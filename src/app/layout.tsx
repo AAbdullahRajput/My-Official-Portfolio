@@ -4,6 +4,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
 import SplashScreen from "@/components/SplashScreen";
+import SpiderWebBackground from "@/components/SpiderWebBackground";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -38,6 +39,7 @@ export default function RootLayout({
       >
         <CustomCursor />
         <SplashScreen />
+        <SpiderWebBackground />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
