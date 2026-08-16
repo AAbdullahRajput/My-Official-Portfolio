@@ -214,29 +214,24 @@ const NestSpider = ({
 );
 
 /* ---------- thought bubble: 3 small trailing dots then the full message bubble, cycling on a delay ---------- */
-const ThoughtBubble = ({
+const ThoughtBubbleTopLeft = ({
   message,
-  corner,
   delay,
 }: {
   message: string;
-  corner: "tl" | "tr" | "bl" | "br";
   delay: number;
 }) => {
-  if (corner !== "tl" && corner !== "bl") return null;
-
   const cycle = 6;
-  const isBottom = corner === "bl";
 
   return (
     <div
       className="pointer-events-none absolute z-30"
       style={{
         left: "35%",
-        [isBottom ? "bottom" : "top"]: "26%",
+        top: "26%",
       }}
     >
-      <div className="absolute" style={{ right: "50%", [isBottom ? "bottom" : "top"]: "32%", marginLeft: -14, marginTop: -14 }}>
+      <div className="absolute" style={{ right: "50%", top: "32%", marginLeft: -14, marginTop: -14 }}>
         {[3, 5, 8].map((size, i) => (
           <motion.div
             key={i}
@@ -245,7 +240,7 @@ const ThoughtBubble = ({
               width: size,
               height: size,
               left: i * 12 + 8,
-              top: isBottom ? i * 12 + 14 : -i * 12 + 14,
+              top: -i * 12 + 14,
             }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
@@ -280,6 +275,87 @@ const ThoughtBubble = ({
       </div>
     </div>
   );
+};
+
+const ThoughtBubbleBottomLeft = ({
+  message,
+  delay,
+}: {
+  message: string;
+  delay: number;
+}) => {
+  const cycle = 6;
+
+  return (
+    <div
+      className="pointer-events-none absolute z-30"
+      style={{
+        left: "35%",
+        bottom: "26%",
+      }}
+    >
+      <div className="absolute" style={{ right: "50%", bottom: "32%", marginLeft: -14, marginTop: -14 }}>
+        {[3, 5, 8].map((size, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-[#8a0303]"
+            style={{
+              width: size,
+              height: size,
+              left: i * 12 + 8,
+              top: i * 12 + 14,
+            }}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
+            transition={{
+              duration: cycle,
+              delay: delay + i * 0.18,
+              repeat: Infinity,
+              times: [0, 0.05, 0.35, 0.42],
+              ease: "easeOut",
+            }}
+          />
+        ))}
+
+        <motion.div
+          className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-6 py-1 shadow-md origin-bottom-left whitespace-nowrap"
+          style={{
+            left: 60,
+            top: 30,
+          }}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
+          transition={{
+            duration: cycle,
+            delay: delay + 0.55,
+            repeat: Infinity,
+            times: [0, 0.08, 0.85, 1],
+            ease: [0.34, 1.56, 0.64, 1],
+          }}
+        >
+          <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`}>{message}</span>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+const ThoughtBubble = ({
+  message,
+  corner,
+  delay,
+}: {
+  message: string;
+  corner: "tl" | "tr" | "bl" | "br";
+  delay: number;
+}) => {
+  if (corner === "tl") {
+    return <ThoughtBubbleTopLeft message={message} delay={delay} />;
+  }
+  if (corner === "bl") {
+    return <ThoughtBubbleBottomLeft message={message} delay={delay} />;
+  }
+  return null;
 };
 
 /* more roaming spiders, mixed heights/speeds/directions */
