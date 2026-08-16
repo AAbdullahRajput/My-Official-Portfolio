@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, type MotionValue } from "framer-motion";
 import Image from "next/image";
 import { Unbounded, JetBrains_Mono } from "next/font/google";
 
@@ -322,16 +322,7 @@ const WebCastingSpider = () => {
         preserveAspectRatio="none"
         style={{ pointerEvents: "none" }}
       >
-        {/* animated web container — rotates from left (180°) to front (0°) */}
-        <motion.g
-          style={{ transformOrigin: "100px 35px" }}
-          animate={{ rotate: [0, 0] }}
-          transition={{
-            duration: 0.1,
-            delay: 0,
-            repeat: Infinity,
-          }}
-        >
+        <g style={{ transformOrigin: "100px 35px" }}>
           {/* radial strands shooting from spider's back TO the name (left-down) */}
           {Array.from({ length: radialCount }).map((_, i) => {
             const angle = (i / radialCount) * Math.PI - Math.PI / 2;
@@ -381,7 +372,7 @@ const WebCastingSpider = () => {
               />
             );
           })}
-        </motion.g>
+        </g>
       </svg>
 
       {/* spider at Ahmad side, back/hips facing name, face to left */}
@@ -400,12 +391,41 @@ const WebCastingSpider = () => {
   );
 };
 
-const WebCursor = ({ x, y, visible }: { x: number; y: number; visible: boolean }) => (
+/* ---------- isolated loader percentage — ticks 60x/sec but only re-renders this tiny piece ---------- */
+const LoadPercent = () => {
+  const [pct, setPct] = useState(0);
+  useEffect(() => {
+    let raf: number;
+    const startTimeout = setTimeout(() => {
+      const start = performance.now();
+      const duration = 3600;
+      function tick(now: number) {
+        const p = Math.min(100, Math.round(((now - start) / duration) * 100));
+        setPct(p);
+        if (p < 100) raf = requestAnimationFrame(tick);
+      }
+      raf = requestAnimationFrame(tick);
+    }, 300);
+    return () => {
+      clearTimeout(startTimeout);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+  return <>{pct}%</>;
+};
+
+const WebCursor = ({
+  x,
+  y,
+  visible,
+}: {
+  x: MotionValue<number>;
+  y: MotionValue<number>;
+  visible: boolean;
+}) => (
   <motion.div
     className="pointer-events-none fixed z-[10000]"
-    animate={{ opacity: visible ? 1 : 0, x: x - 14, y: y - 14 }}
-    transition={{ type: "tween", duration: 0.03 }}
-    style={{ left: 0, top: 0 }}
+    style={{ left: 0, top: 0, x, y, opacity: visible ? 1 : 0 }}
   >
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
       <circle cx="14" cy="14" r="12" stroke="#1a1a1a" strokeWidth="1" opacity="0.7" />
@@ -420,10 +440,12 @@ const WebCursor = ({ x, y, visible }: { x: number; y: number; visible: boolean }
 
 export default function SplashScreen() {
   const [visible, setVisible] = useState(true);
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  // motion values instead of React state — the cursor position now updates
+  // the DOM directly on every mousemove without re-rendering the component
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
   const [cursorVisible, setCursorVisible] = useState(false);
   const [bgLines, setBgLines] = useState<string[]>([]);
-  const [loadProgress, setLoadProgress] = useState(0);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -446,28 +468,9 @@ export default function SplashScreen() {
     setBgLines(lines);
   }, []);
 
-  // ticks the loader percentage up in lockstep with the progress bar's
-  // own animation (same 300ms delay, 3600ms duration)
-  useEffect(() => {
-    let raf: number;
-    const startTimeout = setTimeout(() => {
-      const start = performance.now();
-      const duration = 3600;
-      function tick(now: number) {
-        const pct = Math.min(100, Math.round(((now - start) / duration) * 100));
-        setLoadProgress(pct);
-        if (pct < 100) raf = requestAnimationFrame(tick);
-      }
-      raf = requestAnimationFrame(tick);
-    }, 300);
-    return () => {
-      clearTimeout(startTimeout);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
-
   function handleMouseMove(e: React.MouseEvent) {
-    setCursorPos({ x: e.clientX, y: e.clientY });
+    cursorX.set(e.clientX - 14);
+    cursorY.set(e.clientY - 14);
     if (!cursorVisible) setCursorVisible(true);
   }
 
@@ -482,7 +485,7 @@ export default function SplashScreen() {
           className="fixed inset-0 z-[9999] overflow-hidden bg-white cursor-none"
         >
           <style>{glowPulseStyle}</style>
-          <WebCursor x={cursorPos.x} y={cursorPos.y} visible={cursorVisible} />
+          <WebCursor x={cursorX} y={cursorY} visible={cursorVisible} />
 
           {/* sketchy background texture — generated once on mount, never on re-render */}
           <svg className="absolute inset-0 h-full w-full opacity-[0.07]" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -629,7 +632,7 @@ export default function SplashScreen() {
                 />
               </div>
               <div className={`${monoFont.className} mt-2 text-center text-xs tracking-widest text-[#8a0303]/70`}>
-                {loadProgress}%
+                <LoadPercent />
               </div>
             </div>
           </div>
