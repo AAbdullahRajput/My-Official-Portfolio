@@ -68,7 +68,7 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
         animate={{ y: 0, x: 0, rotate: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 9, delay: 0.4 }}
       >
-        <div style={{ transform: corner === "tl" ? "rotate(90deg)" : "none" }}>
+        <div style={{ transform: corner === "tl" || corner === "bl" ? "rotate(90deg)" : corner === "tr" ? "rotate(90deg)" : "none" }}>
           <NestSpider size={28} opacity={0.9} color="#8a0303" />
         </div>
       </motion.div>
@@ -355,11 +355,11 @@ const ThoughtBubbleTopRight = ({
     <div
       className="pointer-events-none fixed z-30"
       style={{
-        right: "4%",
-        top: "13%",
+        right: "10%",
+        top: "10%",
       }}
     >
-      <div className="absolute" style={{ right: "50%", top: "32%", marginLeft: -14, marginTop: -14 }}>
+      <div className="absolute" style={{ right: 0, top: 0 }}>
         {[3, 5, 8].map((size, i) => (
           <motion.div
             key={i}
@@ -367,7 +367,7 @@ const ThoughtBubbleTopRight = ({
             style={{
               width: size,
               height: size,
-              left: -i * 12 + 8,
+              right: i * 12 + 8,
               top: i * 12 + 14,
             }}
             initial={{ opacity: 0, scale: 0 }}
@@ -383,10 +383,10 @@ const ThoughtBubbleTopRight = ({
         ))}
 
         <motion.div
-          className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-6 py-1 shadow-md origin-bottom-left whitespace-nowrap"
+          className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-6 py-1 shadow-md origin-bottom-right whitespace-nowrap"
           style={{
-            right: 60,
-            top: -30,
+            right: 40,
+            top: 45,
           }}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
