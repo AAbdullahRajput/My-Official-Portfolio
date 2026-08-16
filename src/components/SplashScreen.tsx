@@ -259,7 +259,7 @@ const ThoughtBubble = ({
         ))}
 
         <motion.div
-          className="absolute w-44 rounded-2xl border border-[#8a0303]/40 bg-white px-3.5 py-2 shadow-md origin-bottom-left"
+          className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-3.5 py-2 shadow-md origin-bottom-left whitespace-nowrap"
           style={{
             left: 60,
             top: -30,
