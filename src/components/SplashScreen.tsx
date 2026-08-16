@@ -68,9 +68,11 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
         animate={{ y: 0, x: 0, rotate: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 9, delay: 0.4 }}
       >
-        <NestSpider size={28} opacity={0.9} color="#8a0303" />
+        <div style={{ transform: corner === "tl" ? "rotate(90deg)" : "none" }}>
+          <NestSpider size={28} opacity={0.9} color="#8a0303" />
+        </div>
       </motion.div>
-      {corner !== "bl" && <ThoughtBubble message={CORNER_MESSAGES[corner]} corner={corner} delay={CORNER_DELAYS[corner]} />}
+      {corner !== "bl" && corner !== "tr" && <ThoughtBubble message={CORNER_MESSAGES[corner]} corner={corner} delay={CORNER_DELAYS[corner]} />}
     </div>
   );
 };
@@ -334,6 +336,69 @@ const ThoughtBubbleBottomLeft = ({
           }}
         >
           <span className={`${monoFont.className} text-xs leading-none text-[#0b0e13]`}>{message}</span>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+const ThoughtBubbleTopRight = ({
+  message,
+  delay,
+}: {
+  message: string;
+  delay: number;
+}) => {
+  const cycle = 6;
+
+  return (
+    <div
+      className="pointer-events-none fixed z-30"
+      style={{
+        right: "4%",
+        top: "13%",
+      }}
+    >
+      <div className="absolute" style={{ right: "50%", top: "32%", marginLeft: -14, marginTop: -14 }}>
+        {[3, 5, 8].map((size, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-[#8a0303]"
+            style={{
+              width: size,
+              height: size,
+              left: -i * 12 + 8,
+              top: i * 12 + 14,
+            }}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
+            transition={{
+              duration: cycle,
+              delay: delay + i * 0.18,
+              repeat: Infinity,
+              times: [0, 0.05, 0.35, 0.42],
+              ease: "easeOut",
+            }}
+          />
+        ))}
+
+        <motion.div
+          className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-6 py-1 shadow-md origin-bottom-left whitespace-nowrap"
+          style={{
+            right: 60,
+            top: -30,
+          }}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
+          transition={{
+            duration: cycle,
+            delay: delay + 0.55,
+            repeat: Infinity,
+            times: [0, 0.08, 0.85, 1],
+            ease: [0.34, 1.56, 0.64, 1],
+          }}
+        >
+          <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`}>{message}</span>
         </motion.div>
       </div>
     </div>
@@ -790,6 +855,7 @@ const [webCaptures, setWebCaptures] = useState<
           {/* corner webs, each with a resting spider */}
           <CornerWeb corner="tl" />
           <CornerWeb corner="tr" />
+          <ThoughtBubbleTopRight message={CORNER_MESSAGES.tr} delay={CORNER_DELAYS.tr} />
           <CornerWeb corner="bl" />
           <ThoughtBubbleBottomLeft message={CORNER_MESSAGES.bl} delay={CORNER_DELAYS.bl} />
           <CornerWeb corner="br" />
