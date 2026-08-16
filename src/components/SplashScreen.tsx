@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue, type MotionValue } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, type MotionValue } from "framer-motion";
 import Image from "next/image";
 import { Unbounded, JetBrains_Mono } from "next/font/google";
 
@@ -414,29 +414,60 @@ const LoadPercent = () => {
   return <>{pct}%</>;
 };
 
-const WebCursor = ({
+/* ---------- cursor is a running spider: legs always cycling, body rotates to face travel direction ---------- */
+const SpiderCursor = ({
   x,
   y,
+  rotate,
   visible,
 }: {
   x: MotionValue<number>;
   y: MotionValue<number>;
+  rotate: MotionValue<number>;
   visible: boolean;
 }) => (
   <motion.div
     className="pointer-events-none fixed z-[10000]"
     style={{ left: 0, top: 0, x, y, opacity: visible ? 1 : 0 }}
   >
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-      <circle cx="14" cy="14" r="12" stroke="#1a1a1a" strokeWidth="1" opacity="0.7" />
-      <line x1="14" y1="1" x2="14" y2="7" stroke="#1a1a1a" strokeWidth="1" />
-      <line x1="14" y1="21" x2="14" y2="27" stroke="#1a1a1a" strokeWidth="1" />
-      <line x1="1" y1="14" x2="7" y2="14" stroke="#1a1a1a" strokeWidth="1" />
-      <line x1="21" y1="14" x2="27" y2="14" stroke="#1a1a1a" strokeWidth="1" />
-      <circle cx="14" cy="14" r="2" fill="#a10f0f" />
-    </svg>
+    <motion.div style={{ rotate }}>
+      <AnimatedSpider size={30} color="#0b0e13" legWidth={3} />
+    </motion.div>
   </motion.div>
 );
+
+/* ---------- web strand fired from the spider's back on click ---------- */
+const CursorWebShot = ({ x, y, angle }: { x: number; y: number; angle: number }) => {
+  const rad = (angle * Math.PI) / 180;
+  const len = 110;
+  const ex = x + len * Math.cos(rad);
+  const ey = y + len * Math.sin(rad);
+  return (
+    <svg className="pointer-events-none fixed inset-0 z-[9998] h-full w-full">
+      <motion.line
+        x1={x}
+        y1={y}
+        x2={ex}
+        y2={ey}
+        stroke="#8a0303"
+        strokeWidth="2"
+        strokeDasharray="6 4"
+        initial={{ pathLength: 0, opacity: 1 }}
+        animate={{ pathLength: 1, opacity: [1, 1, 0] }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      />
+      <motion.circle
+        cx={ex}
+        cy={ey}
+        r="3"
+        fill="#8a0303"
+        initial={{ scale: 0, opacity: 1 }}
+        animate={{ scale: [0, 1.4, 1], opacity: [1, 1, 0] }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      />
+    </svg>
+  );
+};
 
 export default function SplashScreen() {
   const [visible, setVisible] = useState(true);
@@ -444,8 +475,13 @@ export default function SplashScreen() {
   // the DOM directly on every mousemove without re-rendering the component
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
+  const cursorAngle = useMotionValue(0);
+  // the spider's default artwork faces "up", so add 90° to align angle-0 (facing right) correctly
+  const spiderRotate = useTransform(cursorAngle, (a) => a + 90);
+  const lastMouseRef = useRef({ x: 0, y: 0 });
   const [cursorVisible, setCursorVisible] = useState(false);
   const [bgLines, setBgLines] = useState<string[]>([]);
+  const [webShots, setWebShots] = useState<{ id: number; x: number; y: number; angle: number }[]>([]);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -469,9 +505,29 @@ export default function SplashScreen() {
   }, []);
 
   function handleMouseMove(e: React.MouseEvent) {
-    cursorX.set(e.clientX - 14);
-    cursorY.set(e.clientY - 14);
+    const nx = e.clientX;
+    const ny = e.clientY;
+    cursorX.set(nx - 15);
+    cursorY.set(ny - 15);
+
+    const dx = nx - lastMouseRef.current.x;
+    const dy = ny - lastMouseRef.current.y;
+    // only update facing direction once there's enough movement to be meaningful —
+    // avoids the spider jittering in place on tiny mouse tremors
+    if (dx * dx + dy * dy > 4) {
+      cursorAngle.set((Math.atan2(dy, dx) * 180) / Math.PI);
+      lastMouseRef.current = { x: nx, y: ny };
+    }
     if (!cursorVisible) setCursorVisible(true);
+  }
+
+  function handleClick(e: React.MouseEvent) {
+    const backAngle = cursorAngle.get() + 180; // web fires from the spider's back, opposite its facing direction
+    const id = Date.now() + Math.random();
+    setWebShots((prev) => [...prev, { id, x: e.clientX, y: e.clientY, angle: backAngle }]);
+    setTimeout(() => {
+      setWebShots((prev) => prev.filter((s) => s.id !== id));
+    }, 650);
   }
 
   return (
@@ -482,10 +538,14 @@ export default function SplashScreen() {
           transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setCursorVisible(false)}
+          onClick={handleClick}
           className="fixed inset-0 z-[9999] overflow-hidden bg-white cursor-none"
         >
           <style>{glowPulseStyle}</style>
-          <WebCursor x={cursorX} y={cursorY} visible={cursorVisible} />
+          <SpiderCursor x={cursorX} y={cursorY} rotate={spiderRotate} visible={cursorVisible} />
+          {webShots.map((s) => (
+            <CursorWebShot key={s.id} x={s.x} y={s.y} angle={s.angle} />
+          ))}
 
           {/* sketchy background texture — generated once on mount, never on re-render */}
           <svg className="absolute inset-0 h-full w-full opacity-[0.07]" viewBox="0 0 100 100" preserveAspectRatio="none">
