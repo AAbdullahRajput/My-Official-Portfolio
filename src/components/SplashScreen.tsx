@@ -70,8 +70,23 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
       >
         <NestSpider size={28} opacity={0.9} color="#8a0303" />
       </motion.div>
+      <ThoughtBubble message={CORNER_MESSAGES[corner]} corner={corner} delay={CORNER_DELAYS[corner]} />
     </div>
   );
+};
+
+const CORNER_MESSAGES: Record<"tl" | "tr" | "bl" | "br", string> = {
+  tl: "Hey!",
+  tr: "Hello!",
+  bl: "With great power comes great responsibility.",
+  br: "Hey, you found the right person.",
+};
+
+const CORNER_DELAYS: Record<"tl" | "tr" | "bl" | "br", number> = {
+  tl: 2,
+  tr: 3.4,
+  bl: 4.8,
+  br: 6.2,
 };
 
 /* ---------- spider silhouette ---------- */
@@ -196,6 +211,76 @@ const NestSpider = ({
     <AnimatedSpider size={size} opacity={opacity} color={color} />
   </motion.div>
 );
+
+/* ---------- thought bubble: 3 small trailing dots then the full message bubble, cycling on a delay ---------- */
+const ThoughtBubble = ({
+  message,
+  corner,
+  delay,
+}: {
+  message: string;
+  corner: "tl" | "tr" | "bl" | "br";
+  delay: number;
+}) => {
+  const isRight = corner === "tr" || corner === "br";
+  const isBottom = corner === "bl" || corner === "br";
+  const cycle = 6; // total loop length — visible + pause before repeating
+
+  return (
+    <div
+      className="pointer-events-none absolute z-30"
+      style={{
+        [isRight ? "right" : "left"]: "30%",
+        [isBottom ? "bottom" : "top"]: "24%",
+      }}
+    >
+      {/* trailing dots, smallest closest to the spider's head, growing as they rise */}
+      {[3, 5, 8].map((size, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-[#8a0303]"
+          style={{
+            width: size,
+            height: size,
+            [isRight ? "right" : "left"]: i * 7,
+            [isBottom ? "bottom" : "top"]: -(i * 10 + 6),
+          }}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
+          transition={{
+            duration: cycle,
+            delay: delay + i * 0.18,
+            repeat: Infinity,
+            times: [0, 0.05, 0.35, 0.42],
+            ease: "easeOut",
+          }}
+        />
+      ))}
+
+      {/* the full bubble with the message */}
+      <motion.div
+        className={`absolute whitespace-nowrap rounded-2xl border border-[#8a0303]/40 bg-white px-3 py-1.5 shadow-sm ${
+          isRight ? "origin-bottom-right" : "origin-bottom-left"
+        }`}
+        style={{
+          [isRight ? "right" : "left"]: -6,
+          [isBottom ? "bottom" : "top"]: -46,
+        }}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
+        transition={{
+          duration: cycle,
+          delay: delay + 0.55,
+          repeat: Infinity,
+          times: [0, 0.08, 0.85, 1],
+          ease: [0.34, 1.56, 0.64, 1],
+        }}
+      >
+        <span className={`${monoFont.className} text-[10px] text-[#0b0e13]`}>{message}</span>
+      </motion.div>
+    </div>
+  );
+};
 
 /* more roaming spiders, mixed heights/speeds/directions */
 const crawlers = [
