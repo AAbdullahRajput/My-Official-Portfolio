@@ -687,7 +687,7 @@ const LoadPercent = () => {
     let raf: number;
     const startTimeout = setTimeout(() => {
       const start = performance.now();
-      const duration = 3600;
+      const duration = 6600;
       function tick(now: number) {
         const p = Math.min(100, Math.round(((now - start) / duration) * 100));
         setPct(p);
@@ -825,7 +825,7 @@ const [webCaptures, setWebCaptures] = useState<
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    hideTimer.current = setTimeout(() => setVisible(false), 4200);
+    hideTimer.current = setTimeout(() => setVisible(false), 7200);
     return () => {
       if (hideTimer.current) clearTimeout(hideTimer.current);
     };
@@ -1032,7 +1032,7 @@ const [webCaptures, setWebCaptures] = useState<
                 className="absolute -top-6"
                 initial={{ left: "0%" }}
                 animate={{ left: "100%" }}
-                transition={{ duration: 3.6, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
+                transition={{ duration: 6.6, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
                 style={{ marginLeft: "-15px" }}
               >
                 <div style={{ transform: "rotate(90deg)" }}>
@@ -1044,7 +1044,7 @@ const [webCaptures, setWebCaptures] = useState<
                   className="h-full rounded-full bg-[#8a0303]"
                   initial={{ width: "0%" }}
                   animate={{ width: "100%" }}
-                  transition={{ duration: 3.6, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
+                  transition={{ duration: 6.6, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
                 />
               </div>
               <div className={`${monoFont.className} mt-2 text-center text-xs tracking-widest text-[#8a0303]/70`}>
