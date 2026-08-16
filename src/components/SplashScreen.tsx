@@ -235,7 +235,7 @@ const ThoughtBubble = ({
         [isBottom ? "bottom" : "top"]: "38%",
       }}
     >
-      {/* trailing dots move sideways, toward where the bubble will open — not upward */}
+      {/* trailing dots rise diagonally from the spider's head (top of its body), not its side */}
       {[3, 5, 8].map((size, i) => (
         <motion.div
           key={i}
@@ -243,8 +243,8 @@ const ThoughtBubble = ({
           style={{
             width: size,
             height: size,
-            [isRight ? "right" : "left"]: i * 10 + 4,
-            top: -size / 2,
+            [isRight ? "right" : "left"]: i * 5 + 2,
+            top: -(i * 9 + 6),
           }}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
@@ -258,15 +258,14 @@ const ThoughtBubble = ({
         />
       ))}
 
-      {/* the full bubble opens to the side, level with the spider — never above it, so it
-          can't crowd the top edge of the screen */}
+      {/* the full bubble opens up and inward from the head, like an idea forming above it */}
       <motion.div
         className={`absolute w-44 rounded-2xl border border-[#8a0303]/40 bg-white px-3.5 py-2 shadow-md ${
-          isRight ? "origin-left" : "origin-right"
+          isRight ? "origin-bottom-right" : "origin-bottom-left"
         }`}
         style={{
-          [isRight ? "right" : "left"]: 40,
-          top: -20,
+          [isRight ? "right" : "left"]: 14,
+          top: -60,
         }}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
