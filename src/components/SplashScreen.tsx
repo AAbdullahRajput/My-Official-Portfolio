@@ -83,10 +83,10 @@ const CORNER_MESSAGES: Record<"tl" | "tr" | "bl" | "br", string> = {
 };
 
 const CORNER_DELAYS: Record<"tl" | "tr" | "bl" | "br", number> = {
-  tl: 2,
-  tr: 3.4,
-  bl: 4.8,
-  br: 6.2,
+  tl: 0.3,
+  tr: 0.9,
+  bl: 1.5,
+  br: 2.1,
 };
 
 /* ---------- spider silhouette ---------- */
