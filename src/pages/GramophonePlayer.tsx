@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const DOCK_DELAY = 4000;
-const AUDIO_DELAY = 3000;
+const DOCK_DELAY = 3000;
+const AUDIO_DELAY = 1500;
 
 export default function GramophonePlayer({ active }: { active: boolean }) {
   const [phase, setPhase] = useState<"hidden" | "paused" | "center" | "docking" | "docked" | "gone">("hidden");
   const [muted, setMuted] = useState(false);
   const [showGif, setShowGif] = useState(false);
+const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const dockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -21,6 +22,7 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
 
   function handlePlay() {
     setShowGif(true);
+    setGifSrc(`/gifs/gramophone.gif?t=${Date.now()}`);
     setPhase("center");
     setTimeout(() => {
       audioRef.current?.play().catch((err) => {
@@ -113,8 +115,8 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
                   }}
                 />
 
-                <motion.img
-                  src="/gifs/gramophone.gif"
+                                <motion.img
+                  src={showGif ? gifSrc : "/gifs/gramophone-poster.png"}
                   alt=""
                   className="pointer-events-none w-full drop-shadow-2xl"
                   animate={

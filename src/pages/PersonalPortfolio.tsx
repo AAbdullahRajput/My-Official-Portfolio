@@ -33,9 +33,17 @@ const fadeUp = {
 // ─── HERO ───────────────────────────────────────────────
 function Hero() {
   return (
-    <section className="relative min-h-screen w-full overflow-hidden">
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6 sm:px-10 lg:px-16">
-        <div className="max-w-xl">
+        <section className="relative min-h-screen w-full overflow-hidden">
+      <div className="absolute inset-y-0 right-0 hidden w-[55%] lg:block">
+        <img
+          src="/images/Spiderman-Main.png"
+          alt="Spiderman"
+          className="h-full w-full object-cover object-top select-none pointer-events-none"
+        />
+      </div>
+
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:px-16">
+        <div className="max-w-xl lg:w-[45%]">
           <motion.div
             variants={fadeUp}
             initial="hidden"
@@ -118,8 +126,8 @@ function Hero() {
                 {tag}
               </span>
             ))}
-          </motion.div>
-        </div>
+                    </motion.div>
+                </div>
       </div>
     </section>
   );
