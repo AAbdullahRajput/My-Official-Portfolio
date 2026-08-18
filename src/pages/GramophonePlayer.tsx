@@ -10,7 +10,15 @@ const DOCK_DELAY = 5000; // ms after audio starts before it shrinks, docks, and 
 
 export default function GramophonePlayer({ active }: { active: boolean }) {
   const [phase, setPhase] = useState<"hidden" | "center" | "docked" | "gone">("hidden");
+  const [muted, setMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  function toggleMute() {
+    if (audioRef.current) {
+      audioRef.current.muted = !audioRef.current.muted;
+      setMuted(audioRef.current.muted);
+    }
+  }
 
   useEffect(() => {
     if (!active || phase !== "hidden") return;
