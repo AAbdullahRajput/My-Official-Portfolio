@@ -171,13 +171,14 @@ const AnimatedSpider = ({
           <circle cx="50" cy="32" r="10" fill={color} />
         </>
       )}
-      {legs.map(([x1, y1, x2, y2], i) => (
+            {legs.map(([x1, y1, x2, y2], i) => (
         <motion.path
           key={i}
           stroke={color}
           strokeWidth={legWidth}
           fill="none"
           strokeLinecap="round"
+          initial={{ d: legPath(x1, y1, x2, y2, 0) }}
           animate={{
             d: [
               legPath(x1, y1, x2, y2, 0),
@@ -919,10 +920,12 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
                     animate={{ x: 0 }}
                     transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <Image
+                                        <Image
                       src="/images/spiderman-right.jpeg"
                       alt="Spider-Man"
                       fill
+                      priority
+                      sizes="(max-width: 640px) 60vw, 380px"
                       className="object-cover object-center"
                     />
                   </motion.div>
@@ -934,10 +937,11 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
                     animate={{ x: 0 }}
                     transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <Image
+                                        <Image
                       src="/images/Me.jpeg"
                       alt="Ahmad Abdullah"
                       fill
+                      sizes="(max-width: 640px) 60vw, 380px"
                       className="object-cover object-left grayscale contrast-125"
                     />
                   </motion.div>
