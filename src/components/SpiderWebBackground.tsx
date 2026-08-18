@@ -16,12 +16,12 @@ export default function SpiderWebBackground() {
       cy: number,
       radius: number,
       spokes: number,
-      rings: number
+      rings: number,
+      color: string
     ) => {
-      ctx.strokeStyle = "rgba(120, 120, 120, 0.22)";
+      ctx.strokeStyle = color;
       ctx.lineWidth = 0.7;
 
-      // radiating spokes
       const spokePoints: { x: number; y: number }[][] = [];
       for (let s = 0; s < spokes; s++) {
         const angle = (s / spokes) * Math.PI * 2;
@@ -39,7 +39,6 @@ export default function SpiderWebBackground() {
         spokePoints.push(points);
       }
 
-      // connecting rings between spokes (slightly irregular, like a real web)
       for (let r = 0; r < rings; r++) {
         ctx.beginPath();
         for (let s = 0; s <= spokes; s++) {
@@ -60,16 +59,29 @@ export default function SpiderWebBackground() {
 
       ctx.clearRect(0, 0, width, height);
 
-      // top-left corner web
-      drawWeb(0, 0, 220, 10, 6);
+      const isDark = document.documentElement.classList.contains("dark");
+      const color = isDark
+        ? "rgba(200, 200, 210, 0.14)"
+        : "rgba(120, 120, 120, 0.22)";
 
-      // bottom-right corner web (near end of hero section)
-      drawWeb(width, Math.min(900, height), 240, 10, 6);
+      drawWeb(0, 0, 220, 10, 6, color);
+      drawWeb(width, Math.min(900, height), 240, 10, 6, color);
     };
 
     draw();
     window.addEventListener("resize", draw);
-    return () => window.removeEventListener("resize", draw);
+
+    // Redraw when theme toggles (watches the <html> class attribute)
+    const observer = new MutationObserver(draw);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => {
+      window.removeEventListener("resize", draw);
+      observer.disconnect();
+    };
   }, []);
 
   return (
