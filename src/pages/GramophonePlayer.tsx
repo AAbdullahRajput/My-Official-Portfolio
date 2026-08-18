@@ -44,8 +44,16 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
     }
   }, [userMuted, hasInteracted]);
 
-    function toggleMute() {
-    setHasInteracted(true);
+      function toggleMute() {
+    // first click: this is the "unlock" click. Just mark the page as
+    // interacted-with — the muted-state effect below already reads
+    // (userMuted || !hasInteracted), so hasInteracted alone flips it audible.
+    // Toggling userMuted here too would immediately re-mute it in the same click.
+    if (!hasInteracted) {
+      setHasInteracted(true);
+      return;
+    }
+    // every click after that is a genuine mute/unmute toggle
     setUserMuted((m) => !m);
   }
 
