@@ -33,12 +33,12 @@ const fadeUp = {
 // ─── HERO ───────────────────────────────────────────────
 function Hero() {
   return (
-        <section className="relative min-h-screen w-full overflow-hidden">
-      <div className="absolute inset-y-0 right-0 hidden w-[55%] lg:block">
-        <img
+       <section className="relative min-h-screen w-full overflow-hidden bg-[#F5DEB3]">
+            <div className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block">
+                <img
           src="/images/Spiderman-Main.png"
           alt="Spiderman"
-          className="h-full w-full object-cover object-top select-none pointer-events-none"
+          className="h-full w-full object-cover object-top select-none pointer-events-none mix-blend-multiply"
         />
       </div>
 
