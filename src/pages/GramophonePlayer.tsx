@@ -44,7 +44,8 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
     }
   }, [userMuted, hasInteracted]);
 
-  function toggleMute() {
+    function toggleMute() {
+    setHasInteracted(true);
     setUserMuted((m) => !m);
   }
 
@@ -133,7 +134,7 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
           >
                         <img src="/gifs/gramophone.gif" alt="" className="w-full drop-shadow-2xl" />
 
-            {phase === "docked" && (
+                        {(phase === "docked" || phase === "center") && (
               <button
                 onClick={toggleMute}
                                 className="pointer-events-auto absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm"
