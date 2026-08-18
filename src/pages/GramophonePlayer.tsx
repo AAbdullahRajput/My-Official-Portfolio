@@ -5,12 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // timing constants — tune these against your actual gif if the needle-drop
 // doesn't line up with when the music starts
-const NEEDLE_DROP_DELAY = 1800; // ms after mount before we start the audio
-const DOCK_DELAY = 5000; // ms after audio starts before it shrinks and docks
+const NEEDLE_DROP_DELAY = 1000; // ms after mount before we start the audio — matches "after 1 second"
+const DOCK_DELAY = 5000; // ms after audio starts before it shrinks, docks, and the shade clears
 
 export default function GramophonePlayer({ active }: { active: boolean }) {
   const [phase, setPhase] = useState<"hidden" | "center" | "docked" | "gone">("hidden");
-  const [needsTap, setNeedsTap] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -22,11 +21,11 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
     if (phase !== "center") return;
 
     const dropTimer = setTimeout(() => {
-      const audio = audioRef.current;
-      if (!audio) return;
-      audio.play().catch(() => {
-        // autoplay blocked — fall back to a tap-to-play prompt instead of failing silently
-        setNeedsTap(true);
+      audioRef.current?.play().catch((err) => {
+        // Autoplay can be blocked by the browser if the page hasn't received any
+        // user interaction yet — this is a browser policy, not something we can
+        // force past from here. No UI shown per your request; logged for debugging.
+        console.warn("Gramophone audio autoplay was blocked:", err);
       });
     }, NEEDLE_DROP_DELAY);
 
@@ -38,11 +37,6 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
     };
   }, [phase]);
 
-  function handleTapToPlay() {
-    audioRef.current?.play();
-    setNeedsTap(false);
-  }
-
   function handleAudioEnded() {
     setPhase("gone");
   }
@@ -51,7 +45,24 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
 
   return (
     <>
-      <audio ref={audioRef} src="/music/sunflower.mp3" onEnded={handleAudioEnded} />
+      <audio ref={audioRef} src="/song/sunflower.mp3" onEnded={handleAudioEnded} />
+
+      {/* full-screen shaded backdrop, only visible while the gramophone is centered */}
+      <AnimatePresence>
+        {phase === "center" && (
+          <motion.div
+            className="pointer-events-none fixed inset-0 z-[8999]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            style={{
+              background:
+                "radial-gradient(circle at center, rgba(11,14,19,0.55) 0%, rgba(11,14,19,0.8) 65%, rgba(11,14,19,0.92) 100%)",
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {phase !== "gone" && (
@@ -65,7 +76,7 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
                     left: "50%",
                     x: "-50%",
                     y: "-50%",
-                    width: 260,
+                    width: 340,
                     opacity: 1,
                   }
                 : {
@@ -85,16 +96,7 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
             transition={{ duration: 1, ease: [0.65, 0, 0.35, 1] }}
             style={{ position: "fixed" }}
           >
-            <img src="/gifs/gramophone.gif" alt="" className="w-full drop-shadow-lg" />
-
-            {needsTap && phase === "center" && (
-              <button
-                onClick={handleTapToPlay}
-                className="pointer-events-auto absolute inset-0 flex items-center justify-center rounded-full bg-black/40 text-xs font-medium text-white"
-              >
-                Tap to play
-              </button>
-            )}
+            <img src="/gifs/gramophone.gif" alt="" className="w-full drop-shadow-2xl" />
           </motion.div>
         )}
       </AnimatePresence>
