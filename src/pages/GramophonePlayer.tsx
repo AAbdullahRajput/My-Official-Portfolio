@@ -10,14 +10,36 @@ const DOCK_DELAY = 5000; // ms after audio starts before it shrinks, docks, and 
 
 export default function GramophonePlayer({ active }: { active: boolean }) {
   const [phase, setPhase] = useState<"hidden" | "center" | "docked" | "gone">("hidden");
-  const [muted, setMuted] = useState(false);
+  const [userMuted, setUserMuted] = useState(false);
+  // browsers block autoplay-with-sound until the page has received a real user
+  // gesture — so we start muted (always allowed) and flip to audible the instant
+  // the user clicks or presses a key anywhere, rather than waiting for the
+  // gramophone itself to be clicked
+  const [hasInteracted, setHasInteracted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  function toggleMute() {
-    if (audioRef.current) {
-      audioRef.current.muted = !audioRef.current.muted;
-      setMuted(audioRef.current.muted);
+  useEffect(() => {
+    function unlock() {
+      setHasInteracted(true);
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
     }
+    window.addEventListener("pointerdown", unlock);
+    window.addEventListener("keydown", unlock);
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = userMuted || !hasInteracted;
+    }
+  }, [userMuted, hasInteracted]);
+
+  function toggleMute() {
+    setUserMuted((m) => !m);
   }
 
   useEffect(() => {
@@ -53,7 +75,7 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
 
   return (
     <>
-      <audio ref={audioRef} src="/song/sunflower.mp3" onEnded={handleAudioEnded} />
+      <audio ref={audioRef} src="/song/sunflower.mp3" muted onEnded={handleAudioEnded} />
 
       {/* full-screen shaded backdrop, only visible while the gramophone is centered */}
       <AnimatePresence>
@@ -64,10 +86,13 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6 }}
-            style={{
+                        style={{
               background:
-                "radial-gradient(circle at center, rgba(11,14,19,0.55) 0%, rgba(11,14,19,0.8) 65%, rgba(11,14,19,0.92) 100%)",
-            }}
+                "radial-gradient(circle at center, rgba(11,14,19,0.78) 0%, rgba(11,14,19,0.93) 55%, rgba(11,14,19,0.98) 100%)",
+              backdropFilter: "blur(2px)",
+            }}git add .
+git commit -m "Fix audio autoplay by starting muted and unmuting on first user interaction, darken intro backdrop"
+git push
           />
         )}
       </AnimatePresence>
@@ -108,10 +133,10 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
             {phase === "docked" && (
               <button
                 onClick={toggleMute}
-                className="pointer-events-auto absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm"
-                aria-label={muted ? "Unmute music" : "Mute music"}
+                                className="pointer-events-auto absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm"
+                aria-label={userMuted ? "Unmute music" : "Mute music"}
               >
-                {muted ? (
+                {userMuted ? (
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M11 5 6 9H2v6h4l5 4V5Z" />
                     <line x1="23" y1="9" x2="17" y2="15" />
