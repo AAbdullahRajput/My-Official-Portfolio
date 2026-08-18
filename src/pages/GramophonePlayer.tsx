@@ -10,54 +10,17 @@ const DOCK_DELAY = 5000; // ms after audio starts before it shrinks, docks, and 
 
 export default function GramophonePlayer({ active }: { active: boolean }) {
   const [phase, setPhase] = useState<"hidden" | "center" | "docked" | "gone">("hidden");
-  const [userMuted, setUserMuted] = useState(false);
-  // browsers block autoplay-with-sound until the page has received a real user
-  // gesture — so we start muted (always allowed) and flip to audible the instant
-  // the user clicks or presses a key anywhere, rather than waiting for the
-  // gramophone itself to be clicked
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const [muted, setMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // set muted imperatively on mount, once — never as a JSX attribute, since React
-  // would re-apply that on every render and silently override our later unmute
-  useEffect(() => {
-    if (audioRef.current) audioRef.current.muted = true;
-  }, []);
-
-  useEffect(() => {
-    function unlock() {
-      setHasInteracted(true);
-      window.removeEventListener("pointerdown", unlock);
-      window.removeEventListener("keydown", unlock);
-    }
-    window.addEventListener("pointerdown", unlock);
-    window.addEventListener("keydown", unlock);
-    return () => {
-      window.removeEventListener("pointerdown", unlock);
-      window.removeEventListener("keydown", unlock);
-    };
-  }, []);
-
-  useEffect(() => {
+  function toggleMute() {
     if (audioRef.current) {
-      audioRef.current.muted = userMuted || !hasInteracted;
+      audioRef.current.muted = !audioRef.current.muted;
+      setMuted(audioRef.current.muted);
     }
-  }, [userMuted, hasInteracted]);
-
-      function toggleMute() {
-    // first click: this is the "unlock" click. Just mark the page as
-    // interacted-with — the muted-state effect below already reads
-    // (userMuted || !hasInteracted), so hasInteracted alone flips it audible.
-    // Toggling userMuted here too would immediately re-mute it in the same click.
-    if (!hasInteracted) {
-      setHasInteracted(true);
-      return;
-    }
-    // every click after that is a genuine mute/unmute toggle
-    setUserMuted((m) => !m);
   }
 
-  useEffect(() => {
+    useEffect(() => {
     if (!active || phase !== "hidden") return;
     setPhase("center");
   }, [active, phase]);
@@ -65,20 +28,37 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
   useEffect(() => {
     if (phase !== "center") return;
 
-    const dropTimer = setTimeout(() => {
-      audioRef.current?.play().catch((err) => {
-        // Autoplay can be blocked by the browser if the page hasn't received any
-        // user interaction yet — this is a browser policy, not something we can
-        // force past from here. No UI shown per your request; logged for debugging.
-        console.warn("Gramophone audio autoplay was blocked:", err);
-      });
-    }, NEEDLE_DROP_DELAY);
+    let played = false;
+    let dockTimer: ReturnType<typeof setTimeout> | null = null;
 
-    const dockTimer = setTimeout(() => setPhase("docked"), NEEDLE_DROP_DELAY + DOCK_DELAY);
+    function startPlayback() {
+      if (played) return;
+      played = true;
+      audioRef.current?.play().catch((err) => {
+        console.warn("Gramophone audio play failed:", err);
+      });
+      dockTimer = setTimeout(() => setPhase("docked"), DOCK_DELAY);
+    }
+
+    // Real, unmuted audio genuinely cannot start before the browser has seen
+    // some interaction with the page — that's a hard policy in every browser,
+    // not something any code can bypass. So: try immediately (works if the
+    // splash screen or anything earlier already counted as interaction), and
+    // also listen for the very next click/keypress as a fallback so it starts
+    // the moment one happens, rather than failing silently forever.
+    const dropTimer = setTimeout(startPlayback, NEEDLE_DROP_DELAY);
+
+    function onInteract() {
+      startPlayback();
+    }
+    window.addEventListener("pointerdown", onInteract);
+    window.addEventListener("keydown", onInteract);
 
     return () => {
       clearTimeout(dropTimer);
-      clearTimeout(dockTimer);
+      if (dockTimer) clearTimeout(dockTimer);
+      window.removeEventListener("pointerdown", onInteract);
+      window.removeEventListener("keydown", onInteract);
     };
   }, [phase]);
 
@@ -101,14 +81,14 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6 }}
-                        style={{
+            style={{
               background:
-                "radial-gradient(circle at center, rgba(11,14,19,0.78) 0%, rgba(11,14,19,0.93) 55%, rgba(11,14,19,0.98) 100%)",
-              backdropFilter: "blur(2px)",
+                "radial-gradient(circle at center, rgba(11,14,19,0.55) 0%, rgba(11,14,19,0.8) 65%, rgba(11,14,19,0.92) 100%)",
             }}
           />
         )}
       </AnimatePresence>
+
       <AnimatePresence>
         {phase !== "gone" && (
           <motion.div
@@ -140,29 +120,7 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
             transition={{ duration: 1, ease: [0.65, 0, 0.35, 1] }}
             style={{ position: "fixed" }}
           >
-                        <img src="/gifs/gramophone.gif" alt="" className="w-full drop-shadow-2xl" />
-
-                        {(phase === "docked" || phase === "center") && (
-              <button
-                onClick={toggleMute}
-                                className="pointer-events-auto absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm"
-                aria-label={userMuted ? "Unmute music" : "Mute music"}
-              >
-                {userMuted ? (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M11 5 6 9H2v6h4l5 4V5Z" />
-                    <line x1="23" y1="9" x2="17" y2="15" />
-                    <line x1="17" y1="9" x2="23" y2="15" />
-                  </svg>
-                ) : (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M11 5 6 9H2v6h4l5 4V5Z" />
-                    <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                    <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-                  </svg>
-                )}
-              </button>
-            )}
+            <img src="/gifs/gramophone.gif" alt="" className="w-full drop-shadow-2xl" />
           </motion.div>
         )}
       </AnimatePresence>
