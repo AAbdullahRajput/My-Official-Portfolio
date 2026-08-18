@@ -3,7 +3,7 @@ import { Space_Grotesk, JetBrains_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
-import SplashScreen from "@/components/SplashScreen";
+import IntroSequence from "@/components/IntroSequence";
 import SpiderWebBackground from "@/components/SpiderWebBackground";
 
 const spaceGrotesk = Space_Grotesk({
@@ -38,8 +38,8 @@ export default function RootLayout({
         className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${inter.variable} font-body antialiased`}
         suppressHydrationWarning
       >
-        <CustomCursor />
-        <SplashScreen />
+                <CustomCursor />
+        <IntroSequence />
         <SpiderWebBackground />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
