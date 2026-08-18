@@ -785,19 +785,28 @@ const CursorWebCapture = ({
   );
 };
 
-export default function SplashScreen() {
+export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {}) {
   const [visible, setVisible] = useState(true);
   // motion values instead of React state — the cursor position now updates
   // the DOM directly on every mousemove without re-rendering the component
   const [bgLines, setBgLines] = useState<string[]>([]);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
+    useEffect(() => {
     hideTimer.current = setTimeout(() => setVisible(false), 7200);
     return () => {
       if (hideTimer.current) clearTimeout(hideTimer.current);
     };
   }, []);
+
+  // fire once the exit slide-out finishes (7200ms hide delay + 800ms slide animation),
+  // so the parent page knows exactly when the splash is fully gone
+  useEffect(() => {
+    if (!visible) {
+      const t = setTimeout(() => onFinish?.(), 800);
+      return () => clearTimeout(t);
+    }
+  }, [visible, onFinish]);
 
   // Generate the background scribble lines exactly once, on the client,
   // after mount. This avoids a server/client mismatch (Math.random() would
