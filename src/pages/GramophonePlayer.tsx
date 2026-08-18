@@ -18,6 +18,12 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
   const [hasInteracted, setHasInteracted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // set muted imperatively on mount, once — never as a JSX attribute, since React
+  // would re-apply that on every render and silently override our later unmute
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.muted = true;
+  }, []);
+
   useEffect(() => {
     function unlock() {
       setHasInteracted(true);
@@ -75,7 +81,7 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
 
   return (
     <>
-      <audio ref={audioRef} src="/song/sunflower.mp3" muted onEnded={handleAudioEnded} />
+      <audio ref={audioRef} src="/song/sunflower.mp3" onEnded={handleAudioEnded} />
 
       {/* full-screen shaded backdrop, only visible while the gramophone is centered */}
       <AnimatePresence>
@@ -90,13 +96,10 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
               background:
                 "radial-gradient(circle at center, rgba(11,14,19,0.78) 0%, rgba(11,14,19,0.93) 55%, rgba(11,14,19,0.98) 100%)",
               backdropFilter: "blur(2px)",
-            }}git add .
-git commit -m "Fix audio autoplay by starting muted and unmuting on first user interaction, darken intro backdrop"
-git push
+            }}
           />
         )}
       </AnimatePresence>
-
       <AnimatePresence>
         {phase !== "gone" && (
           <motion.div
