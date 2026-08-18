@@ -103,7 +103,29 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
             transition={{ duration: 1, ease: [0.65, 0, 0.35, 1] }}
             style={{ position: "fixed" }}
           >
-            <img src="/gifs/gramophone.gif" alt="" className="w-full drop-shadow-2xl" />
+                        <img src="/gifs/gramophone.gif" alt="" className="w-full drop-shadow-2xl" />
+
+            {phase === "docked" && (
+              <button
+                onClick={toggleMute}
+                className="pointer-events-auto absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm"
+                aria-label={muted ? "Unmute music" : "Mute music"}
+              >
+                {muted ? (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 5 6 9H2v6h4l5 4V5Z" />
+                    <line x1="23" y1="9" x2="17" y2="15" />
+                    <line x1="17" y1="9" x2="23" y2="15" />
+                  </svg>
+                ) : (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 5 6 9H2v6h4l5 4V5Z" />
+                    <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+                    <path d="M18.5 5.5a9 9 0 0 1 0 13" />
+                  </svg>
+                )}
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
