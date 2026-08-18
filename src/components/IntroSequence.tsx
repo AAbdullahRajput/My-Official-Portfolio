@@ -10,7 +10,7 @@ export default function IntroSequence() {
   return (
     <>
       <SplashScreen onFinish={() => setSplashDone(true)} />
-      <GramophonePlayer active={splashDone} />
+      {splashDone && <GramophonePlayer active={true} />}
     </>
   );
 }
