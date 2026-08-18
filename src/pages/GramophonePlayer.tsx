@@ -79,13 +79,12 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
                     width: 340,
                     opacity: 1,
                   }
-                : {
-                    // docked position — placeholder next to where a "Resume" button
-                    // typically sits (bottom-right). Adjust to match your actual layout.
+                                : {
+                    // docked position — bottom-left corner
                     top: "auto",
                     bottom: 24,
-                    right: 24,
-                    left: "auto",
+                    right: "auto",
+                    left: 24,
                     x: 0,
                     y: 0,
                     width: 90,
