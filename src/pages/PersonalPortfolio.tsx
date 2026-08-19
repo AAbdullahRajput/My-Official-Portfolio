@@ -34,13 +34,15 @@ const fadeUp = {
 function Hero() {
   const heroImgRef = useRef<HTMLDivElement>(null);
   const [revealing, setRevealing] = useState(false);
+  const [spotPos, setSpotPos] = useState({ x: 50, y: 8 });
 
-    const handleFaceMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleFaceMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = heroImgRef.current?.getBoundingClientRect();
     if (!rect) return;
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-         setRevealing(true);
+    const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+    const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+    setSpotPos({ x: xPct, y: yPct });
+    setRevealing(true);
   };
 
 
@@ -48,10 +50,8 @@ function Hero() {
     <section className="relative min-h-screen w-full overflow-hidden bg-[#F5F7F6] dark:bg-ink">
             <div
         ref={heroImgRef}
-        onMouseMove={handleFaceMouseMove}
-        onMouseLeave={() => setRevealing(false)}
-                className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block cursor-crosshair"
-        style={{ pointerEvents: "all", zIndex: 5 }}
+        className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block"
+        style={{ pointerEvents: "none", zIndex: 5 }}
       >
         <img
           src="/images/Spiderman-Main.png"
@@ -75,12 +75,45 @@ function Hero() {
               "radial-gradient(ellipse 90% 95% at 50% 40%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
           }}
         />
-                        <img
-          src="/images/Main-Me.png"
-          alt="Ahmad Abdullah"
-          className="absolute inset-0 h-full w-full object-cover object-top select-none pointer-events-none transition-opacity duration-300 ease-out"
-          style={{ opacity: revealing ? 1 : 0 }}
+         {/* Face-only hover zone — tight box around Spiderman's head */}
+        <div
+          className="absolute"
+          onMouseMove={(e) => {
+            const rect = heroImgRef.current?.getBoundingClientRect();
+            if (!rect) return;
+            const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+            const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+            setSpotPos({ x: xPct, y: yPct });
+            setRevealing(true);
+          }}
+          onMouseLeave={() => setRevealing(false)}
+          style={{
+            pointerEvents: "all",
+            top: "18%",
+            left: "33%",
+            width: "34%",
+            height: "22%",
+            zIndex: 10,
+          }}
         />
+
+        <div
+          className="absolute select-none pointer-events-none"
+          style={{
+            opacity: revealing ? 1 : 0,
+            transition: "opacity 0.3s ease-out",
+            inset: 0,
+            WebkitMaskImage: `radial-gradient(ellipse 38% 45% at 50% 38%, black 55%, transparent 100%)`,
+            maskImage: `radial-gradient(ellipse 38% 45% at 50% 38%, black 55%, transparent 100%)`,
+          }}
+        >
+          <img
+            src="/images/Main-Me.jpg"
+            alt="Ahmad"
+            className="h-full w-full object-cover"
+            style={{ objectPosition: "50% 8%" }}
+          />
+        </div>
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:px-6">
