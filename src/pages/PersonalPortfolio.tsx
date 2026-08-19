@@ -34,11 +34,22 @@ const fadeUp = {
 function Hero() {
   return (
         <section className="relative min-h-screen w-full overflow-hidden bg-[#F5F7F6] dark:bg-ink">
-      <div className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block">
+            <div className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block">
         <img
           src="/images/Spiderman-Main.png"
           alt="Spiderman"
-          className="h-full w-full object-cover object-top select-none pointer-events-none"
+          className="h-full w-full object-cover object-top select-none pointer-events-none dark:hidden"
+          style={{
+            maskImage:
+              "radial-gradient(ellipse 90% 95% at 50% 40%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 90% 95% at 50% 40%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
+          }}
+        />
+        <img
+          src="/images/Spiderman-Main-night.png"
+          alt="Spiderman"
+          className="hidden h-full w-full object-cover object-top select-none pointer-events-none dark:block"
           style={{
             maskImage:
               "radial-gradient(ellipse 90% 95% at 50% 40%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
