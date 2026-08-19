@@ -33,7 +33,6 @@ const fadeUp = {
 // ─── HERO ───────────────────────────────────────────────
 function Hero() {
   const heroImgRef = useRef<HTMLDivElement>(null);
-  const [maskPos, setMaskPos] = useState({ x: 50, y: 20 });
   const [revealing, setRevealing] = useState(false);
 
     const handleFaceMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -41,14 +40,9 @@ function Hero() {
     if (!rect) return;
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setMaskPos({ x, y });
          setRevealing(true);
   };
 
-    const revealMaskStyle = {
-    maskImage: `radial-gradient(circle 130px at 50% 22%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 100%)`,
-    WebkitMaskImage: `radial-gradient(circle 130px at 50% 22%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 100%)`,
-  };
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden bg-[#F5F7F6] dark:bg-ink">
