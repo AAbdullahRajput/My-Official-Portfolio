@@ -143,9 +143,9 @@ function Hero() {
 // ─── PROJECTS ───────────────────────────────────────────
 function Projects() {
   return (
-    <section
+        <section
       id="projects"
-      className="relative bg-white px-6 py-28 sm:px-10 lg:px-16 dark:bg-ink"
+      className="relative bg-[#F5F7F6] px-6 py-28 sm:px-10 lg:px-16 dark:bg-ink"
     >
       <div className="mx-auto max-w-6xl">
         <motion.div
