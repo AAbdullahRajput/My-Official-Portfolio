@@ -42,7 +42,12 @@ const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
     }
   }
 
-  function handleAudioEnded() {
+    function handleAudioEnded() {
+    // no-op now that audio loops; kept in case loop is ever disabled
+  }
+
+  function handleDismiss() {
+    audioRef.current?.pause();
     setPhase("gone");
   }
 
@@ -61,7 +66,7 @@ const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
 
   return (
     <>
-      <audio ref={audioRef} src="/song/sunflower.mp3" onEnded={handleAudioEnded} />
+      <audio ref={audioRef} src="/song/sunflower.mp3" loop onEnded={handleAudioEnded} />
 
       <AnimatePresence>
         {overlayVisible && (
@@ -199,7 +204,7 @@ const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
                   className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm"
                   aria-label={muted ? "Unmute music" : "Mute music"}
                 >
-                  {muted ? (
+                                    {muted ? (
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M11 5 6 9H2v6h4l5 4V5Z" />
                       <line x1="23" y1="9" x2="17" y2="15" />
@@ -212,6 +217,16 @@ const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
                       <path d="M18.5 5.5a9 9 0 0 1 0 13" />
                     </svg>
                   )}
+                </button>
+                <button
+                  onClick={handleDismiss}
+                  className="absolute -right-2 -bottom-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm"
+                  aria-label="Close music player"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
                 </button>
               </motion.div>
             )}
