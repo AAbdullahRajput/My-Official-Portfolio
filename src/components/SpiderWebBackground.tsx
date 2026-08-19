@@ -85,10 +85,10 @@ export default function SpiderWebBackground() {
   }, []);
 
   return (
-    <canvas
+        <canvas
       ref={canvasRef}
       className="pointer-events-none absolute top-0 left-0 z-0"
-      style={{ position: "absolute", top: 0, left: 0 }}
+      style={{ position: "absolute", top: 0, left: 0, backgroundColor: "#fafafa" }}
     />
   );
 }
