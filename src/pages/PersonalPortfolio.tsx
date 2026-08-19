@@ -36,25 +36,18 @@ function Hero() {
   const [maskPos, setMaskPos] = useState({ x: 50, y: 20 });
   const [revealing, setRevealing] = useState(false);
 
-  // Only reveal the real photo when the cursor is near the face —
-  // roughly the top-center portion of the hero image, matching the
-  // splash-screen "capture" feel instead of following the mouse everywhere.
-  const FACE_ZONE = { xMin: 20, xMax: 75, yMin: 0, yMax: 45 };
-
-  const handleFaceMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const handleFaceMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = heroImgRef.current?.getBoundingClientRect();
     if (!rect) return;
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setMaskPos({ x, y });
-    const inFaceZone =
-      x >= FACE_ZONE.xMin && x <= FACE_ZONE.xMax && y >= FACE_ZONE.yMin && y <= FACE_ZONE.yMax;
-    setRevealing(inFaceZone);
+         setRevealing(true);
   };
 
-  const revealMaskStyle = {
-    maskImage: `radial-gradient(circle 110px at ${maskPos.x}% ${maskPos.y}%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 100%)`,
-    WebkitMaskImage: `radial-gradient(circle 110px at ${maskPos.x}% ${maskPos.y}%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 100%)`,
+    const revealMaskStyle = {
+    maskImage: `radial-gradient(circle 130px at 50% 22%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 100%)`,
+    WebkitMaskImage: `radial-gradient(circle 130px at 50% 22%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 100%)`,
   };
 
   return (
@@ -63,7 +56,8 @@ function Hero() {
         ref={heroImgRef}
         onMouseMove={handleFaceMouseMove}
         onMouseLeave={() => setRevealing(false)}
-        className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block"
+                className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block cursor-crosshair"
+        style={{ pointerEvents: "all", zIndex: 5 }}
       >
         <img
           src="/images/Spiderman-Main.png"
@@ -87,11 +81,11 @@ function Hero() {
               "radial-gradient(ellipse 90% 95% at 50% 40%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
           }}
         />
-                <img
-          src="/images/Main-Me.jpeg"
+                        <img
+          src="/images/Main-Me.png"
           alt="Ahmad Abdullah"
-          className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none transition-opacity duration-300 ease-out"
-          style={{ ...revealMaskStyle, objectPosition: "50% 15%", opacity: revealing ? 1 : 0 }}
+          className="absolute inset-0 h-full w-full object-cover object-top select-none pointer-events-none transition-opacity duration-300 ease-out"
+          style={{ opacity: revealing ? 1 : 0 }}
         />
       </div>
 
