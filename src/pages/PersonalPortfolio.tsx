@@ -32,9 +32,33 @@ const fadeUp = {
 
 // ─── HERO ───────────────────────────────────────────────
 function Hero() {
+  const heroImgRef = useRef<HTMLDivElement>(null);
+  const [maskPos, setMaskPos] = useState({ x: 50, y: 30 });
+  const [hovering, setHovering] = useState(false);
+
+  const handleFaceMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = heroImgRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setMaskPos({
+      x: ((e.clientX - rect.left) / rect.width) * 100,
+      y: ((e.clientY - rect.top) / rect.height) * 100,
+    });
+  };
+
+  const revealMaskStyle = {
+    maskImage: `radial-gradient(circle 140px at ${maskPos.x}% ${maskPos.y}%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 100%)`,
+    WebkitMaskImage: `radial-gradient(circle 140px at ${maskPos.x}% ${maskPos.y}%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 55%, rgba(0,0,0,0) 100%)`,
+  };
+
   return (
-        <section className="relative min-h-screen w-full overflow-hidden bg-[#F5F7F6] dark:bg-ink">
-            <div className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block">
+    <section className="relative min-h-screen w-full overflow-hidden bg-[#F5F7F6] dark:bg-ink">
+      <div
+        ref={heroImgRef}
+        onMouseMove={handleFaceMouseMove}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
+        className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block"
+      >
         <img
           src="/images/Spiderman-Main.png"
           alt="Spiderman"
@@ -56,6 +80,12 @@ function Hero() {
             WebkitMaskImage:
               "radial-gradient(ellipse 90% 95% at 50% 40%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
           }}
+        />
+        <img
+          src="/images/Main-Me.jpeg"
+          alt="Ahmad Abdullah"
+          className="absolute inset-0 h-full w-full object-cover object-top select-none pointer-events-none transition-opacity duration-300 ease-out"
+          style={{ ...revealMaskStyle, opacity: hovering ? 1 : 0 }}
         />
       </div>
 
