@@ -27,26 +27,26 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md"
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 z-[100] bg-white dark:bg-[#0a0a0d] overflow-y-auto"
       onMouseLeave={onMouseLeave}
     >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0, y: 30 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 30 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-[90vw] max-w-5xl max-h-[85vh] overflow-hidden rounded-[28px] border border-[#8a0303]/20 bg-white shadow-2xl shadow-black/60 dark:bg-[#0a0a0d]"
-      >
-        {/* red top accent */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#8a0303] to-transparent" />
+      {/* red top accent line */}
+      <div className="fixed top-0 left-0 right-0 h-[2px] z-10 bg-gradient-to-r from-transparent via-[#8a0303] to-transparent" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 h-full max-h-[85vh]">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 24 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="min-h-screen w-full max-w-6xl mx-auto px-8 py-16"
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
           {/* LEFT — images */}
-          <div className="flex flex-col gap-4 bg-gray-50 dark:bg-[#0f0f12] p-7 overflow-y-auto">
+          <div className="flex flex-col gap-6 sticky top-16">
             {/* main image */}
-            <div className="relative aspect-video w-full overflow-hidden rounded-[16px] border border-gray-100 dark:border-white/10 bg-gray-100 dark:bg-white/5 shrink-0">
+            <div className="relative aspect-video w-full overflow-hidden rounded-[20px] border border-gray-100 dark:border-white/10 bg-gray-100 dark:bg-white/5 shadow-xl">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeImg}
@@ -81,13 +81,13 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
               </AnimatePresence>
             </div>
 
-            {/* thumbnail strip */}
+            {/* image grid */}
             {project.images?.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-1 shrink-0">
+              <div className="grid grid-cols-3 gap-2">
                 {project.images.map((img, i) => (
                   <button key={i} onClick={() => setActiveImg(i)}
-                    className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-[8px] border-2 transition-all ${
-                      activeImg === i ? "border-[#8a0303] scale-105" : "border-transparent opacity-60 hover:opacity-100"
+                    className={`relative aspect-video overflow-hidden rounded-[10px] border-2 transition-all ${
+                      activeImg === i ? "border-[#8a0303]" : "border-transparent opacity-50 hover:opacity-90"
                     }`}
                   >
                     <img src={img} alt="" className="h-full w-full object-cover" />
@@ -97,7 +97,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
             )}
 
             {/* badges */}
-            <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <div className="flex flex-wrap items-center gap-2">
               {project.status && (
                 <span className={`rounded-full px-3 py-1 font-mono text-[10px] tracking-wide border ${
                   project.status === "Live"
@@ -121,7 +121,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
           </div>
 
           {/* RIGHT — details */}
-          <div className="flex flex-col gap-6 overflow-y-auto p-7">
+          <div className="flex flex-col gap-8">
             {/* title block */}
             <div>
               <div className="mb-3 h-[2px] w-12 rounded-full bg-[#8a0303]" />
@@ -168,7 +168,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
             )}
 
             {/* links */}
-            <div className="mt-auto flex flex-wrap gap-2 pt-4 border-t border-gray-100 dark:border-white/5">
+            <div className="flex flex-wrap gap-2 pt-6 border-t border-gray-100 dark:border-white/5">
               {project.github && (
                 <a href={project.github} target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 font-mono text-xs text-gray-600 transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:bg-white/5 dark:text-white/50 dark:hover:text-red-300"
