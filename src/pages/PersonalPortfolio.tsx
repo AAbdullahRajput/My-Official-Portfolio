@@ -99,7 +99,7 @@ function Hero() {
       </motion.div>
 
       {/* My photo — revealed over Spiderman face on eye hover */}
-      <div
+           <motion.div
         className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block pointer-events-none select-none"
         style={{
           zIndex: 6,
@@ -107,6 +107,9 @@ function Hero() {
           transition: "opacity 0.3s ease-out",
           maskImage: "radial-gradient(ellipse 38% 45% at 50% 38%, black 55%, transparent 100%)",
           WebkitMaskImage: "radial-gradient(ellipse 38% 45% at 50% 38%, black 55%, transparent 100%)",
+          rotateX,
+          rotateY,
+          transformStyle: "preserve-3d",
         }}
       >
         <img
