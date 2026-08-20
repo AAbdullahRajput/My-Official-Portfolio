@@ -147,7 +147,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-4 lg:pr-6">
-        <div className="max-w-lg lg:w-[48%] lg:-ml-50">
+        <div className="max-w-lg lg:w-[48%] lg:-ml-60">
           <motion.div
             variants={fadeUp}
             initial="hidden"
@@ -385,7 +385,7 @@ function Projects() {
       className="relative bg-[#F5F7F6] py-28 dark:bg-ink overflow-hidden"
     >
       {/* Header — padded normally */}
-      <div className="px-6 sm:px-10 lg:px-16 mb-14">
+      <div className="px-6 sm:px-10 lg:px-25 mb-14">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

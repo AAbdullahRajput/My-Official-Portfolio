@@ -362,9 +362,9 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
                 <div className="flex flex-col gap-3">
                   {project.techStack.map((cat) => (
                     <div key={cat.category}>
-                      <span className="mb-1.5 block font-mono text-[9px] uppercase tracking-widest text-gray-300 dark:text-white/20">
-                        {cat.category}
-                      </span>
+                      <span className="mb-1.5 block font-mono text-[9px] font-semibold uppercase tracking-widest text-gray-500 dark:text-white/50">
+  {cat.category}
+</span>
                       <div className="flex flex-wrap gap-1.5">
                         {cat.tools.map((tool) => (
                           <span key={tool}
