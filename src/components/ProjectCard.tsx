@@ -67,6 +67,16 @@ function ZoomableImage({ src, alt }: { src: string; alt: string }) {
     setPos({ x: 0, y: 0 });
   }
 
+  function zoomBy(delta: number) {
+    setScale((s) => clampScale(s + delta));
+  }
+
+  const PAN_STEP = 60;
+
+  function panBy(dx: number, dy: number) {
+    setPos((p) => ({ x: p.x + dx, y: p.y + dy }));
+  }
+
   // Reset pan when zoomed all the way back out
   useEffect(() => {
     if (scale === 1) setPos({ x: 0, y: 0 });
@@ -97,18 +107,75 @@ function ZoomableImage({ src, alt }: { src: string; alt: string }) {
         }}
       />
 
-      {scale > 1 && (
-        <button
-          onClick={resetZoom}
-          className="absolute bottom-3 right-3 z-10 rounded-full border border-gray-200 bg-white/90 px-3 py-1.5 font-mono text-[10px] text-gray-600 shadow-md backdrop-blur-sm transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60"
-        >
-          Reset zoom
-        </button>
-      )}
-
-      <div className="pointer-events-none absolute bottom-3 left-3 rounded-full border border-gray-200 bg-white/80 px-2.5 py-1 font-mono text-[9px] text-gray-400 backdrop-blur-sm dark:border-white/10 dark:bg-black/60 dark:text-white/30">
-        {Math.round(scale * 100)}%
+      {/* zoom controls */}
+      <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5">
+        {scale > 1 && (
+          <button
+            onClick={resetZoom}
+            className="rounded-full border border-gray-200 bg-white/90 px-3 py-1.5 font-mono text-[10px] text-gray-600 shadow-md backdrop-blur-sm transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60"
+          >
+            Reset
+          </button>
+        )}
+        <div className="flex items-center overflow-hidden rounded-full border border-gray-200 bg-white/90 shadow-md backdrop-blur-sm dark:border-white/10 dark:bg-black/70">
+          <button
+            onClick={(e) => { e.stopPropagation(); zoomBy(-0.4); }}
+            aria-label="Zoom out"
+            className="flex h-8 w-8 items-center justify-center text-gray-600 transition-colors hover:text-[#8a0303] dark:text-white/60"
+          >
+            −
+          </button>
+          <span className="px-1 font-mono text-[10px] text-gray-400 dark:text-white/30">
+            {Math.round(scale * 100)}%
+          </span>
+          <button
+            onClick={(e) => { e.stopPropagation(); zoomBy(0.4); }}
+            aria-label="Zoom in"
+            className="flex h-8 w-8 items-center justify-center text-gray-600 transition-colors hover:text-[#8a0303] dark:text-white/60"
+          >
+            +
+          </button>
+        </div>
       </div>
+
+      {/* directional pad — only useful once zoomed in */}
+      {scale > 1 && (
+        <div className="absolute bottom-3 left-3 z-10 grid grid-cols-3 grid-rows-3 gap-0.5">
+          <div />
+          <button
+            onClick={(e) => { e.stopPropagation(); panBy(0, PAN_STEP); }}
+            aria-label="Pan up"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60"
+          >
+            ↑
+          </button>
+          <div />
+          <button
+            onClick={(e) => { e.stopPropagation(); panBy(PAN_STEP, 0); }}
+            aria-label="Pan left"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60"
+          >
+            ←
+          </button>
+          <div />
+          <button
+            onClick={(e) => { e.stopPropagation(); panBy(-PAN_STEP, 0); }}
+            aria-label="Pan right"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60"
+          >
+            →
+          </button>
+          <div />
+          <button
+            onClick={(e) => { e.stopPropagation(); panBy(0, -PAN_STEP); }}
+            aria-label="Pan down"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60"
+          >
+            ↓
+          </button>
+          <div />
+        </div>
+      )}
     </div>
   );
 }
@@ -175,12 +242,12 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
 
         {/* red top accent line */}
         <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[24px] bg-gradient-to-r from-transparent via-[#8a0303] to-transparent" />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
 
           {/* LEFT — images */}
-          <div className="flex flex-col gap-6 sticky top-16">
+          <div className="flex flex-col gap-6 sticky top-16 lg:col-span-3">
             {/* main image */}
-            <div className="relative aspect-video w-full overflow-hidden rounded-[20px] border border-gray-100 dark:border-white/10 bg-gray-100 dark:bg-white/5 shadow-xl">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[20px] border border-gray-100 dark:border-white/10 bg-gray-100 dark:bg-white/5 shadow-xl">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeImg}
@@ -251,7 +318,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
           </div>
 
           {/* RIGHT — details */}
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-8 lg:col-span-2">
             {/* title block */}
             <div>
               <div className="mb-3 h-[2px] w-12 rounded-full bg-[#8a0303]" />
