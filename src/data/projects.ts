@@ -78,7 +78,7 @@ export const projects: Project[] = [
       "https://raw.githubusercontent.com/AAbdullahRajput/Get-Fit-Mobile-Application-User-/main/Project%20Design/WhatsApp%20Image%202026-08-06%20at%2017.50.40.jpeg",
       "https://raw.githubusercontent.com/AAbdullahRajput/Get-Fit-Mobile-Application-User-/main/Project%20Design/WhatsApp%20Image%202026-08-06%20at%2017.50.41.jpeg",
     ],
-    thumbnail: "https://raw.githubusercontent.com/AAbdullahRajput/Get-Fit-Ai-Web-Trainer-Website-And-Mobile-Application-/main/Project%20Images/Thumbnil/Gemini_Generated_Image_krqa01krqa01krqa.png",
+    thumbnail: "https://raw.githubusercontent.com/AAbdullahRajput/Get-Fit-Ai-Web-Trainer-Website-And-Mobile-Application-/main/Project%20Images/Project%20Images/Thumbnil/Gemini_Generated_Image_krqa01krqa01krqa.png",
     featured: true,
     status: "Live",
     year: "2025",
