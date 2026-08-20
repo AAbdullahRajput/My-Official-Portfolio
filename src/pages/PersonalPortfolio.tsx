@@ -78,9 +78,9 @@ function Hero() {
             {/* Spiderman image layer */}
             <motion.div
         ref={heroImgRef}
-        initial={{ y: -900, opacity: 0, rotate: -12 }}
-        animate={{ y: 0, opacity: 1, rotate: 0 }}
-        transition={{ type: "spring", stiffness: 55, damping: 11, mass: 1, delay: 0.1 }}
+        initial={{ y: -500, opacity: 0, rotate: -10 }}
+        animate={{ y: [-500, 30, -15, 5, 0], opacity: 1, rotate: [-10, 4, -2, 1, 0] }}
+        transition={{ duration: 1.4, times: [0, 0.55, 0.75, 0.9, 1], ease: "easeIn", delay: 0.1 }}
         className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block"
         style={{ zIndex: 5, rotateX, rotateY, transformStyle: "preserve-3d" }}
       >
@@ -144,8 +144,8 @@ function Hero() {
         />
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:px-6">
-        <div className="max-w-lg lg:w-[38%] lg:-ml-8">
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-4 lg:pr-6">
+        <div className="max-w-lg lg:w-[48%] lg:-ml-50">
           <motion.div
             variants={fadeUp}
             initial="hidden"
