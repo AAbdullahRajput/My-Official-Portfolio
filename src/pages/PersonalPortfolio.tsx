@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { motion, useMotionValue, useSpring, useTransform, useScroll, animate } from "framer-motion";
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
 import Navbar from "@/components/Navbar";
@@ -18,14 +18,17 @@ const skills = [
 ];
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: -140, rotate: -6 },
   show: (i: number = 0) => ({
     opacity: 1,
     y: 0,
+    rotate: 0,
     transition: {
-      duration: 0.7,
       delay: i * 0.12,
-      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+      type: "spring" as const,
+      stiffness: 140,
+      damping: 13,
+      mass: 0.8,
     },
   }),
 };
@@ -73,8 +76,11 @@ function Hero() {
       style={{ perspective: 1400 }}
     >
             {/* Spiderman image layer */}
-      <motion.div
+            <motion.div
         ref={heroImgRef}
+        initial={{ y: -900, opacity: 0, rotate: -12 }}
+        animate={{ y: 0, opacity: 1, rotate: 0 }}
+        transition={{ type: "spring", stiffness: 55, damping: 11, mass: 1, delay: 0.1 }}
         className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block"
         style={{ zIndex: 5, rotateX, rotateY, transformStyle: "preserve-3d" }}
       >
@@ -139,7 +145,7 @@ function Hero() {
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:px-6">
-        <div className="max-w-xl lg:w-[45%] lg:-ml-2">
+        <div className="max-w-lg lg:w-[38%] lg:-ml-8">
           <motion.div
             variants={fadeUp}
             initial="hidden"
@@ -159,7 +165,7 @@ function Hero() {
             initial="hidden"
             animate="show"
             custom={1}
-            className="font-display text-4xl font-bold leading-[1.1] text-[#0b0e13] dark:text-text sm:text-5xl lg:text-6xl"
+            className="font-serif text-4xl font-bold tracking-tight leading-[1.05] text-[#0b0e13] dark:text-text sm:text-5xl lg:text-6xl"
           >
             Ahmad Abdullah
           </motion.h1>
@@ -169,7 +175,7 @@ function Hero() {
             initial="hidden"
             animate="show"
             custom={2}
-            className="font-display mt-4 text-lg font-medium leading-snug text-[#374151] dark:text-text-muted sm:text-xl"
+            className="font-sans mt-4 text-lg font-normal tracking-wide leading-snug text-[#374151] dark:text-text-muted sm:text-xl"
           >
             Full-stack engineer building connected mobile and web systems.
           </motion.p>
@@ -238,11 +244,37 @@ function Projects() {
     offset: ["start end", "end start"],
   });
 
-  // Top row slides right as the user scrolls down; bottom row slides left.
-  // Both read straight off scrollYProgress, so scrolling back up reverses
-  // both automatically.
-  const rowOneX = useTransform(scrollYProgress, [0, 1], [-120, 260]);
-  const rowTwoX = useTransform(scrollYProgress, [0, 1], [120, -260]);
+  // Scroll-linked component: top row slides right as the user scrolls down,
+  // bottom row slides left. Reads straight off scrollYProgress, so scrolling
+  // back up reverses both automatically.
+  const rowOneScrollX = useTransform(scrollYProgress, [0, 1], [-120, 260]);
+  const rowTwoScrollX = useTransform(scrollYProgress, [0, 1], [120, -260]);
+
+  // Auto-slide component: a gentle continuous drift layered on top, so the
+  // rows are always moving a little even without scrolling — each row
+  // oscillates back and forth in its own direction.
+  const rowOneAutoX = useMotionValue(0);
+  const rowTwoAutoX = useMotionValue(0);
+
+  useEffect(() => {
+    const c1 = animate(rowOneAutoX, [0, 50, 0], {
+      duration: 7,
+      repeat: Infinity,
+      ease: "easeInOut",
+    });
+    const c2 = animate(rowTwoAutoX, [0, -50, 0], {
+      duration: 7,
+      repeat: Infinity,
+      ease: "easeInOut",
+    });
+    return () => {
+      c1.stop();
+      c2.stop();
+    };
+  }, []);
+
+  const rowOneX = useTransform([rowOneScrollX, rowOneAutoX], ([s, a]: number[]) => s + a);
+  const rowTwoX = useTransform([rowTwoScrollX, rowTwoAutoX], ([s, a]: number[]) => s + a);
 
   const half = Math.ceil(projects.length / 2);
   const rowOne = projects.slice(0, half);
@@ -270,13 +302,13 @@ function Projects() {
           </h2>
         </motion.div>
 
-        <motion.div style={{ x: rowOneX }} className="flex items-end justify-center py-8">
+        <motion.div style={{ x: rowOneX }} className="flex items-end justify-center gap-10 py-12">
           {rowOne.map((project, i) => (
             <ProjectCard key={project.title} project={project} index={i} total={rowOne.length} />
           ))}
         </motion.div>
 
-        <motion.div style={{ x: rowTwoX }} className="flex items-end justify-center py-8">
+        <motion.div style={{ x: rowTwoX }} className="flex items-end justify-center gap-10 py-12">
           {rowTwo.map((project, i) => (
             <ProjectCard key={project.title} project={project} index={i} total={rowTwo.length} />
           ))}
@@ -285,6 +317,7 @@ function Projects() {
     </section>
   );
 }
+
 
 // ─── ABOUT ──────────────────────────────────────────────
 function About() {
