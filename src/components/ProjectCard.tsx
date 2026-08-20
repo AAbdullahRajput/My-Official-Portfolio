@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState, createContext, useContext } from "react";
+import { useRef, useState, useEffect, createContext, useContext } from "react";
+import { createPortal } from "react-dom";
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import type { Project } from "@/data/projects";
 
@@ -22,14 +23,23 @@ export function ProjectCardGrid({ children }: { children: React.ReactNode }) {
 function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLeave: () => void }) {
   const [activeImg, setActiveImg] = useState(0);
 
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[100] bg-white dark:bg-[#0a0a0d] overflow-y-auto"
+      className="fixed inset-0 z-[100] bg-white dark:bg-[#0a0a0d] overflow-y-auto overscroll-contain"
       onMouseLeave={onMouseLeave}
+      style={{ overscrollBehavior: "contain" }}
     >
       {/* red top accent line */}
       <div className="fixed top-0 left-0 right-0 h-[2px] z-10 bg-gradient-to-r from-transparent via-[#8a0303] to-transparent" />
@@ -269,9 +279,13 @@ export default function ProjectCard({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <AnimatePresence>
-        {hovered && <ProjectOverlay project={project} onMouseLeave={() => setHovered(false)} />}
-      </AnimatePresence>
+      {typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {hovered && <ProjectOverlay project={project} onMouseLeave={() => setHovered(false)} />}
+          </AnimatePresence>,
+          document.body
+        )}
 
       <motion.div
         initial={{ opacity: 0, y: 60 + fanY, rotate: fanRotate }}
