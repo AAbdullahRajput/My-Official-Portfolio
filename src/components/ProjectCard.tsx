@@ -24,12 +24,24 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
   const [activeImg, setActiveImg] = useState(0);
 
   useEffect(() => {
-    const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = original;
+    const html = document.documentElement;
+    const body = document.body;
+    const originalHtmlOverflow = html.style.overflow;
+    const originalBodyOverflow = body.style.overflow;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onMouseLeave();
     };
-  }, []);
+    window.addEventListener("keydown", handleEsc);
+
+    return () => {
+      html.style.overflow = originalHtmlOverflow;
+      body.style.overflow = originalBodyOverflow;
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, [onMouseLeave]);
 
   return (
     <motion.div
@@ -37,20 +49,36 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[100] bg-white dark:bg-[#0a0a0d] overflow-y-auto overscroll-contain"
-      onMouseLeave={onMouseLeave}
-      style={{ overscrollBehavior: "contain" }}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-6"
+      onClick={onMouseLeave}
+      onWheel={(e) => e.preventDefault()}
+      onTouchMove={(e) => e.preventDefault()}
     >
-      {/* red top accent line */}
-      <div className="fixed top-0 left-0 right-0 h-[2px] z-10 bg-gradient-to-r from-transparent via-[#8a0303] to-transparent" />
-
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 24, scale: 0.97 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="min-h-screen w-full max-w-6xl mx-auto px-8 py-16"
+        onClick={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+        className="relative w-[60vw] h-[85vh] max-w-5xl overflow-y-auto overscroll-contain rounded-[24px] border border-gray-200 bg-white px-8 py-12 shadow-2xl dark:border-white/10 dark:bg-[#0a0a0d]"
+        style={{ overscrollBehavior: "contain" }}
       >
+        {/* close button */}
+        <button
+          onClick={onMouseLeave}
+          className="absolute top-6 right-6 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:bg-white/5 dark:text-white/60"
+          aria-label="Close"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
+        {/* red top accent line */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[24px] bg-gradient-to-r from-transparent via-[#8a0303] to-transparent" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
           {/* LEFT — images */}
