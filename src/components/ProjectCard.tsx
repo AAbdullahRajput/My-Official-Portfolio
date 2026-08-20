@@ -67,15 +67,15 @@ export default function ProjectCard({
         transformOrigin: "bottom center",
       }}
       data-cursor-hover
-      className="group relative w-[260px] shrink-0 -ml-6 first:ml-0 sm:w-72 sm:-ml-8"
+      className="group relative w-72 shrink-0"
     >
       {/* outer glow ring, only visible on hover */}
-      <div className="pointer-events-none absolute -inset-px rounded-[22px] bg-gradient-to-b from-red-600/40 via-red-900/10 to-transparent opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="pointer-events-none absolute -inset-px rounded-[22px] bg-gradient-to-b from-red-600/50 via-red-900/10 to-transparent opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
 
-      <div className="relative overflow-hidden rounded-[20px] border border-white/10 bg-[#0a0a0d] p-6 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.7)] transition-colors duration-300 group-hover:border-red-600/50">
+      <div className="relative flex h-[400px] flex-col overflow-hidden rounded-[20px] border border-gray-200 bg-white p-6 shadow-lg transition-colors duration-300 group-hover:border-[#8a0303]/60 dark:border-white/10 dark:bg-[#0a0a0d] dark:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.7)] dark:group-hover:border-red-600/60">
         {/* web-line texture, corner-anchored */}
         <svg
-          className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 text-red-600/10 transition-colors duration-300 group-hover:text-red-600/25"
+          className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 text-[#8a0303]/10 transition-colors duration-300 group-hover:text-[#8a0303]/30 dark:text-red-600/10 dark:group-hover:text-red-600/25"
           viewBox="0 0 100 100"
           fill="none"
         >
@@ -103,41 +103,44 @@ export default function ProjectCard({
         />
 
         {/* thin red accent line, top */}
-        <div className="mb-4 h-[2px] w-10 rounded-full bg-red-600/70 transition-all duration-300 group-hover:w-16" />
+        <div className="mb-4 h-[2px] w-10 rounded-full bg-[#8a0303] transition-all duration-300 group-hover:w-16 dark:bg-red-600/70" />
 
         <div className="relative mb-3 flex items-start justify-between gap-3" style={{ transform: "translateZ(24px)" }}>
-          <h3 className="font-display text-lg font-semibold leading-tight text-white">
+          <h3 className="font-mono text-lg font-semibold leading-tight text-[#0b0e13] dark:text-white">
             {project.title}
           </h3>
           {project.featured && (
-            <span className="shrink-0 rounded-full border border-red-600/40 bg-red-600/10 px-2 py-0.5 font-mono text-[9px] tracking-wide text-red-300">
+            <span className="shrink-0 rounded-full border border-[#8a0303]/40 bg-[#8a0303]/10 px-2 py-0.5 font-mono text-[9px] tracking-wide text-[#8a0303] dark:border-red-600/40 dark:bg-red-600/10 dark:text-red-300">
               FEATURED
             </span>
           )}
         </div>
 
-        <p className="relative mb-5 text-xs leading-relaxed text-white/50" style={{ transform: "translateZ(14px)" }}>
+        <p
+          className="relative mb-5 line-clamp-4 flex-1 font-mono text-xs leading-relaxed text-gray-500 dark:text-white/50"
+          style={{ transform: "translateZ(14px)" }}
+        >
           {project.description}
         </p>
 
         <div className="relative mb-5 flex flex-wrap gap-1.5" style={{ transform: "translateZ(10px)" }}>
-          {project.tags.map((tag) => (
+          {project.tags.slice(0, 4).map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono text-[10px] text-white/60 transition-colors duration-300 group-hover:border-red-600/30 group-hover:text-red-200"
+              className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 font-mono text-[10px] text-gray-500 transition-colors duration-300 group-hover:border-[#8a0303]/30 group-hover:text-[#8a0303] dark:border-white/10 dark:bg-white/[0.03] dark:text-white/60 dark:group-hover:border-red-600/30 dark:group-hover:text-red-200"
             >
               {tag}
             </span>
           ))}
         </div>
 
-        <div className="relative flex gap-4 text-xs" style={{ transform: "translateZ(10px)" }}>
+        <div className="relative mt-auto flex gap-4 font-mono text-xs" style={{ transform: "translateZ(10px)" }}>
           {project.github && (
             <a
               href={project.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/40 underline-offset-4 transition-colors hover:text-red-300 hover:underline"
+              className="text-gray-400 underline-offset-4 transition-colors hover:text-[#8a0303] hover:underline dark:text-white/40 dark:hover:text-red-300"
             >
               GitHub
             </a>
@@ -147,7 +150,7 @@ export default function ProjectCard({
               href={project.live}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/40 underline-offset-4 transition-colors hover:text-red-300 hover:underline"
+              className="text-gray-400 underline-offset-4 transition-colors hover:text-[#8a0303] hover:underline dark:text-white/40 dark:hover:text-red-300"
             >
               Live site
             </a>
