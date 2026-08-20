@@ -73,10 +73,10 @@ function Hero() {
       style={{ perspective: 1400 }}
     >
             {/* Spiderman image layer */}
-      <div
+      <motion.div
         ref={heroImgRef}
         className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block"
-        style={{ zIndex: 5 }}
+        style={{ zIndex: 5, rotateX, rotateY, transformStyle: "preserve-3d" }}
       >
         <img
           src="/images/Spiderman-Main.png"
