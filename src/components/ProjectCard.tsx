@@ -33,12 +33,33 @@ export default function ProjectCard({ project, index }: { project: Project; inde
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, transformPerspective: 800 }}
+            style={{
+        rotateX,
+        rotateY,
+        transformPerspective: 800,
+        transformStyle: "preserve-3d",
+        boxShadow: useTransform(
+          [rotateX, rotateY],
+          ([rx, ry]: number[]) => `${ry * -1.5}px ${rx * 1.5}px 30px rgba(0,0,0,0.25)`
+        ) as any,
+      }}
       data-cursor-hover
-      className="group relative rounded-2xl border border-line bg-panel p-6"
+      className="group relative rounded-2xl border border-line bg-panel p-6 transition-shadow"
     >
-      <div className="mb-4 flex items-start justify-between">
-        <h3 className="font-display text-xl font-semibold text-text">{project.title}</h3>
+            <motion.div
+        className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100"
+        style={{
+          background: useTransform(
+            [x, y],
+            ([xv, yv]: number[]) =>
+              `radial-gradient(circle at ${(xv + 0.5) * 100}% ${(yv + 0.5) * 100}%, rgba(255,255,255,0.12), transparent 60%)`
+          ) as any,
+          transition: "opacity 0.3s",
+        }}
+      />
+
+      <div className="mb-4 flex items-start justify-between" style={{ transform: "translateZ(20px)" }}>
+               <h3 className="font-display text-xl font-semibold text-text" style={{ transform: "translateZ(30px)" }}>{project.title}</h3>
         {project.featured && (
           <span className="rounded-full bg-accent-blue/10 px-2 py-0.5 font-mono text-[10px] text-accent-blue">
             FEATURED
