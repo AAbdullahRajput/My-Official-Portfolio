@@ -246,11 +246,13 @@ function Projects() {
     offset: ["start end", "end start"],
   });
 
-  const rowOneScrollX = useTransform(scrollYProgress, [0, 1], [-120, 260]);
-  const rowTwoScrollX = useTransform(scrollYProgress, [0, 1], [120, -260]);
+  const rowOneScrollX = useTransform(scrollYProgress, [0, 1], [0, -200]);
+  const rowTwoScrollX = useTransform(scrollYProgress, [0, 1], [0, 200]);
 
-  const rowOneAutoX = useMotionValue(0);
-  const rowTwoAutoX = useMotionValue(0);
+  const [scrollDir, setScrollDir] = useState<1 | -1>(1);
+  const scrollDirRef = useRef<1 | -1>(1);
+  const lastScrollY = useRef(0);
+
   const rowOneDragX = useMotionValue(0);
   const rowTwoDragX = useMotionValue(0);
 
@@ -260,27 +262,68 @@ function Projects() {
   const rowTwoStartX = useRef(0);
   const rowOneStartDrag = useRef(0);
   const rowTwoStartDrag = useRef(0);
+  const rowOneAnim = useRef<ReturnType<typeof animate> | null>(null);
+  const rowTwoAnim = useRef<ReturnType<typeof animate> | null>(null);
+
+  const half = Math.ceil(projects.length / 2);
+  const rowOne = projects.slice(0, half);
+  const rowTwo = projects.slice(half);
+
+  const CARD_W = 288 + 40; // card width + gap
+  const rowOneWidth = rowOne.length * CARD_W;
+  const rowTwoWidth = rowTwo.length * CARD_W;
+
+  // Triple the rows so there's always content on both sides
+  const rowOneLoop = [...rowOne, ...rowOne, ...rowOne];
+  const rowTwoLoop = [...rowTwo, ...rowTwo, ...rowTwo];
+
+  const rowOneAutoX = useMotionValue(-rowOneWidth); // start at second copy
+  const rowTwoAutoX = useMotionValue(-rowTwoWidth);
 
   useEffect(() => {
-    let c1 = animate(rowOneAutoX, [0, 50, 0], { duration: 7, repeat: Infinity, ease: "easeInOut" });
-    let c2 = animate(rowTwoAutoX, [0, -50, 0], { duration: 7, repeat: Infinity, ease: "easeInOut" });
+    const runRowOne = (dir: 1 | -1) => {
+      rowOneAnim.current?.stop();
+      const current = rowOneAutoX.get();
+      const target = dir === 1 ? -rowOneWidth * 2 : 0;
+      const dist = Math.abs(target - current) || rowOneWidth;
+      rowOneAnim.current = animate(rowOneAutoX, target, {
+        duration: 30 * (dist / rowOneWidth),
+        ease: "linear",
+        repeat: Infinity,
+        repeatType: "loop",
+        onRepeat: () => rowOneAutoX.set(-rowOneWidth),
+      });
+    };
 
-    const pause = () => { c1.pause(); c2.pause(); };
-    const resume = () => { c1.play(); c2.play(); };
+    const runRowTwo = (dir: 1 | -1) => {
+      rowTwoAnim.current?.stop();
+      const current = rowTwoAutoX.get();
+      const target = dir === 1 ? 0 : -rowTwoWidth * 2;
+      const dist = Math.abs(target - current) || rowTwoWidth;
+      rowTwoAnim.current = animate(rowTwoAutoX, target, {
+        duration: 30 * (dist / rowTwoWidth),
+        ease: "linear",
+        repeat: Infinity,
+        repeatType: "loop",
+        onRepeat: () => rowTwoAutoX.set(-rowTwoWidth),
+      });
+    };
 
-    const handleMouseDown = (e: MouseEvent, isRowOne: boolean) => {
-      if (isRowOne) {
-        rowOneIsDragging.current = true;
-        rowOneStartX.current = e.clientX;
-        rowOneStartDrag.current = rowOneDragX.get();
-        c1.pause();
-      } else {
-        rowTwoIsDragging.current = true;
-        rowTwoStartX.current = e.clientX;
-        rowTwoStartDrag.current = rowTwoDragX.get();
-        c2.pause();
-      }
-      document.body.style.userSelect = "none";
+    // Initial direction: down (1) → row1 left, row2 right
+    runRowOne(1);
+    runRowTwo(1);
+
+    const handleScroll = () => {
+      const current = window.scrollY;
+      const delta = current - lastScrollY.current;
+      lastScrollY.current = current;
+      if (Math.abs(delta) < 2) return; // ignore noise
+      const newDir: 1 | -1 = delta > 0 ? 1 : -1;
+      if (newDir === scrollDirRef.current) return; // no direction change
+      scrollDirRef.current = newDir;
+      setScrollDir(newDir);
+      runRowOne(newDir);
+      runRowTwo(newDir);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -297,70 +340,57 @@ function Projects() {
     const handleMouseUp = () => {
       if (rowOneIsDragging.current) {
         rowOneIsDragging.current = false;
-        c1.play();
+        rowOneAnim.current?.play();
       }
       if (rowTwoIsDragging.current) {
         rowTwoIsDragging.current = false;
-        c2.play();
+        rowTwoAnim.current?.play();
       }
       document.body.style.userSelect = "";
     };
 
+    const pause = () => { rowOneAnim.current?.pause(); rowTwoAnim.current?.pause(); };
+    const resume = () => { rowOneAnim.current?.play(); rowTwoAnim.current?.play(); };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
     document.addEventListener("portal-open", pause);
     document.addEventListener("portal-close", resume);
 
     return () => {
-      c1.stop();
-      c2.stop();
+      rowOneAnim.current?.stop();
+      rowTwoAnim.current?.stop();
+      window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("portal-open", pause);
       document.removeEventListener("portal-close", resume);
     };
-  }, []);
-
-  const rowOneX = useTransform([rowOneScrollX, rowOneAutoX, rowOneDragX], ([s, a, d]: number[]) => s + a + d);
-  const rowTwoX = useTransform([rowTwoScrollX, rowTwoAutoX, rowTwoDragX], ([s, a, d]: number[]) => s + a + d);
-
-  const half = Math.ceil(projects.length / 2);
-  const rowOne = projects.slice(0, half);
-  const rowTwo = projects.slice(half);
-  const CARD_W = 288 + 40;
-  const rowOneWidth = rowOne.length * CARD_W;
-  const rowTwoWidth = rowTwo.length * CARD_W;
-
-  useEffect(() => {
-    const handleWrap = setInterval(() => {
-      const r1Current = rowOneDragX.get() + rowOneAutoX.get();
-      const r2Current = rowTwoDragX.get() + rowTwoAutoX.get();
-
-      if (r1Current <= -rowOneWidth) {
-        rowOneDragX.set(rowOneDragX.get() + rowOneWidth);
-      }
-
-      if (r2Current <= -rowTwoWidth) {
-        rowTwoDragX.set(rowTwoDragX.get() + rowTwoWidth);
-      }
-    }, 100);
-
-    return () => clearInterval(handleWrap);
   }, [rowOneWidth, rowTwoWidth]);
+
+  const rowOneX = useTransform(
+    [rowOneScrollX, rowOneAutoX, rowOneDragX],
+    ([s, a, d]: number[]) => s + a + d
+  );
+  const rowTwoX = useTransform(
+    [rowTwoScrollX, rowTwoAutoX, rowTwoDragX],
+    ([s, a, d]: number[]) => s + a + d
+  );
 
   return (
     <section
       id="projects"
       ref={sectionRef}
-      className="relative overflow-hidden bg-[#F5F7F6] px-6 py-28 sm:px-10 lg:px-16 dark:bg-ink"
+      className="relative bg-[#F5F7F6] py-28 dark:bg-ink overflow-hidden"
     >
-      <div className="mx-auto max-w-6xl">
+      {/* Header — padded normally */}
+      <div className="px-6 sm:px-10 lg:px-16 mb-14">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6 }}
-          className="mb-14"
         >
           <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
             SELECTED WORK
@@ -369,40 +399,56 @@ function Projects() {
             Things I&rsquo;ve built
           </h2>
         </motion.div>
+      </div>
 
-        <div className="overflow-hidden">
-          <motion.div
-            style={{ x: rowOneX }}
-            className="flex items-end justify-center gap-10 py-12 cursor-grab active:cursor-grabbing"
-            onMouseDown={(e) => {
-              rowOneIsDragging.current = true;
-              rowOneStartX.current = e.clientX;
-              rowOneStartDrag.current = rowOneDragX.get();
-              document.body.style.userSelect = "none";
-            }}
-          >
-            {rowOne.map((project, i) => (
-              <ProjectCard key={`r1-${i}`} project={project} index={i} total={rowOne.length} />
-            ))}
-          </motion.div>
-        </div>
+      {/* Row 1 — full bleed, left scroll */}
+      <div className="w-full overflow-visible">
+        <motion.div
+          style={{ x: rowOneX }}
+          className="flex items-center gap-10 py-6 cursor-grab active:cursor-grabbing will-change-transform"
+          onMouseDown={(e) => {
+            rowOneIsDragging.current = true;
+            rowOneStartX.current = e.clientX;
+            rowOneStartDrag.current = rowOneDragX.get();
+            rowOneAnim.current?.pause();
+            document.body.style.userSelect = "none";
+          }}
+        >
+          {rowOneLoop.map((project, i) => (
+            <ProjectCard
+              key={`r1-${i}`}
+              project={project}
+              index={i % rowOne.length}
+              total={rowOne.length}
+              scrollDir={scrollDir}
+            />
+          ))}
+        </motion.div>
+      </div>
 
-        <div className="overflow-hidden">
-          <motion.div
-            style={{ x: rowTwoX }}
-            className="flex items-end justify-center gap-10 py-12 cursor-grab active:cursor-grabbing"
-            onMouseDown={(e) => {
-              rowTwoIsDragging.current = true;
-              rowTwoStartX.current = e.clientX;
-              rowTwoStartDrag.current = rowTwoDragX.get();
-              document.body.style.userSelect = "none";
-            }}
-          >
-            {rowTwo.map((project, i) => (
-              <ProjectCard key={`r2-${i}`} project={project} index={i} total={rowTwo.length} />
-            ))}
-          </motion.div>
-        </div>
+      {/* Row 2 — full bleed, right scroll */}
+      <div className="w-full overflow-visible">
+        <motion.div
+          style={{ x: rowTwoX }}
+          className="flex items-center gap-10 py-6 cursor-grab active:cursor-grabbing will-change-transform"
+          onMouseDown={(e) => {
+            rowTwoIsDragging.current = true;
+            rowTwoStartX.current = e.clientX;
+            rowTwoStartDrag.current = rowTwoDragX.get();
+            rowTwoAnim.current?.pause();
+            document.body.style.userSelect = "none";
+          }}
+        >
+          {rowTwoLoop.map((project, i) => (
+            <ProjectCard
+              key={`r2-${i}`}
+              project={project}
+              index={i % rowTwo.length}
+              total={rowTwo.length}
+              scrollDir={scrollDir * -1 as 1 | -1}
+            />
+          ))}
+        </motion.div>
       </div>
     </section>
   );

@@ -429,10 +429,12 @@ export default function ProjectCard({
   project,
   index,
   total = 1,
+  scrollDir = 1,
 }: {
   project: Project;
   index: number;
   total?: number;
+  scrollDir?: 1 | -1;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
@@ -443,10 +445,8 @@ export default function ProjectCard({
   const isFocused = focusedId === project.title;
   const isBlurred = focusedId !== null && !isFocused;
 
-  const center = (total - 1) / 2;
-  const offset = index - center;
-  const fanRotate = offset * 5;
-  const fanY = Math.abs(offset) * 12;
+  const fanRotate = scrollDir * -4;
+  const fanY = 0;
 
   const flipY = useMotionValue(0);
   const smoothFlipY = useSpring(flipY, { stiffness: 60, damping: 18, mass: 1.2 });
@@ -504,12 +504,12 @@ export default function ProjectCard({
         )}
 
       <motion.div
-        initial={{ opacity: 0, y: 60 + fanY, rotate: fanRotate }}
-        whileInView={{ opacity: 1, y: fanY, rotate: fanRotate }}
+        initial={{ opacity: 0, y: 60, rotate: fanRotate }}
+        whileInView={{ opacity: 1, y: 0, rotate: fanRotate }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.7, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
         animate={{
-          y: isFocused ? fanY - 60 : fanY,
+          y: isFocused ? -60 : 0,
           rotate: isFocused ? 0 : fanRotate,
           scale: isFocused ? 1.12 : isBlurred ? 0.94 : 1,
           opacity: isBlurred ? 0.5 : 1,
@@ -523,7 +523,7 @@ export default function ProjectCard({
           rotateY: smoothFlipY,
           transformPerspective: 900,
           transformStyle: "preserve-3d",
-          transformOrigin: "bottom center",
+          transformOrigin: "center center",
           cursor: "pointer",
         }}
         data-cursor-hover
