@@ -392,6 +392,54 @@ function Contact() {
   );
 }
 
+// ─── FOOTER ─────────────────────────────────────────────
+function Footer() {
+  const year = new Date().getFullYear();
+
+  return (
+    <footer className="relative border-t border-gray-200 bg-[#F5F7F6] px-6 py-10 sm:px-10 lg:px-16 dark:border-line dark:bg-ink">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
+        <p className="font-mono text-xs text-[#6b7280] dark:text-text-dim">
+          &copy; {year} Ahmad Abdullah. All rights reserved.
+        </p>
+
+        <div className="flex items-center gap-5">
+          
+          <a  href="https://github.com/AAbdullahRajput"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor-hover
+            className="font-mono text-xs text-[#6b7280] underline-offset-4 hover:text-[#0b0e13] hover:underline dark:text-text-dim dark:hover:text-text"
+          >
+            GitHub
+          </a>
+          
+          <a  href="mailto:ahmadabdullah4972@gmail.com"
+            data-cursor-hover
+            className="font-mono text-xs text-[#6b7280] underline-offset-4 hover:text-[#0b0e13] hover:underline dark:text-text-dim dark:hover:text-text"
+          >
+            Email
+          </a>
+          
+          <a  href="#projects"
+            data-cursor-hover
+            className="font-mono text-xs text-[#6b7280] underline-offset-4 hover:text-[#0b0e13] hover:underline dark:text-text-dim dark:hover:text-text"
+          >
+            Work
+          </a>
+          
+          <a  href="#contact"
+            data-cursor-hover
+            className="font-mono text-xs text-[#6b7280] underline-offset-4 hover:text-[#0b0e13] hover:underline dark:text-text-dim dark:hover:text-text"
+          >
+            Contact
+          </a>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 // ─── MAIN EXPORT ────────────────────────────────────────
 export default function PersonalPortfolio() {
   return (
@@ -401,6 +449,7 @@ export default function PersonalPortfolio() {
       <Projects />
       <About />
       <Contact />
+      <Footer />
     </main>
   );
 }
