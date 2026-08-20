@@ -246,17 +246,20 @@ function Projects() {
     offset: ["start end", "end start"],
   });
 
-  // Scroll-linked component: top row slides right as the user scrolls down,
-  // bottom row slides left. Reads straight off scrollYProgress, so scrolling
-  // back up reverses both automatically.
   const rowOneScrollX = useTransform(scrollYProgress, [0, 1], [-120, 260]);
   const rowTwoScrollX = useTransform(scrollYProgress, [0, 1], [120, -260]);
 
-  // Auto-slide component: a gentle continuous drift layered on top, so the
-  // rows are always moving a little even without scrolling — each row
-  // oscillates back and forth in its own direction.
   const rowOneAutoX = useMotionValue(0);
   const rowTwoAutoX = useMotionValue(0);
+  const rowOneDragX = useMotionValue(0);
+  const rowTwoDragX = useMotionValue(0);
+
+  const rowOneIsDragging = useRef(false);
+  const rowTwoIsDragging = useRef(false);
+  const rowOneStartX = useRef(0);
+  const rowTwoStartX = useRef(0);
+  const rowOneStartDrag = useRef(0);
+  const rowTwoStartDrag = useRef(0);
 
   useEffect(() => {
     let c1 = animate(rowOneAutoX, [0, 50, 0], { duration: 7, repeat: Infinity, ease: "easeInOut" });
@@ -265,19 +268,61 @@ function Projects() {
     const pause = () => { c1.pause(); c2.pause(); };
     const resume = () => { c1.play(); c2.play(); };
 
+    const handleMouseDown = (e: MouseEvent, isRowOne: boolean) => {
+      if (isRowOne) {
+        rowOneIsDragging.current = true;
+        rowOneStartX.current = e.clientX;
+        rowOneStartDrag.current = rowOneDragX.get();
+        c1.pause();
+      } else {
+        rowTwoIsDragging.current = true;
+        rowTwoStartX.current = e.clientX;
+        rowTwoStartDrag.current = rowTwoDragX.get();
+        c2.pause();
+      }
+      document.body.style.userSelect = "none";
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (rowOneIsDragging.current) {
+        const delta = e.clientX - rowOneStartX.current;
+        rowOneDragX.set(rowOneStartDrag.current + delta);
+      }
+      if (rowTwoIsDragging.current) {
+        const delta = e.clientX - rowTwoStartX.current;
+        rowTwoDragX.set(rowTwoStartDrag.current + delta);
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (rowOneIsDragging.current) {
+        rowOneIsDragging.current = false;
+        c1.play();
+      }
+      if (rowTwoIsDragging.current) {
+        rowTwoIsDragging.current = false;
+        c2.play();
+      }
+      document.body.style.userSelect = "";
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
     document.addEventListener("portal-open", pause);
     document.addEventListener("portal-close", resume);
 
     return () => {
       c1.stop();
       c2.stop();
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("portal-open", pause);
       document.removeEventListener("portal-close", resume);
     };
   }, []);
 
-  const rowOneX = useTransform([rowOneScrollX, rowOneAutoX], ([s, a]: number[]) => s + a);
-  const rowTwoX = useTransform([rowTwoScrollX, rowTwoAutoX], ([s, a]: number[]) => s + a);
+  const rowOneX = useTransform([rowOneScrollX, rowOneAutoX, rowOneDragX], ([s, a, d]: number[]) => s + a + d);
+  const rowTwoX = useTransform([rowTwoScrollX, rowTwoAutoX, rowTwoDragX], ([s, a, d]: number[]) => s + a + d);
 
   const half = Math.ceil(projects.length / 2);
   const rowOne = projects.slice(0, half);
@@ -305,13 +350,31 @@ function Projects() {
           </h2>
         </motion.div>
 
-        <motion.div style={{ x: rowOneX }} className="flex items-end justify-center gap-10 py-12">
+        <motion.div
+          style={{ x: rowOneX }}
+          className="flex items-end justify-center gap-10 py-12 cursor-grab active:cursor-grabbing"
+          onMouseDown={(e) => {
+            rowOneIsDragging.current = true;
+            rowOneStartX.current = e.clientX;
+            rowOneStartDrag.current = rowOneDragX.get();
+            document.body.style.userSelect = "none";
+          }}
+        >
           {rowOne.map((project, i) => (
             <ProjectCard key={project.title} project={project} index={i} total={rowOne.length} />
           ))}
         </motion.div>
 
-        <motion.div style={{ x: rowTwoX }} className="flex items-end justify-center gap-10 py-12">
+        <motion.div
+          style={{ x: rowTwoX }}
+          className="flex items-end justify-center gap-10 py-12 cursor-grab active:cursor-grabbing"
+          onMouseDown={(e) => {
+            rowTwoIsDragging.current = true;
+            rowTwoStartX.current = e.clientX;
+            rowTwoStartDrag.current = rowTwoDragX.get();
+            document.body.style.userSelect = "none";
+          }}
+        >
           {rowTwo.map((project, i) => (
             <ProjectCard key={project.title} project={project} index={i} total={rowTwo.length} />
           ))}
