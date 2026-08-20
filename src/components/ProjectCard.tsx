@@ -30,6 +30,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
     const originalBodyOverflow = body.style.overflow;
     html.style.overflow = "hidden";
     body.style.overflow = "hidden";
+    document.dispatchEvent(new Event("portal-open"));
 
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onMouseLeave();
@@ -39,6 +40,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
     return () => {
       html.style.overflow = originalHtmlOverflow;
       body.style.overflow = originalBodyOverflow;
+      document.dispatchEvent(new Event("portal-close"));
       window.removeEventListener("keydown", handleEsc);
     };
   }, [onMouseLeave]);
@@ -49,7 +51,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-6"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-6"
       onClick={onMouseLeave}
       onWheel={(e) => e.preventDefault()}
       onTouchMove={(e) => e.preventDefault()}
@@ -98,6 +100,8 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
                     <img
                       src={project.images[activeImg]}
                       alt={project.title}
+                      loading="eager"
+                      decoding="async"
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -128,7 +132,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
                       activeImg === i ? "border-[#8a0303]" : "border-transparent opacity-50 hover:opacity-90"
                     }`}
                   >
-                    <img src={img} alt="" className="h-full w-full object-cover" />
+                    <img src={img} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -282,7 +286,6 @@ export default function ProjectCard({
 
   function handleMouseEnter() {
     setFocusedId(project.title);
-    setHovered(true);
     flipY.set(360);
   }
 
@@ -297,7 +300,6 @@ export default function ProjectCard({
     x.set(0);
     y.set(0);
     setFocusedId(null);
-    setHovered(false);
     flipY.set(0);
   }
 
@@ -324,7 +326,7 @@ export default function ProjectCard({
           y: isFocused ? fanY - 60 : fanY,
           rotate: isFocused ? 0 : fanRotate,
           scale: isFocused ? 1.12 : isBlurred ? 0.94 : 1,
-          filter: isBlurred ? "blur(3px) brightness(0.6)" : "blur(0px) brightness(1)",
+          opacity: isBlurred ? 0.5 : 1,
           zIndex: isFocused ? 50 : 1,
           transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
         }}
@@ -339,6 +341,7 @@ export default function ProjectCard({
           cursor: "pointer",
         }}
         data-cursor-hover
+        onClick={() => setHovered(true)}
         className="group relative w-72"
       >
         <div className="pointer-events-none absolute -inset-px rounded-[22px] bg-gradient-to-b from-red-600/50 via-red-900/10 to-transparent opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
@@ -362,7 +365,7 @@ export default function ProjectCard({
 
           {project.thumbnail && (
             <div className="mb-4 -mx-6 -mt-6 h-36 overflow-hidden shrink-0">
-              <img src={project.thumbnail} alt={project.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <img src={project.thumbnail} alt={project.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
             </div>
           )}
 
@@ -409,7 +412,7 @@ export default function ProjectCard({
               )}
             </div>
             <span className="text-[10px] text-gray-300 dark:text-white/20 group-hover:text-[#8a0303]/50 transition-colors">
-              hover to preview →
+              click to view →
             </span>
           </div>
         </div>

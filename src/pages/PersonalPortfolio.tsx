@@ -257,19 +257,20 @@ function Projects() {
   const rowTwoAutoX = useMotionValue(0);
 
   useEffect(() => {
-    const c1 = animate(rowOneAutoX, [0, 50, 0], {
-      duration: 7,
-      repeat: Infinity,
-      ease: "easeInOut",
-    });
-    const c2 = animate(rowTwoAutoX, [0, -50, 0], {
-      duration: 7,
-      repeat: Infinity,
-      ease: "easeInOut",
-    });
+    let c1 = animate(rowOneAutoX, [0, 50, 0], { duration: 7, repeat: Infinity, ease: "easeInOut" });
+    let c2 = animate(rowTwoAutoX, [0, -50, 0], { duration: 7, repeat: Infinity, ease: "easeInOut" });
+
+    const pause = () => { c1.pause(); c2.pause(); };
+    const resume = () => { c1.play(); c2.play(); };
+
+    document.addEventListener("portal-open", pause);
+    document.addEventListener("portal-close", resume);
+
     return () => {
       c1.stop();
       c2.stop();
+      document.removeEventListener("portal-open", pause);
+      document.removeEventListener("portal-close", resume);
     };
   }, []);
 
