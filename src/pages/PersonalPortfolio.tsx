@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
 import Navbar from "@/components/Navbar";
@@ -33,6 +33,7 @@ const fadeUp = {
 // ─── HERO ───────────────────────────────────────────────
 function Hero() {
   const heroImgRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const [revealing, setRevealing] = useState(false);
   const [spotPos, setSpotPos] = useState({ x: 50, y: 8 });
 
@@ -45,9 +46,32 @@ function Hero() {
     setRevealing(true);
   };
 
+  // 3D tilt for the hero image stack, driven by cursor position
+  const tiltX = useMotionValue(0);
+  const tiltY = useMotionValue(0);
+  const rotateX = useSpring(useTransform(tiltY, [-0.5, 0.5], [8, -8]), { stiffness: 100, damping: 20 });
+  const rotateY = useSpring(useTransform(tiltX, [-0.5, 0.5], [-8, 8]), { stiffness: 100, damping: 20 });
+
+  const handleSectionMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = sectionRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    tiltX.set((e.clientX - rect.left) / rect.width - 0.5);
+    tiltY.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+
+  const handleSectionMouseLeave = () => {
+    tiltX.set(0);
+    tiltY.set(0);
+  };
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-[#F5F7F6] dark:bg-ink">
+    <section
+      ref={sectionRef}
+      onMouseMove={handleSectionMouseMove}
+      onMouseLeave={handleSectionMouseLeave}
+      className="relative min-h-screen w-full overflow-hidden bg-[#F5F7F6] dark:bg-ink"
+      style={{ perspective: 1400 }}
+    >
             {/* Spiderman image layer */}
       <div
         ref={heroImgRef}
