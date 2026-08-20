@@ -246,7 +246,17 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
                   className="absolute inset-0"
                 >
                   {project.images?.[activeImg] ? (
-                    <ZoomableImage src={project.images[activeImg]} alt={project.title} />
+                    project.images[activeImg].endsWith(".mp4") ? (
+                      <video
+                        src={project.images[activeImg]}
+                        controls
+                        autoPlay
+                        loop
+                        className="h-full w-full object-contain bg-black"
+                      />
+                    ) : (
+                      <ZoomableImage src={project.images[activeImg]} alt={project.title} />
+                    )
                   ) : (
                     <div className="flex h-full w-full items-center justify-center">
                       <svg className="h-20 w-20 text-[#8a0303]/15" viewBox="0 0 100 100" fill="none">
@@ -276,7 +286,24 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
                       activeImg === i ? "border-[#8a0303]" : "border-transparent opacity-50 hover:opacity-90"
                     }`}
                   >
-                    <img src={img} alt="" loading="lazy" decoding="async" className="h-full w-full object-contain bg-gray-100 dark:bg-white/5" />
+                    {img.endsWith(".mp4") ? (
+                      <div className="relative h-full w-full bg-black">
+                        <video
+                          src={img + "#t=0.5"}
+                          preload="metadata"
+                          muted
+                          playsInline
+                          className="h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                          <svg className="h-8 w-8 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z"/>
+                          </svg>
+                        </div>
+                      </div>
+                    ) : (
+                      <img src={img} alt="" loading="lazy" decoding="async" className="h-full w-full object-contain bg-gray-100 dark:bg-white/5" />
+                    )}
                   </button>
                 ))}
               </div>

@@ -124,6 +124,32 @@ export const projects: Project[] = [
     year: "2025",
   },
   {
+    title: "The Royal Restaurant",
+    shortDesc: "Luxury restaurant website with menu, specials, and MongoDB user database.",
+    description:
+      "Modern responsive restaurant website built with React.js — hero banner, menu display, special dishes, about and contact sections, backed by MongoDB.",
+    longDescription:
+      "The Royal Restaurant Website is a React.js project presenting a luxury restaurant brand online. Built with reusable component-based architecture, it includes a hero section with an attractive banner, About Us, full Menu display, Special Dishes highlight, and Contact section. The project is fully responsive across all devices and connects to a MongoDB database for user data. Built with React.js, JavaScript ES6+, CSS3, and Vite as the build tool.",
+    tags: ["React.js", "JavaScript", "CSS3", "MongoDB", "Vite"],
+    techStack: [
+      { category: "Frontend", tools: ["React.js", "JavaScript", "CSS3", "HTML5"] },
+      { category: "Build", tools: ["Vite", "npm"] },
+      { category: "Database", tools: ["MongoDB"] },
+    ],
+    github: "https://github.com/AAbdullahRajput/-The-Royal-Restaurant-Website-Using-React-",
+    images: [
+      "https://raw.githubusercontent.com/AAbdullahRajput/-The-Royal-Restaurant-Website-Using-React-/main/The%20Royal%20Website%20Videos/ChatGPT%20Image%20Feb%2024%2C%202026%2C%2010_55_24%20AM.png",
+      "https://raw.githubusercontent.com/AAbdullahRajput/-The-Royal-Restaurant-Website-Using-React-/main/The%20Royal%20Website%20Videos/Screenshot%20(1088).png",
+      "https://raw.githubusercontent.com/AAbdullahRajput/-The-Royal-Restaurant-Website-Using-React-/main/The%20Royal%20Website%20Videos/The%20Royals%20Video%201.mp4",
+      "https://raw.githubusercontent.com/AAbdullahRajput/-The-Royal-Restaurant-Website-Using-React-/main/The%20Royal%20Website%20Videos/The%20Royals%20Video%202%20Teams.mp4",
+      "https://raw.githubusercontent.com/AAbdullahRajput/-The-Royal-Restaurant-Website-Using-React-/main/The%20Royal%20Website%20Videos/The%20Royals%20Video%203%20About%20us.mp4",
+      "https://raw.githubusercontent.com/AAbdullahRajput/-The-Royal-Restaurant-Website-Using-React-/main/The%20Royal%20Website%20Videos/The%20Royals%20Video%204%20Profile%20%26%20Logout.mp4",
+    ],
+    thumbnail: "https://raw.githubusercontent.com/AAbdullahRajput/-The-Royal-Restaurant-Website-Using-React-/main/The%20Royal%20Website%20Videos/ChatGPT%20Image%20Feb%2024%2C%202026%2C%2010_55_24%20AM.png",
+    status: "Completed",
+    year: "2025",
+  },
+  {
     title: "E-Commerce Fullstack",
     shortDesc: "Full-stack store with JWT auth, cart, admin panel — deployed on Vercel & Railway.",
     description:
