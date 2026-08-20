@@ -108,7 +108,7 @@ function ZoomableImage({ src, alt }: { src: string; alt: string }) {
       />
 
       {/* zoom controls */}
-      <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5">
+      <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5" data-cursor-hover>
         {scale > 1 && (
           <button
             onClick={resetZoom}
@@ -138,42 +138,29 @@ function ZoomableImage({ src, alt }: { src: string; alt: string }) {
         </div>
       </div>
 
-      {/* directional pad — only useful once zoomed in */}
+      {/* directional pad — only useful once zoomed in — full 8-way */}
       {scale > 1 && (
-        <div className="absolute bottom-3 left-3 z-10 grid grid-cols-3 grid-rows-3 gap-0.5">
-          <div />
-          <button
-            onClick={(e) => { e.stopPropagation(); panBy(0, PAN_STEP); }}
-            aria-label="Pan up"
-            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60"
-          >
-            ↑
-          </button>
-          <div />
-          <button
-            onClick={(e) => { e.stopPropagation(); panBy(PAN_STEP, 0); }}
-            aria-label="Pan left"
-            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60"
-          >
-            ←
-          </button>
-          <div />
-          <button
-            onClick={(e) => { e.stopPropagation(); panBy(-PAN_STEP, 0); }}
-            aria-label="Pan right"
-            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60"
-          >
-            →
-          </button>
-          <div />
-          <button
-            onClick={(e) => { e.stopPropagation(); panBy(0, -PAN_STEP); }}
-            aria-label="Pan down"
-            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60"
-          >
-            ↓
-          </button>
-          <div />
+        <div className="absolute bottom-3 left-3 z-10 grid grid-cols-3 grid-rows-3 gap-0.5" data-cursor-hover>
+          <button onClick={(e) => { e.stopPropagation(); panBy(PAN_STEP, PAN_STEP); }} aria-label="Pan up-left"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60">↖</button>
+          <button onClick={(e) => { e.stopPropagation(); panBy(0, PAN_STEP); }} aria-label="Pan up"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60">↑</button>
+          <button onClick={(e) => { e.stopPropagation(); panBy(-PAN_STEP, PAN_STEP); }} aria-label="Pan up-right"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60">↗</button>
+
+          <button onClick={(e) => { e.stopPropagation(); panBy(PAN_STEP, 0); }} aria-label="Pan left"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60">←</button>
+          <button onClick={resetZoom} aria-label="Center"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-400 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/30">•</button>
+          <button onClick={(e) => { e.stopPropagation(); panBy(-PAN_STEP, 0); }} aria-label="Pan right"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60">→</button>
+
+          <button onClick={(e) => { e.stopPropagation(); panBy(PAN_STEP, -PAN_STEP); }} aria-label="Pan down-left"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60">↙</button>
+          <button onClick={(e) => { e.stopPropagation(); panBy(0, -PAN_STEP); }} aria-label="Pan down"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60">↓</button>
+          <button onClick={(e) => { e.stopPropagation(); panBy(-PAN_STEP, -PAN_STEP); }} aria-label="Pan down-right"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60">↘</button>
         </div>
       )}
     </div>
@@ -231,6 +218,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
         {/* close button */}
         <button
           onClick={onMouseLeave}
+          data-cursor-hover
           className="absolute top-6 right-6 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:bg-white/5 dark:text-white/60"
           aria-label="Close"
         >
@@ -283,6 +271,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
               <div className="grid grid-cols-3 gap-2">
                 {project.images.map((img, i) => (
                   <button key={i} onClick={() => setActiveImg(i)}
+                    data-cursor-hover
                     className={`relative aspect-video overflow-hidden rounded-[10px] border-2 transition-all ${
                       activeImg === i ? "border-[#8a0303]" : "border-transparent opacity-50 hover:opacity-90"
                     }`}
@@ -368,6 +357,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
             <div className="flex flex-wrap gap-2 pt-6 border-t border-gray-100 dark:border-white/5">
               {project.github && (
                 <a href={project.github} target="_blank" rel="noopener noreferrer"
+                  data-cursor-hover
                   className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 font-mono text-xs text-gray-600 transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:bg-white/5 dark:text-white/50 dark:hover:text-red-300"
                 >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
@@ -378,6 +368,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
               )}
               {project.live && (
                 <a href={project.live} target="_blank" rel="noopener noreferrer"
+                  data-cursor-hover
                   className="flex items-center gap-2 rounded-lg border border-[#8a0303]/30 bg-[#8a0303]/5 px-4 py-2 font-mono text-xs text-[#8a0303] transition-colors hover:bg-[#8a0303]/10 dark:text-red-300"
                 >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -389,6 +380,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
               )}
               {project.apk && (
                 <a href={project.apk} target="_blank" rel="noopener noreferrer"
+                  data-cursor-hover
                   className="flex items-center gap-2 rounded-lg border border-green-400/30 bg-green-50 px-4 py-2 font-mono text-xs text-green-600 transition-colors hover:bg-green-100 dark:bg-green-500/10 dark:text-green-300 dark:border-green-500/20"
                 >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -531,8 +523,8 @@ export default function ProjectCard({
           <motion.div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: glow as any }} />
 
           {project.thumbnail && (
-            <div className="mb-4 -mx-6 -mt-6 h-36 overflow-hidden shrink-0">
-              <img src={project.thumbnail} alt={project.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <div className="mb-4 -mx-6 -mt-6 h-44 overflow-hidden shrink-0">
+              <img src={project.thumbnail} alt={project.title} loading="lazy" decoding="async" className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105" />
             </div>
           )}
 
@@ -549,7 +541,7 @@ export default function ProjectCard({
             )}
           </div>
 
-          <p className="relative mb-4 flex-1 font-mono text-xs leading-relaxed text-gray-500 line-clamp-3 dark:text-white/50">
+          <p className="relative mb-4 flex-1 font-mono text-xs leading-relaxed text-gray-500 line-clamp-4 dark:text-white/50">
             {project.shortDesc || project.description}
           </p>
 

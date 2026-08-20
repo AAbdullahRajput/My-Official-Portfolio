@@ -82,6 +82,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
         animate={splashDone ? { y: [-500, 30, -15, 5, 0], opacity: 1, rotate: [-10, 4, -2, 1, 0] } : { y: -500, opacity: 0, rotate: -10 }}
         transition={{ duration: 1.4, times: [0, 0.55, 0.75, 0.9, 1], ease: "easeIn", delay: 0.1 }}
         className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block"
+        data-cursor-surface="dark"
         style={{ zIndex: 5, rotateX, rotateY, transformStyle: "preserve-3d" }}
       >
         <img
@@ -128,11 +129,12 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
 
       {/* Eye hover zone — above everything */}
       <div
-        className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block"
+        className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block pointer-events-none"
         style={{ zIndex: 20 }}
       >
         <div
-          className="absolute"
+          className="absolute pointer-events-auto"
+          data-cursor-surface="dark"
           onMouseEnter={() => setRevealing(true)}
           onMouseLeave={() => setRevealing(false)}
           style={{
@@ -165,7 +167,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             initial="hidden"
             animate={splashDone ? "show" : "hidden"}
             custom={1}
-            className="font-serif text-4xl font-bold tracking-tight leading-[1.05] text-[#0b0e13] dark:text-text sm:text-5xl lg:text-6xl"
+            className="font-display text-4xl font-bold tracking-tight leading-[1.05] text-[#0b0e13] dark:text-text sm:text-5xl lg:text-6xl"
           >
             Ahmad Abdullah
           </motion.h1>
@@ -175,7 +177,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             initial="hidden"
             animate={splashDone ? "show" : "hidden"}
             custom={2}
-            className="font-sans mt-4 text-lg font-normal tracking-wide leading-snug text-[#374151] dark:text-text-muted sm:text-xl"
+            className="font-body mt-4 text-lg font-normal tracking-wide leading-snug text-[#374151] dark:text-text-muted sm:text-xl"
           >
             Full-stack engineer building connected mobile and web systems.
           </motion.p>
@@ -200,7 +202,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             
             <a  href="#projects"
               data-cursor-hover
-              className="rounded-lg bg-[#0b0e13] px-6 py-3 text-sm font-medium text-white transition-transform hover:scale-105 dark:bg-white dark:text-ink"
+              className="rounded-lg bg-[#0b0e13] px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:scale-105 hover:bg-[#8a0303] hover:shadow-lg hover:shadow-[#8a0303]/30 dark:bg-white dark:text-ink dark:hover:bg-accent-red dark:hover:text-white"
             >
               View work
             </a>
@@ -208,7 +210,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             
             <a  href="#contact"
               data-cursor-hover
-              className="rounded-lg border border-[#d1d5db] px-6 py-3 text-sm font-medium text-[#0b0e13] transition-colors hover:bg-gray-50 dark:border-line dark:text-text dark:hover:bg-panel"
+              className="rounded-lg border border-[#d1d5db] px-6 py-3 text-sm font-medium text-[#0b0e13] transition-all duration-200 hover:scale-105 hover:border-[#8a0303] hover:text-[#8a0303] hover:bg-gray-50 dark:border-line dark:text-text dark:hover:border-accent-red dark:hover:text-accent-red dark:hover:bg-panel"
             >
               Get in touch
             </a>

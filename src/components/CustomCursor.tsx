@@ -140,6 +140,41 @@ const CursorWebCapture = ({
   );
 };
 
+// ─── SURFACE DETECTION ────────────────────────────────────
+// Walks up from the hovered element to find the nearest element with a
+// non-transparent background color, then decides if it reads as "dark"
+// (spider should render white) or "light" (spider should render red).
+function parseRGB(str: string): [number, number, number] | null {
+  const m = str.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if (!m) return null;
+  return [Number(m[1]), Number(m[2]), Number(m[3])];
+}
+
+function luminance([r, g, b]: [number, number, number]) {
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function isOverDarkSurface(el: Element | null): boolean {
+  let node: Element | null = el;
+  let hops = 0;
+  while (node && hops < 12) {
+    const bg = getComputedStyle(node).backgroundColor;
+    const rgb = parseRGB(bg);
+    if (rgb && !(rgb[0] === 0 && rgb[1] === 0 && rgb[2] === 0 && bg.includes("rgba") && bg.endsWith(", 0)"))) {
+      // treat fully transparent (alpha 0) backgrounds as "keep looking up"
+      if (bg === "rgba(0, 0, 0, 0)" || bg === "transparent") {
+        node = node.parentElement;
+        hops++;
+        continue;
+      }
+      return luminance(rgb) < 110;
+    }
+    node = node.parentElement;
+    hops++;
+  }
+  return false;
+}
+
 export default function CustomCursor() {
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
@@ -147,6 +182,8 @@ export default function CustomCursor() {
   const spiderRotate = useTransform(cursorAngle, (a) => a + 90);
   const lastMouseRef = useRef({ x: 0, y: 0 });
   const [visible, setVisible] = useState(false);
+  const [isHoveringTarget, setIsHoveringTarget] = useState(false);
+  const [overDark, setOverDark] = useState(false);
   type WebCapture = { id: number; originX: number; originY: number; targetX: number; targetY: number };
   const [webCaptures, setWebCaptures] = useState<WebCapture[]>([]);
 
@@ -154,8 +191,8 @@ export default function CustomCursor() {
     const handleMouseMove = (e: MouseEvent) => {
       const nx = e.clientX;
       const ny = e.clientY;
-      cursorX.set(nx - 15);
-      cursorY.set(ny - 15);
+      cursorX.set(nx - 25);
+      cursorY.set(ny - 25);
 
       const dx = nx - lastMouseRef.current.x;
       const dy = ny - lastMouseRef.current.y;
@@ -164,6 +201,13 @@ export default function CustomCursor() {
         lastMouseRef.current = { x: nx, y: ny };
       }
       if (!visible) setVisible(true);
+
+      const el = document.elementFromPoint(nx, ny);
+      const isTarget = !!el?.closest("[data-cursor-hover]");
+      setIsHoveringTarget((prev) => (prev !== isTarget ? isTarget : prev));
+
+      const dark = isOverDarkSurface(el);
+      setOverDark((prev) => (prev !== dark ? dark : prev));
     };
 
     const handleMouseLeave = () => setVisible(false);
@@ -209,17 +253,24 @@ export default function CustomCursor() {
         />
       ))}
       <motion.div
-        className="pointer-events-none fixed z-[10000]"
+        className="pointer-events-none fixed"
         style={{
           left: 0,
           top: 0,
           x: cursorX,
           y: cursorY,
           opacity: visible ? 1 : 0,
+          zIndex: 2147483647,
         }}
+        animate={{ scale: isHoveringTarget ? 0.55 : 1 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
       >
-        <motion.div style={{ rotate: spiderRotate }}>
-          <AnimatedSpider size={50} color="#8a0303" legWidth={3} />
+        <motion.div
+          style={{ rotate: spiderRotate }}
+          animate={{ opacity: isHoveringTarget ? 0.85 : 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <AnimatedSpider size={50} color={overDark ? "#ffffff" : "#8a0303"} legWidth={3} />
         </motion.div>
       </motion.div>
     </>
