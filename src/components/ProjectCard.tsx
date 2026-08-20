@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, createContext, useContext } from "react";
+import { useRef, useState, useEffect, useCallback, createContext, useContext } from "react";
 import { createPortal } from "react-dom";
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import type { Project } from "@/data/projects";
@@ -16,6 +16,100 @@ export function ProjectCardGrid({ children }: { children: React.ReactNode }) {
     <FocusCtx.Provider value={{ focusedId, setFocusedId }}>
       <div className="relative">{children}</div>
     </FocusCtx.Provider>
+  );
+}
+
+// ─── ZOOMABLE IMAGE ──────────────────────────────────────
+function ZoomableImage({ src, alt }: { src: string; alt: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const dragging = useRef(false);
+  const lastPoint = useRef({ x: 0, y: 0 });
+
+  const clampScale = (s: number) => Math.min(5, Math.max(1, s));
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    // Trackpad pinch gestures arrive as wheel events with ctrlKey true.
+    // Plain two-finger scroll (no ctrlKey) is treated as pan/zoom too so
+    // scrolling never escapes to the page behind it.
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.ctrlKey) {
+      setScale((s) => clampScale(s - e.deltaY * 0.015));
+    } else {
+      setScale((s) => clampScale(s - e.deltaY * 0.01));
+    }
+  }, []);
+
+  function handleMouseDown(e: React.MouseEvent) {
+    if (scale <= 1) return;
+    dragging.current = true;
+    lastPoint.current = { x: e.clientX, y: e.clientY };
+  }
+
+  function handleMouseMove(e: React.MouseEvent) {
+    if (!dragging.current) return;
+    const dx = e.clientX - lastPoint.current.x;
+    const dy = e.clientY - lastPoint.current.y;
+    lastPoint.current = { x: e.clientX, y: e.clientY };
+    setPos((p) => ({ x: p.x + dx, y: p.y + dy }));
+  }
+
+  function stopDrag() {
+    dragging.current = false;
+  }
+
+  function resetZoom(e: React.MouseEvent) {
+    e.stopPropagation();
+    setScale(1);
+    setPos({ x: 0, y: 0 });
+  }
+
+  // Reset pan when zoomed all the way back out
+  useEffect(() => {
+    if (scale === 1) setPos({ x: 0, y: 0 });
+  }, [scale]);
+
+  return (
+    <div
+      ref={containerRef}
+      onWheel={handleWheel}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={stopDrag}
+      onMouseLeave={stopDrag}
+      className="relative h-full w-full overflow-hidden touch-none select-none"
+      style={{ cursor: scale > 1 ? (dragging.current ? "grabbing" : "grab") : "default" }}
+    >
+      <img
+        src={src}
+        alt={alt}
+        loading="eager"
+        decoding="async"
+        draggable={false}
+        className="h-full w-full object-contain bg-gray-100 dark:bg-white/5"
+        style={{
+          transform: `translate(${pos.x}px, ${pos.y}px) scale(${scale})`,
+          transition: dragging.current ? "none" : "transform 0.15s ease-out",
+          transformOrigin: "center center",
+        }}
+      />
+
+      {scale > 1 && (
+        <button
+          onClick={resetZoom}
+          className="absolute bottom-3 right-3 z-10 rounded-full border border-gray-200 bg-white/90 px-3 py-1.5 font-mono text-[10px] text-gray-600 shadow-md backdrop-blur-sm transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:bg-black/70 dark:text-white/60"
+        >
+          Reset zoom
+        </button>
+      )}
+
+      <div className="pointer-events-none absolute bottom-3 left-3 rounded-full border border-gray-200 bg-white/80 px-2.5 py-1 font-mono text-[9px] text-gray-400 backdrop-blur-sm dark:border-white/10 dark:bg-black/60 dark:text-white/30">
+        {Math.round(scale * 100)}%
+      </div>
+    </div>
   );
 }
 
@@ -57,15 +151,15 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
       onTouchMove={(e) => e.preventDefault()}
     >
       <motion.div
-        initial={{ opacity: 0, y: 24, scale: 0.97 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 24, scale: 0.97 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0, scale: 0.2, rotateY: -360 }}
+        animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+        exit={{ opacity: 0, scale: 0.2, rotateY: 360 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         onClick={(e) => e.stopPropagation()}
         onWheel={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
         className="relative w-[60vw] h-[85vh] max-w-5xl overflow-y-auto overscroll-contain rounded-[24px] border border-gray-200 bg-white px-8 py-12 shadow-2xl dark:border-white/10 dark:bg-[#0a0a0d]"
-        style={{ overscrollBehavior: "contain" }}
+        style={{ overscrollBehavior: "contain", transformPerspective: 1600, transformStyle: "preserve-3d" }}
       >
         {/* close button */}
         <button
@@ -97,13 +191,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
                   className="absolute inset-0"
                 >
                   {project.images?.[activeImg] ? (
-                    <img
-                      src={project.images[activeImg]}
-                      alt={project.title}
-                      loading="eager"
-                      decoding="async"
-                      className="h-full w-full object-cover"
-                    />
+                    <ZoomableImage src={project.images[activeImg]} alt={project.title} />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center">
                       <svg className="h-20 w-20 text-[#8a0303]/15" viewBox="0 0 100 100" fill="none">
@@ -132,7 +220,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
                       activeImg === i ? "border-[#8a0303]" : "border-transparent opacity-50 hover:opacity-90"
                     }`}
                   >
-                    <img src={img} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                    <img src={img} alt="" loading="lazy" decoding="async" className="h-full w-full object-contain bg-gray-100 dark:bg-white/5" />
                   </button>
                 ))}
               </div>
@@ -303,6 +391,18 @@ export default function ProjectCard({
     flipY.set(0);
   }
 
+  function handleOpen() {
+    setFocusedId(project.title);
+    flipY.set(360);
+    setHovered(true);
+  }
+
+  function handleClose() {
+    flipY.set(0);
+    setFocusedId(null);
+    setHovered(false);
+  }
+
   return (
     <div
       className="relative shrink-0"
@@ -312,7 +412,7 @@ export default function ProjectCard({
       {typeof document !== "undefined" &&
         createPortal(
           <AnimatePresence>
-            {hovered && <ProjectOverlay project={project} onMouseLeave={() => setHovered(false)} />}
+            {hovered && <ProjectOverlay project={project} onMouseLeave={handleClose} />}
           </AnimatePresence>,
           document.body
         )}
@@ -341,7 +441,7 @@ export default function ProjectCard({
           cursor: "pointer",
         }}
         data-cursor-hover
-        onClick={() => setHovered(true)}
+        onClick={handleOpen}
         className="group relative w-72"
       >
         <div className="pointer-events-none absolute -inset-px rounded-[22px] bg-gradient-to-b from-red-600/50 via-red-900/10 to-transparent opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
