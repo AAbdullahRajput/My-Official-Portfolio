@@ -34,7 +34,7 @@ const fadeUp = {
 };
 
 // ─── HERO ───────────────────────────────────────────────
-function Hero() {
+function Hero({ splashDone = false }: { splashDone?: boolean }) {
   const heroImgRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const [revealing, setRevealing] = useState(false);
@@ -79,7 +79,7 @@ function Hero() {
             <motion.div
         ref={heroImgRef}
         initial={{ y: -500, opacity: 0, rotate: -10 }}
-        animate={{ y: [-500, 30, -15, 5, 0], opacity: 1, rotate: [-10, 4, -2, 1, 0] }}
+        animate={splashDone ? { y: [-500, 30, -15, 5, 0], opacity: 1, rotate: [-10, 4, -2, 1, 0] } : { y: -500, opacity: 0, rotate: -10 }}
         transition={{ duration: 1.4, times: [0, 0.55, 0.75, 0.9, 1], ease: "easeIn", delay: 0.1 }}
         className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block"
         style={{ zIndex: 5, rotateX, rotateY, transformStyle: "preserve-3d" }}
@@ -149,7 +149,7 @@ function Hero() {
           <motion.div
             variants={fadeUp}
             initial="hidden"
-            animate="show"
+            animate={splashDone ? "show" : "hidden"}
             custom={0}
             className="mb-5 flex items-center gap-2 font-mono text-xs text-[#8a0303] dark:text-accent-red"
           >
@@ -163,7 +163,7 @@ function Hero() {
           <motion.h1
             variants={fadeUp}
             initial="hidden"
-            animate="show"
+            animate={splashDone ? "show" : "hidden"}
             custom={1}
             className="font-serif text-4xl font-bold tracking-tight leading-[1.05] text-[#0b0e13] dark:text-text sm:text-5xl lg:text-6xl"
           >
@@ -173,7 +173,7 @@ function Hero() {
           <motion.p
             variants={fadeUp}
             initial="hidden"
-            animate="show"
+            animate={splashDone ? "show" : "hidden"}
             custom={2}
             className="font-sans mt-4 text-lg font-normal tracking-wide leading-snug text-[#374151] dark:text-text-muted sm:text-xl"
           >
@@ -183,7 +183,7 @@ function Hero() {
           <motion.p
             variants={fadeUp}
             initial="hidden"
-            animate="show"
+            animate={splashDone ? "show" : "hidden"}
             custom={3}
             className="mt-5 max-w-md text-sm leading-relaxed text-[#6b7280] dark:text-text-dim sm:text-base"
           >
@@ -193,7 +193,7 @@ function Hero() {
           <motion.div
             variants={fadeUp}
             initial="hidden"
-            animate="show"
+            animate={splashDone ? "show" : "hidden"}
             custom={4}
             className="mt-8 flex flex-wrap gap-3"
           >
@@ -217,7 +217,7 @@ function Hero() {
           <motion.div
             variants={fadeUp}
             initial="hidden"
-            animate="show"
+            animate={splashDone ? "show" : "hidden"}
             custom={5}
             className="mt-10 flex flex-wrap gap-2"
           >
@@ -525,10 +525,18 @@ function Footer() {
 
 // ─── MAIN EXPORT ────────────────────────────────────────
 export default function PersonalPortfolio() {
+  const [splashDone, setSplashDone] = useState(false);
+
+  useEffect(() => {
+    // Match this to however long your splash screen runs (ms)
+    const t = setTimeout(() => setSplashDone(true), 2800);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <main>
       <Navbar />
-      <Hero />
+      <Hero splashDone={splashDone} />
       <Projects />
       <About />
       <Contact />
