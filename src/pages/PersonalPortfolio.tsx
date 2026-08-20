@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
 import Navbar from "@/components/Navbar";
@@ -116,9 +116,9 @@ function Hero() {
           src="/images/Main-Me.jpg"
           alt="Ahmad"
           className="h-full w-full object-cover object-top"
-          style={{ objectPosition: "50% 8%" }}
+                    style={{ objectPosition: "50% 8%" }}
         />
-      </div>
+      </motion.div>
 
       {/* Eye hover zone — above everything */}
       <div
@@ -232,10 +232,27 @@ function Hero() {
 
 // ─── PROJECTS ───────────────────────────────────────────
 function Projects() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Top row slides right as the user scrolls down; bottom row slides left.
+  // Both read straight off scrollYProgress, so scrolling back up reverses
+  // both automatically.
+  const rowOneX = useTransform(scrollYProgress, [0, 1], [-120, 260]);
+  const rowTwoX = useTransform(scrollYProgress, [0, 1], [120, -260]);
+
+  const half = Math.ceil(projects.length / 2);
+  const rowOne = projects.slice(0, half);
+  const rowTwo = projects.slice(half);
+
   return (
-        <section
+    <section
       id="projects"
-      className="relative bg-[#F5F7F6] px-6 py-28 sm:px-10 lg:px-16 dark:bg-ink"
+      ref={sectionRef}
+      className="relative overflow-hidden bg-[#F5F7F6] px-6 py-28 sm:px-10 lg:px-16 dark:bg-ink"
     >
       <div className="mx-auto max-w-6xl">
         <motion.div
@@ -253,11 +270,17 @@ function Projects() {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {projects.map((project, i) => (
-            <ProjectCard key={project.title} project={project} index={i} />
+        <motion.div style={{ x: rowOneX }} className="flex items-end justify-center py-8">
+          {rowOne.map((project, i) => (
+            <ProjectCard key={project.title} project={project} index={i} total={rowOne.length} />
           ))}
-        </div>
+        </motion.div>
+
+        <motion.div style={{ x: rowTwoX }} className="flex items-end justify-center py-8">
+          {rowTwo.map((project, i) => (
+            <ProjectCard key={project.title} project={project} index={i} total={rowTwo.length} />
+          ))}
+        </motion.div>
       </div>
     </section>
   );
