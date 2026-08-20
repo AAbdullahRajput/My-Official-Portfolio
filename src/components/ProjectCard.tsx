@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import type { Project } from "@/data/projects";
 
@@ -22,6 +22,10 @@ export default function ProjectCard({
   const fanRotate = offset * 5; // base fan angle
   const fanY = Math.abs(offset) * 12; // arc lift toward the edges
 
+  const [flipped, setFlipped] = useState(false);
+  const flipY = useMotionValue(0);
+  const smoothFlipY = useSpring(flipY, { stiffness: 60, damping: 18, mass: 1.2 });
+
   const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [6, -6]), { stiffness: 200, damping: 20 });
   const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-6, 6]), { stiffness: 200, damping: 20 });
 
@@ -30,6 +34,11 @@ export default function ProjectCard({
     ([xv, yv]: number[]) =>
       `radial-gradient(circle at ${(xv + 0.5) * 100}% ${(yv + 0.5) * 100}%, rgba(220,38,38,0.22), transparent 55%)`
   );
+
+  function handleMouseEnter() {
+    setFlipped(true);
+    flipY.set(360);
+  }
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const rect = ref.current?.getBoundingClientRect();
@@ -41,6 +50,8 @@ export default function ProjectCard({
   function handleMouseLeave() {
     x.set(0);
     y.set(0);
+    setFlipped(false);
+    flipY.set(0);
   }
 
   return (
@@ -57,11 +68,12 @@ export default function ProjectCard({
         transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
       }}
       ref={ref}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
         rotateX,
-        rotateY,
+        rotateY: smoothFlipY,
         transformPerspective: 900,
         transformStyle: "preserve-3d",
         transformOrigin: "bottom center",

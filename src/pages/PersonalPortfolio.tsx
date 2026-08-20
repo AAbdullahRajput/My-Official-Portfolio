@@ -524,15 +524,7 @@ function Footer() {
 }
 
 // ─── MAIN EXPORT ────────────────────────────────────────
-export default function PersonalPortfolio() {
-  const [splashDone, setSplashDone] = useState(false);
-
-  useEffect(() => {
-    // Match this to however long your splash screen runs (ms)
-    const t = setTimeout(() => setSplashDone(true), 2800);
-    return () => clearTimeout(t);
-  }, []);
-
+export default function PersonalPortfolio({ splashDone = false }: { splashDone?: boolean }) {
   return (
     <main>
       <Navbar />
