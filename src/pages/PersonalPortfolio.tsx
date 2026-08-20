@@ -94,9 +94,9 @@ function Hero() {
           style={{
             maskImage: "radial-gradient(ellipse 90% 95% at 50% 40%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
             WebkitMaskImage: "radial-gradient(ellipse 90% 95% at 50% 40%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
-          }}
+                    }}
         />
-      </div>
+      </motion.div>
 
       {/* My photo — revealed over Spiderman face on eye hover */}
       <div
