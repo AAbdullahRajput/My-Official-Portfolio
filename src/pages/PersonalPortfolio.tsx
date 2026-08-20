@@ -327,6 +327,26 @@ function Projects() {
   const half = Math.ceil(projects.length / 2);
   const rowOne = projects.slice(0, half);
   const rowTwo = projects.slice(half);
+  const CARD_W = 288 + 40;
+  const rowOneWidth = rowOne.length * CARD_W;
+  const rowTwoWidth = rowTwo.length * CARD_W;
+
+  useEffect(() => {
+    const handleWrap = setInterval(() => {
+      const r1Current = rowOneDragX.get() + rowOneAutoX.get();
+      const r2Current = rowTwoDragX.get() + rowTwoAutoX.get();
+
+      if (r1Current <= -rowOneWidth) {
+        rowOneDragX.set(rowOneDragX.get() + rowOneWidth);
+      }
+
+      if (r2Current <= -rowTwoWidth) {
+        rowTwoDragX.set(rowTwoDragX.get() + rowTwoWidth);
+      }
+    }, 100);
+
+    return () => clearInterval(handleWrap);
+  }, [rowOneWidth, rowTwoWidth]);
 
   return (
     <section
@@ -350,35 +370,39 @@ function Projects() {
           </h2>
         </motion.div>
 
-        <motion.div
-          style={{ x: rowOneX }}
-          className="flex items-end justify-center gap-10 py-12 cursor-grab active:cursor-grabbing"
-          onMouseDown={(e) => {
-            rowOneIsDragging.current = true;
-            rowOneStartX.current = e.clientX;
-            rowOneStartDrag.current = rowOneDragX.get();
-            document.body.style.userSelect = "none";
-          }}
-        >
-          {rowOne.map((project, i) => (
-            <ProjectCard key={project.title} project={project} index={i} total={rowOne.length} />
-          ))}
-        </motion.div>
+        <div className="overflow-hidden">
+          <motion.div
+            style={{ x: rowOneX }}
+            className="flex items-end justify-center gap-10 py-12 cursor-grab active:cursor-grabbing"
+            onMouseDown={(e) => {
+              rowOneIsDragging.current = true;
+              rowOneStartX.current = e.clientX;
+              rowOneStartDrag.current = rowOneDragX.get();
+              document.body.style.userSelect = "none";
+            }}
+          >
+            {rowOne.map((project, i) => (
+              <ProjectCard key={`r1-${i}`} project={project} index={i} total={rowOne.length} />
+            ))}
+          </motion.div>
+        </div>
 
-        <motion.div
-          style={{ x: rowTwoX }}
-          className="flex items-end justify-center gap-10 py-12 cursor-grab active:cursor-grabbing"
-          onMouseDown={(e) => {
-            rowTwoIsDragging.current = true;
-            rowTwoStartX.current = e.clientX;
-            rowTwoStartDrag.current = rowTwoDragX.get();
-            document.body.style.userSelect = "none";
-          }}
-        >
-          {rowTwo.map((project, i) => (
-            <ProjectCard key={project.title} project={project} index={i} total={rowTwo.length} />
-          ))}
-        </motion.div>
+        <div className="overflow-hidden">
+          <motion.div
+            style={{ x: rowTwoX }}
+            className="flex items-end justify-center gap-10 py-12 cursor-grab active:cursor-grabbing"
+            onMouseDown={(e) => {
+              rowTwoIsDragging.current = true;
+              rowTwoStartX.current = e.clientX;
+              rowTwoStartDrag.current = rowTwoDragX.get();
+              document.body.style.userSelect = "none";
+            }}
+          >
+            {rowTwo.map((project, i) => (
+              <ProjectCard key={`r2-${i}`} project={project} index={i} total={rowTwo.length} />
+            ))}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
