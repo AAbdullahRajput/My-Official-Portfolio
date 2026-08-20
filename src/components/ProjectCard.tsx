@@ -19,7 +19,7 @@ export function ProjectCardGrid({ children }: { children: React.ReactNode }) {
 }
 
 // ─── FULLSCREEN OVERLAY ──────────────────────────────────
-function ProjectOverlay({ project }: { project: Project }) {
+function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLeave: () => void }) {
   const [activeImg, setActiveImg] = useState(0);
 
   return (
@@ -29,6 +29,7 @@ function ProjectOverlay({ project }: { project: Project }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md"
+      onMouseLeave={onMouseLeave}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0, y: 30 }}
@@ -263,9 +264,13 @@ export default function ProjectCard({
   }
 
   return (
-    <>
+    <div
+      className="relative shrink-0"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <AnimatePresence>
-        {hovered && <ProjectOverlay project={project} />}
+        {hovered && <ProjectOverlay project={project} onMouseLeave={() => setHovered(false)} />}
       </AnimatePresence>
 
       <motion.div
@@ -282,9 +287,7 @@ export default function ProjectCard({
           transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
         }}
         ref={ref}
-        onMouseEnter={handleMouseEnter}
         onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
         style={{
           rotateX,
           rotateY: smoothFlipY,
@@ -294,7 +297,7 @@ export default function ProjectCard({
           cursor: "pointer",
         }}
         data-cursor-hover
-        className="group relative w-72 shrink-0"
+        className="group relative w-72"
       >
         <div className="pointer-events-none absolute -inset-px rounded-[22px] bg-gradient-to-b from-red-600/50 via-red-900/10 to-transparent opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
 
@@ -369,6 +372,6 @@ export default function ProjectCard({
           </div>
         </div>
       </motion.div>
-    </>
+    </div>
   );
 }
