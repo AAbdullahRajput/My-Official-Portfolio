@@ -475,18 +475,56 @@ const highlights = [
   },
 ];
 
+const BADGE_ICONS = {
+  experience: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="6" width="16" height="11" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M7 6V5a3 3 0 0 1 6 0v1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M10 11v2M9 12h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  ),
+  projects: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5Z" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M7 10l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  playstore: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 3.5 15.5 10 4 16.5V3.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  ),
+  realtime: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 3v2M10 15v2M3 10h2M15 10h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M5.5 5.5l1.4 1.4M13.1 13.1l1.4 1.4M14.5 5.5l-1.4 1.4M6.9 13.1l-1.4 1.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  ),
+  stack: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 10l8-5 8 5-8 5-8-5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M2 13l8 5 8-5" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  ),
+} as const;
+
 function OrbitBadge({
   orbitAngle,
   baseAngle,
   radius,
+  iconKey,
   label,
   sub,
+  accent = false,
 }: {
   orbitAngle: ReturnType<typeof useMotionValue<number>>;
   baseAngle: number;
   radius: number;
+  iconKey: keyof typeof BADGE_ICONS;
   label: string;
   sub: string;
+  accent?: boolean;
 }) {
   const left = useTransform(orbitAngle, (v) => {
     const rad = ((v + baseAngle) * Math.PI) / 180;
@@ -499,13 +537,43 @@ function OrbitBadge({
 
   return (
     <motion.div
-      className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-md dark:border-line dark:bg-panel"
+      className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap"
       style={{ left, top }}
     >
-      <div className="font-display text-base font-bold text-[#8a0303] dark:text-accent-green">
-        {label}
+      <div
+        className={[
+          "flex items-center gap-2.5 rounded-2xl border px-3.5 py-2.5 shadow-lg backdrop-blur-sm",
+          accent
+            ? "border-[#8a0303]/20 bg-[#8a0303]/5 dark:border-accent-green/20 dark:bg-accent-green/5"
+            : "border-gray-200/80 bg-white/90 dark:border-line dark:bg-panel/90",
+        ].join(" ")}
+      >
+        <span
+          className={[
+            "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
+            accent
+              ? "bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green"
+              : "bg-gray-100 text-[#6b7280] dark:bg-white/10 dark:text-text-dim",
+          ].join(" ")}
+        >
+          {BADGE_ICONS[iconKey]}
+        </span>
+        <div>
+          <div
+            className={[
+              "font-display text-[13px] font-bold leading-tight",
+              accent
+                ? "text-[#8a0303] dark:text-accent-green"
+                : "text-[#0b0e13] dark:text-text",
+            ].join(" ")}
+          >
+            {label}
+          </div>
+          <div className="text-[10px] font-medium tracking-wide text-[#6b7280] dark:text-text-dim">
+            {sub}
+          </div>
+        </div>
       </div>
-      <div className="text-xs text-[#6b7280] dark:text-text-dim">{sub}</div>
     </motion.div>
   );
 }
@@ -547,9 +615,11 @@ function OrbitPhoto() {
 
       {mounted && (
         <>
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={0} radius={75} label="1+ Years" sub="of Experience" />
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={120} radius={75} label="20+" sub="Projects Shipped" />
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={240} radius={75} label="Live on" sub="Google Play" />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={0}   radius={75} iconKey="experience" label="1+ Years"     sub="Production Experience" accent />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={72}  radius={75} iconKey="projects"   label="20+ Apps"     sub="Shipped to Production" />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={144} radius={75} iconKey="playstore"  label="Google Play"  sub="Live with Real Users"  accent />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={216} radius={75} iconKey="realtime"   label="Real-Time"    sub="Video · Sockets · RTC" />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={288} radius={75} iconKey="stack"      label="Full-Stack"   sub="Mobile · Web · API"    accent />
         </>
       )}
 
