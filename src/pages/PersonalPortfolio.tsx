@@ -479,94 +479,97 @@ function About() {
   return (
     <section
       id="about"
-      className="relative overflow-hidden bg-gray-50 px-6 py-28 sm:px-10 lg:px-16 dark:bg-ink-soft"
+      className="relative overflow-hidden bg-gray-50 py-28 dark:bg-ink-soft"
     >
-      <div className="mx-auto max-w-6xl">
-        <div className="grid grid-cols-1 items-start gap-16 lg:grid-cols-2">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6 }}
+      <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6 }}
+          className="pl-6 sm:pl-10 lg:pl-20 xl:pl-32 lg:pr-10"
+        >
+          <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
+            ABOUT
+          </div>
+          <h2 className="font-display mb-6 text-3xl font-bold leading-tight text-[#0b0e13] dark:text-text sm:text-4xl">
+            Full-stack, end to end.
+          </h2>
+          <p className="mb-4 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
+            I&rsquo;m a full-stack developer based in Islamabad, currently
+            building production apps at Mehdi Technologies — Flutter and
+            React Native on the client side, Node.js and FastAPI on the
+            backend, Supabase and Firebase for auth, storage, and real-time
+            data.
+          </p>
+          <p className="mb-4 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
+            My focus is on systems that stay in sync — live video calls,
+            push notifications, payments, and real-time updates — shipped
+            as complete, deployed products rather than prototypes. Golazo,
+            my World Cup 2026 prediction app, is live on the Google Play
+            Store with real users and a Supabase backend secured with
+            row-level security.
+          </p>
+          <p className="mb-4 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
+            I care about clean architecture and code I can hand off — SOLID
+            principles, JWT auth done properly, and APIs designed so a
+            Flutter frontend and a React frontend can both consume them
+            without duplicated logic.
+          </p>
+          <p className="text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
+            Outside of client work I&rsquo;m usually deep in a side project —
+            right now that&rsquo;s AI Tools Hub, a Framer-driven CMS site, and
+            polishing Get Fit&rsquo;s trainer-booking flow. From idea to
+            deployed app is still my favorite part of the job.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs text-[#6b7280] dark:text-text-dim">
+            <span>📍 Islamabad, Pakistan</span>
+            <span>💼 Available for freelance</span>
+            <span>🗣️ English · Urdu</span>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="relative aspect-[4/5] w-full overflow-hidden lg:aspect-auto lg:h-[640px]"
+        >
+          <img
+            src="/images/About-Photo.jpeg"
+            alt="Ahmad Abdullah"
+            className="h-full w-full object-cover"
+          />
+        </motion.div>
+      </div>
+
+      <div className="mt-16 grid grid-cols-1 gap-px bg-gray-200 dark:bg-line sm:grid-cols-2 lg:grid-cols-4">
+        {highlights.map((item) => (
+          <div
+            key={item.title}
+            className="bg-gray-50 p-8 dark:bg-ink-soft"
           >
-            <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
-              ABOUT
-            </div>
-            <h2 className="font-display mb-6 text-3xl font-bold leading-tight text-[#0b0e13] dark:text-text sm:text-4xl">
-              Full-stack, end to end.
-            </h2>
-            <p className="mb-4 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
-              I&rsquo;m a full-stack developer based in Islamabad, currently
-              building production apps at Mehdi Technologies — Flutter and
-              React Native on the client side, Node.js and FastAPI on the
-              backend, Supabase and Firebase for auth, storage, and
-              real-time data.
+            <h3 className="mb-2 font-display text-base font-semibold text-[#0b0e13] dark:text-text">
+              {item.title}
+            </h3>
+            <p className="text-sm leading-relaxed text-[#6b7280] dark:text-text-muted">
+              {item.desc}
             </p>
-            <p className="mb-4 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
-              My focus is on systems that stay in sync — live video calls,
-              push notifications, payments, and real-time updates — shipped
-              as complete, deployed products rather than prototypes. Golazo,
-              my World Cup 2026 prediction app, is live on the Google Play
-              Store with real users and a Supabase backend secured with
-              row-level security.
-            </p>
-            <p className="text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
-              I care about clean architecture and code I can hand off — SOLID
-              principles, JWT auth done properly, and APIs designed so a
-              Flutter frontend and a React frontend can both consume them
-              without duplicated logic. From idea to deployed app is my
-              favorite part of the job.
-            </p>
+          </div>
+        ))}
+      </div>
 
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs text-[#6b7280] dark:text-text-dim">
-              <span>📍 Islamabad, Pakistan</span>
-              <span>💼 Available for freelance</span>
-              <span>🗣️ English · Urdu</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      <div className="mt-16 flex flex-wrap justify-center gap-2 px-6">
+        {skills.map((skill) => (
+          <span
+            key={skill.label}
+            className="rounded-full border border-gray-200 bg-white px-3 py-1.5 font-mono text-[11px] text-[#0b0e13] dark:border-line dark:bg-panel dark:text-accent-blue"
           >
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-2xl border border-gray-200 dark:border-line">
-              <img
-                src="/images/About-Photo.jpeg"
-                alt="Ahmad Abdullah"
-                className="h-full w-full object-cover"
-              />
-            </div>
-
-            <div className="mx-auto mt-6 grid max-w-sm grid-cols-2 gap-3">
-              {highlights.map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-xl border border-gray-200 bg-white p-4 dark:border-line dark:bg-panel"
-                >
-                  <h3 className="mb-1 font-display text-sm font-semibold text-[#0b0e13] dark:text-text">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs leading-relaxed text-[#6b7280] dark:text-text-muted">
-                    {item.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mx-auto mt-6 flex max-w-sm flex-wrap justify-center gap-2">
-              {skills.map((skill) => (
-                <span
-                  key={skill.label}
-                  className="rounded-full border border-gray-200 bg-white px-3 py-1.5 font-mono text-[11px] text-[#0b0e13] dark:border-line dark:bg-panel dark:text-accent-blue"
-                >
-                  {skill.label}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-        </div>
+            {skill.label}
+          </span>
+        ))}
       </div>
     </section>
   );
