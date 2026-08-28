@@ -537,29 +537,13 @@ function About() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="relative mx-auto w-full max-w-md pr-6 sm:pr-10 lg:pr-16 xl:pr-20"
         >
-          <div className="relative mx-auto aspect-square w-full max-w-lg">
-            <motion.div
-              className="absolute inset-0 rounded-full border border-[#8a0303]/30 dark:border-accent-green/30"
-              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0, 0.6] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div
-              className="absolute inset-0 rounded-full border border-[#8a0303]/30 dark:border-accent-green/30"
-              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0, 0.6] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            />
-            <motion.div
-              className="absolute inset-0 rounded-full border border-[#8a0303]/30 dark:border-accent-green/30"
-              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0, 0.6] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-            />
-            <div className="absolute inset-0 rounded-full border border-[#8a0303]/25 dark:border-accent-green/25" />
-            <div className="absolute inset-[6px] overflow-hidden rounded-full shadow-xl">
+          <div className="relative mx-auto aspect-[4/5] w-full max-w-lg">
+            <div className="absolute inset-0 overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line">
               <img
                 src="/images/About-Photo.jpeg"
                 alt="Ahmad Abdullah"
-                className="h-full w-full object-cover scale-[2.2]"
-                style={{ objectPosition: "35% 45%" }}
+                className="h-full w-full object-cover"
+                style={{ objectPosition: "50% 30%" }}
               />
             </div>
 
