@@ -518,6 +518,89 @@ function About() {
   );
 }
 
+// ─── CAREER ─────────────────────────────────────────────
+const career = [
+  {
+    role: "Python & MERN Stack Developer",
+    org: "Mehdi Technologies Pvt. Ltd.",
+    period: "May 2026 — Present",
+    desc: "Building full-stack solutions with Python, React.js, Node.js, Express, MongoDB, and cross-platform mobile features for real client projects.",
+  },
+  {
+    role: "Full Stack Development Intern",
+    org: "CodeAlpha",
+    period: "May 2026",
+    desc: "Built ProjectSync, a Trello-style PM app with React/Vite, Node.js/Express, MongoDB Atlas, and Socket.io — deployed on AWS.",
+  },
+  {
+    role: "Independent Full Stack Developer",
+    org: "Self-Directed",
+    period: "Feb 2025 — Apr 2026",
+    desc: "Designed, built, and deployed full-stack Flutter and web apps end to end — UI, REST APIs, Firebase/Supabase integration, and cloud deployment.",
+  },
+  {
+    role: "B.S. Computer Science",
+    org: "University of Arid Agriculture, Rawalpindi",
+    period: "May 2026 · CGPA 3.0/4.0",
+    desc: "",
+  },
+];
+
+function Career() {
+  return (
+    <section
+      id="career"
+      className="relative bg-gray-50 px-6 py-28 sm:px-10 lg:px-16 dark:bg-ink-soft"
+    >
+      <div className="mx-auto max-w-3xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6 }}
+          className="mb-14"
+        >
+          <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
+            CAREER
+          </div>
+          <h2 className="font-display text-3xl font-bold text-[#0b0e13] dark:text-text sm:text-4xl">
+            Where I&rsquo;ve been.
+          </h2>
+        </motion.div>
+
+        <div className="relative border-l border-gray-200 dark:border-line pl-8">
+          {career.map((item, i) => (
+            <motion.div
+              key={item.role}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="relative mb-10 last:mb-0"
+            >
+              <span className="absolute -left-[2.35rem] top-1.5 h-3 w-3 rounded-full bg-[#8a0303] dark:bg-accent-green" />
+              <div className="mb-1 font-mono text-xs text-[#6b7280] dark:text-text-dim">
+                {item.period}
+              </div>
+              <h3 className="font-display text-lg font-semibold text-[#0b0e13] dark:text-text">
+                {item.role}
+              </h3>
+              <div className="mb-2 text-sm text-[#8a0303] dark:text-accent-red">
+                {item.org}
+              </div>
+              {item.desc && (
+                <p className="text-sm leading-relaxed text-[#6b7280] dark:text-text-muted">
+                  {item.desc}
+                </p>
+              )}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ─── CONTACT ────────────────────────────────────────────
 function Contact() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
