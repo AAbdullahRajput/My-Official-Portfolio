@@ -512,6 +512,12 @@ function OrbitBadge({
 
 function OrbitPhoto() {
   const orbitAngle = useMotionValue(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useAnimationFrame((t) => {
     orbitAngle.set((t / 1000) * (360 / 22));
   });
@@ -539,9 +545,13 @@ function OrbitPhoto() {
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 2 }}
       />
 
-      <OrbitBadge orbitAngle={orbitAngle} baseAngle={0} radius={75} label="1+ Years" sub="of Experience" />
-      <OrbitBadge orbitAngle={orbitAngle} baseAngle={120} radius={75} label="20+" sub="Projects Shipped" />
-      <OrbitBadge orbitAngle={orbitAngle} baseAngle={240} radius={75} label="Live on" sub="Google Play" />
+      {mounted && (
+        <>
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={0} radius={75} label="1+ Years" sub="of Experience" />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={120} radius={75} label="20+" sub="Projects Shipped" />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={240} radius={75} label="Live on" sub="Google Play" />
+        </>
+      )}
 
       <div className="relative aspect-[4/5] w-[90%] overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line">
         <img
