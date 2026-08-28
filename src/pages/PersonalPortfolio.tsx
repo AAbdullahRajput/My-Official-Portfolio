@@ -1390,7 +1390,7 @@ function CareerNode({
     : "text-[#0b0e13] dark:text-text";
   const orgClass = activated
     ? "text-white/90 dark:text-[#0b0e13]/80"
-    : "text-[#8a0303] dark:text-accent-red";
+    : "text-[#8a0303] dark:hover:text-amber-300";
   const descClass = activated
     ? "text-white/80 dark:text-[#0b0e13]/75"
     : "text-[#6b7280] dark:text-text-muted";
@@ -1524,13 +1524,10 @@ function CareerNode({
           variants={waveItem}
           data-cursor-hover
           onClick={() => setDetailOpen(true)}
-          whileHover={{ rotateY: 360 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          style={{ transformPerspective: 800 }}
-          className={`relative mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl border py-2 font-mono text-[11px] font-medium transition-colors ${
+          className={`relative mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl border py-2 font-mono text-[11px] font-medium transition-all duration-200 ${
             activated
-              ? "border-white/30 bg-white/10 text-white hover:bg-white/20"
-              : "border-[#8a0303]/25 bg-[#8a0303]/5 text-[#8a0303] hover:bg-[#8a0303]/10 dark:border-accent-green/25 dark:bg-accent-green/5 dark:text-accent-green dark:hover:bg-accent-green/10"
+              ? "border-white/90 text-black hover:bg-black hover:border-black"
+              : "border-[#0b0e13]/25 text-[#0b0e13] hover:bg-[#0b0e13] hover:text-white hover:border-[#0b0e13] dark:border-white/20 dark:text-white dark:hover:bg-black dark:hover:border-black"
           }`}
         >
           View more

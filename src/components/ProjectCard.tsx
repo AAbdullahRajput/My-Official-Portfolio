@@ -326,7 +326,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
                 </span>
               )}
               {project.featured && (
-                <span className="rounded-full border border-[#8a0303]/40 bg-[#8a0303]/8 px-3 py-1 font-mono text-[10px] tracking-wide text-[#8a0303] dark:text-red-300">
+                <span className="rounded-full border border-[#8a0303]/40 bg-[#8a0303]/8 px-3 py-1 font-mono text-[10px] tracking-wide text-[#8a0303] dark:text-amber-300">
                   FEATURED
                 </span>
               )}
@@ -342,7 +342,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
                 {project.title}
               </h2>
               {project.shortDesc && (
-                <p className="mt-2 font-mono text-sm text-[#8a0303]/80 dark:text-red-400 leading-snug">
+                <p className="mt-2 font-mono text-sm text-[#8a0303]/80 dark:text-amber-400 leading-snug">
                   {project.shortDesc}
                 </p>
               )}
@@ -356,7 +356,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
             {/* tech stack */}
             {project.techStack?.length > 0 && (
               <div>
-                <p className="mb-3 font-mono text-[10px] tracking-[0.2em] text-[#8a0303] dark:text-red-400 uppercase">
+                <p className="mb-3 font-mono text-[10px] tracking-[0.2em] text-[#8a0303] dark:text-amber-400 uppercase">
                   Tech Stack
                 </p>
                 <div className="flex flex-col gap-3">
@@ -368,7 +368,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
                       <div className="flex flex-wrap gap-1.5">
                         {cat.tools.map((tool) => (
                           <span key={tool}
-                            className="rounded-full border border-[#8a0303]/20 bg-[#8a0303]/5 px-2.5 py-1 font-mono text-[10px] text-[#8a0303] dark:border-red-600/20 dark:bg-red-600/5 dark:text-red-300"
+                            className="rounded-full border border-[#8a0303]/20 bg-[#8a0303]/5 px-2.5 py-1 font-mono text-[10px] text-[#8a0303] dark:border-amber-500/20 dark:bg-amber-500/5 dark:text-amber-300"
                           >
                             {tool}
                           </span>
@@ -385,7 +385,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
               {project.github && (
                 <a href={project.github} target="_blank" rel="noopener noreferrer"
                   data-cursor-hover
-                  className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 font-mono text-xs text-gray-600 transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:bg-white/5 dark:text-white/50 dark:hover:text-red-300"
+                  className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 font-mono text-xs text-gray-600 transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:bg-white/5 dark:text-white/50 dark:hover:text-amber-300"
                 >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/>
@@ -396,7 +396,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
               {project.live && (
                 <a href={project.live} target="_blank" rel="noopener noreferrer"
                   data-cursor-hover
-                  className="flex items-center gap-2 rounded-lg border border-[#8a0303]/30 bg-[#8a0303]/5 px-4 py-2 font-mono text-xs text-[#8a0303] transition-colors hover:bg-[#8a0303]/10 dark:text-red-300"
+                  className="flex items-center gap-2 rounded-lg border border-[#8a0303]/30 bg-[#8a0303]/5 px-4 py-2 font-mono text-xs text-[#8a0303] transition-colors hover:bg-[#8a0303]/10 dark:text-amber-300"
                 >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -532,7 +532,7 @@ export default function ProjectCard({
       >
         <div className="pointer-events-none absolute -inset-px rounded-[22px] bg-gradient-to-b from-red-600/50 via-red-900/10 to-transparent opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
 
-        <div className="relative flex h-[400px] flex-col overflow-hidden rounded-[20px] border border-gray-200 bg-white p-6 shadow-lg transition-all duration-300 group-hover:border-[#8a0303]/60 group-hover:shadow-2xl group-hover:shadow-[#8a0303]/20 dark:border-white/10 dark:bg-[#0a0a0d] dark:group-hover:border-red-600/60">
+        <div className="relative flex h-[400px] flex-col overflow-hidden rounded-[20px] border border-gray-200 bg-white p-6 shadow-lg transition-all duration-300 group-hover:border-[#8a0303]/60 group-hover:shadow-2xl group-hover:shadow-[#8a0303]/20 dark:border-white/10 dark:bg-[#0a0a0d] dark:group-hover:border-amber-500/60">
 
           <svg className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 text-[#8a0303]/10 transition-colors duration-300 group-hover:text-[#8a0303]/30" viewBox="0 0 100 100" fill="none">
             <circle cx="50" cy="50" r="8" stroke="currentColor" strokeWidth="0.6" />
@@ -562,7 +562,7 @@ export default function ProjectCard({
               {project.title}
             </h3>
             {project.featured && (
-              <span className="shrink-0 rounded-full border border-[#8a0303]/40 bg-[#8a0303]/10 px-2 py-0.5 font-mono text-[9px] tracking-wide text-[#8a0303] dark:text-red-300">
+              <span className="shrink-0 rounded-full border border-[#8a0303]/40 bg-[#8a0303]/10 px-2 py-0.5 font-mono text-[9px] tracking-wide text-[#8a0303] dark:text-amber-300">
                 FEATURED
               </span>
             )}
@@ -574,7 +574,7 @@ export default function ProjectCard({
 
           <div className="relative mb-4 flex flex-wrap gap-1.5">
             {project.tags.slice(0, 4).map((tag) => (
-              <span key={tag} className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 font-mono text-[10px] text-gray-500 transition-colors duration-300 group-hover:border-[#8a0303]/30 group-hover:text-[#8a0303] dark:border-white/10 dark:bg-white/[0.03] dark:text-white/60">
+              <span key={tag} className="rounded-full border border-[#8a0303]/20 bg-[#8a0303]/5 px-2.5 py-1 font-mono text-[10px] text-[#8a0303] transition-colors duration-300 group-hover:border-[#8a0303]/40 group-hover:bg-[#8a0303]/10 dark:border-amber-500/20 dark:bg-amber-500/5 dark:text-amber-300">
                 {tag}
               </span>
             ))}
@@ -584,14 +584,14 @@ export default function ProjectCard({
             <div className="flex gap-4">
               {project.github && (
                 <a href={project.github} target="_blank" rel="noopener noreferrer"
-                  className="text-gray-400 underline-offset-4 transition-colors hover:text-[#8a0303] hover:underline dark:text-white/40 dark:hover:text-red-300"
+                  className="text-[#8a0303]/60 underline-offset-4 transition-colors hover:text-[#8a0303] hover:underline dark:text-amber-400/60 dark:hover:text-amber-300"
                 >
                   GitHub
                 </a>
               )}
               {project.live && (
                 <a href={project.live} target="_blank" rel="noopener noreferrer"
-                  className="text-gray-400 underline-offset-4 transition-colors hover:text-[#8a0303] hover:underline dark:text-white/40 dark:hover:text-red-300"
+                  className="text-gray-400 underline-offset-4 transition-colors hover:text-[#8a0303] hover:underline dark:text-white/40 dark:hover:text-amber-300"
                 >
                   Live
                 </a>
