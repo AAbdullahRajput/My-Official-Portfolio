@@ -15,7 +15,7 @@
   --color-accent-green: #7fe0a8;
   --color-accent-red: #8a0303;
 
-  --font-display: var(--font-space-grotesk);
+  --font-display: var(--font-cormorant-garamond);
   --font-mono: var(--font-jetbrains-mono);
   --font-body: var(--font-inter);
 }

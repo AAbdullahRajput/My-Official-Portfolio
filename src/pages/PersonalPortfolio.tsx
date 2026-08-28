@@ -40,6 +40,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [revealing, setRevealing] = useState(false);
   const [spotPos, setSpotPos] = useState({ x: 50, y: 8 });
+  const [activeHeroTag, setActiveHeroTag] = useState<{ label: string; desc: string } | null>(null);
 
   const handleFaceMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = heroImgRef.current?.getBoundingClientRect();
@@ -147,21 +148,47 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
         />
       </div>
 
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {activeHeroTag && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+              onClick={() => setActiveHeroTag(null)}
+            >
+              <motion.div
+                initial={{ y: 60, opacity: 0, scale: 0.96 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: 60, opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-white/[0.08] dark:bg-[#0f1117]/90 dark:backdrop-blur-xl"
+              >
+                <div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+                  {activeHeroTag.label}
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted">
+                  {activeHeroTag.desc}
+                </p>
+                <button
+                  data-cursor-hover
+                  onClick={() => setActiveHeroTag(null)}
+                  className="mt-5 w-full rounded-xl bg-[#0b0e13] py-2.5 font-mono text-[11px] font-medium text-white transition-colors hover:bg-[#8a0303] dark:bg-white/[0.06] dark:border dark:border-white/[0.08] dark:text-text dark:hover:border-accent-green/30 dark:hover:bg-white/[0.10]"
+                >
+                  Close
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-4 lg:pr-6">
-        <div className="max-w-lg lg:w-[48%] lg:-ml-60">
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate={splashDone ? "show" : "hidden"}
-            custom={0}
-            className="mb-5 flex items-center gap-2 font-mono text-xs text-[#8a0303] dark:text-accent-red"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#8a0303] opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#8a0303]" />
-            </span>
-            AVAILABLE FOR PROJECTS
-          </motion.div>
+        <div className="max-w-lg lg:w-[48%] lg:-ml-60 lg:mt-20">
 
           <motion.h1
             variants={fadeUp}
@@ -178,7 +205,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             initial="hidden"
             animate={splashDone ? "show" : "hidden"}
             custom={2}
-            className="font-body mt-4 text-lg font-normal tracking-wide leading-snug text-[#374151] dark:text-text-muted sm:text-xl"
+            className="font-body mt-4 text-lg font-normal tracking-wide leading-snug text-[#374151] dark:text-white/90 sm:text-xl"
           >
             Full-stack engineer building connected mobile and web systems.
           </motion.p>
@@ -188,7 +215,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             initial="hidden"
             animate={splashDone ? "show" : "hidden"}
             custom={3}
-            className="mt-5 max-w-md text-sm leading-relaxed text-[#6b7280] dark:text-text-dim sm:text-base"
+            className="mt-5 max-w-md text-sm leading-relaxed text-[#6b7280] dark:text-white/65 sm:text-base"
           >
             Flutter, React Native, and Next.js apps wired to real-time backends &mdash; live video, payments, and data that stay in sync.
           </motion.p>
@@ -203,7 +230,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             
             <a  href="#projects"
               data-cursor-hover
-              className="rounded-lg bg-[#0b0e13] px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:scale-105 hover:bg-[#8a0303] hover:shadow-lg hover:shadow-[#8a0303]/30 dark:bg-white dark:text-ink dark:hover:bg-accent-red dark:hover:text-white"
+              className="rounded-lg bg-[#0b0e13] px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:scale-105 hover:bg-[#8a0303] hover:shadow-lg hover:shadow-[#8a0303]/30 dark:bg-white/15 dark:text-white dark:border dark:border-white/30 dark:hover:bg-white/25 dark:hover:border-white/50"
             >
               View work
             </a>
@@ -211,7 +238,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             
             <a  href="#contact"
               data-cursor-hover
-              className="rounded-lg border border-[#d1d5db] px-6 py-3 text-sm font-medium text-[#0b0e13] transition-all duration-200 hover:scale-105 hover:border-[#8a0303] hover:text-[#8a0303] hover:bg-gray-50 dark:border-line dark:text-text dark:hover:border-accent-red dark:hover:text-accent-red dark:hover:bg-panel"
+              className="rounded-lg border border-[#d1d5db] px-6 py-3 text-sm font-medium text-[#0b0e13] transition-all duration-200 hover:scale-105 hover:border-[#8a0303] hover:text-[#8a0303] hover:bg-gray-50 dark:border-white/40 dark:text-white dark:hover:border-white dark:hover:text-white dark:hover:bg-white/10"
             >
               Get in touch
             </a>
@@ -224,13 +251,33 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             custom={5}
             className="mt-10 flex flex-wrap gap-2"
           >
-            {["Flutter", "Next.js", "Supabase", "Agora RTC"].map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full border border-[#8a0303]/30 px-3 py-1 font-mono text-xs text-[#8a0303] dark:border-accent-red/40 dark:text-accent-red"
-              >
-                {tag}
-              </span>
+            {[
+              { label: "Flutter", desc: "Cross-platform mobile & web framework by Google. Powers GetFit and Golazo with a single Dart codebase on Android, iOS, and web." },
+              { label: "Next.js", desc: "React meta-framework for production web apps. Handles SSR, routing, and API routes — used in this portfolio and ConnectHub's frontend." },
+              { label: "Supabase", desc: "Open-source Firebase alternative built on PostgreSQL. Used for auth, real-time subscriptions, and Row Level Security in Golazo and ConnectHub." },
+              { label: "Agora RTC", desc: "Real-time video & audio SDK. Powers live trainer-to-user video call sessions inside GetFit with low-latency peer-to-peer streaming." },
+            ].map((tag) => (
+              <div key={tag.label} className="group relative">
+                <button
+                  data-cursor-hover
+                  onClick={() => setActiveHeroTag(tag)}
+                  className="rounded-full border border-[#8a0303]/30 bg-[#8a0303]/5 px-3 py-1 font-mono text-xs text-[#8a0303] transition-all duration-200 hover:bg-[#8a0303]/10 dark:border-white/30 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
+                >
+                  {tag.label}
+                </button>
+                <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2.5 w-56 -translate-x-1/2 scale-95 opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 hidden sm:block">
+                  <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-xl dark:border-line dark:bg-panel">
+                    <div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+                      {tag.label}
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-[#6b7280] dark:text-text-muted">
+                      {tag.desc}
+                    </p>
+                    <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-200 dark:border-t-line" />
+                    <div className="absolute left-1/2 top-full mt-[-1px] -translate-x-1/2 border-4 border-transparent border-t-white dark:border-t-panel" />
+                  </div>
+                </div>
+              </div>
             ))}
           </motion.div>
         </div>

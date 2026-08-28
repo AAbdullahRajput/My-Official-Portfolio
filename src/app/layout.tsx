@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono, Inter, Playfair_Display } from "next/font/google";
+import { Cormorant_Garamond, JetBrains_Mono, Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
@@ -21,9 +21,10 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant-garamond",
   subsets: ["latin"],
+  weight: ["400", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -40,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${inter.variable} ${playfair.variable} font-body antialiased`}
+        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${inter.variable} ${cormorantGaramond.variable} font-body antialiased`}
         suppressHydrationWarning
       >
                 <CustomCursor />
