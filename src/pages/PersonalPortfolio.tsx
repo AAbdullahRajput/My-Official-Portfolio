@@ -556,9 +556,10 @@ function About() {
             <div className="absolute inset-0 rounded-full border border-[#8a0303]/25 dark:border-accent-green/25" />
             <div className="absolute inset-[6px] overflow-hidden rounded-full shadow-xl">
               <img
-                src="/images/About-Photo.png"
+                src="/images/About-Photo.jpeg"
                 alt="Ahmad Abdullah"
-                className="h-full w-full object-cover scale-125 object-top"
+                className="h-full w-full object-cover scale-[2.2]"
+                style={{ objectPosition: "35% 45%" }}
               />
             </div>
 
