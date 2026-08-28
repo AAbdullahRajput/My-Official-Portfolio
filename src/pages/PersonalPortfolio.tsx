@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, useMotionValue, useSpring, useTransform, useScroll, animate } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, useScroll, useAnimationFrame, animate } from "framer-motion";
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
 import Navbar from "@/components/Navbar";
@@ -475,6 +475,86 @@ const highlights = [
   },
 ];
 
+function OrbitBadge({
+  orbitAngle,
+  baseAngle,
+  radius,
+  label,
+  sub,
+}: {
+  orbitAngle: ReturnType<typeof useMotionValue<number>>;
+  baseAngle: number;
+  radius: number;
+  label: string;
+  sub: string;
+}) {
+  const left = useTransform(orbitAngle, (v) => {
+    const rad = ((v + baseAngle) * Math.PI) / 180;
+    return `${50 + radius * Math.cos(rad)}%`;
+  });
+  const top = useTransform(orbitAngle, (v) => {
+    const rad = ((v + baseAngle) * Math.PI) / 180;
+    return `${50 + radius * Math.sin(rad)}%`;
+  });
+
+  return (
+    <motion.div
+      className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-md dark:border-line dark:bg-panel"
+      style={{ left, top }}
+    >
+      <div className="font-display text-base font-bold text-[#8a0303] dark:text-accent-green">
+        {label}
+      </div>
+      <div className="text-xs text-[#6b7280] dark:text-text-dim">{sub}</div>
+    </motion.div>
+  );
+}
+
+function OrbitPhoto() {
+  const orbitAngle = useMotionValue(0);
+  useAnimationFrame((t) => {
+    orbitAngle.set((t / 1000) * (360 / 22));
+  });
+
+  return (
+    <div className="relative mx-auto flex aspect-square w-full max-w-2xl items-center justify-center">
+      <div className="absolute inset-[8%] rounded-full bg-[#8a0303]/10 blur-3xl dark:bg-accent-green/10" />
+
+      <motion.div
+        className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
+        style={{ inset: "-30%" }}
+        animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
+        style={{ inset: "-20%" }}
+        animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+      />
+      <motion.div
+        className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
+        style={{ inset: "-10%" }}
+        animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+      />
+
+      <OrbitBadge orbitAngle={orbitAngle} baseAngle={0} radius={75} label="1+ Years" sub="of Experience" />
+      <OrbitBadge orbitAngle={orbitAngle} baseAngle={120} radius={75} label="20+" sub="Projects Shipped" />
+      <OrbitBadge orbitAngle={orbitAngle} baseAngle={240} radius={75} label="Live on" sub="Google Play" />
+
+      <div className="relative aspect-[4/5] w-[90%] overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line">
+        <img
+          src="/images/About-Photo.jpeg"
+          alt="Ahmad Abdullah"
+          className="h-full w-full object-cover"
+          style={{ objectPosition: "50% 30%" }}
+        />
+      </div>
+    </div>
+  );
+}
+
 function About() {
   return (
     <section
@@ -537,80 +617,7 @@ function About() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="relative mx-auto w-full max-w-md pr-6 sm:pr-10 lg:pr-16 xl:pr-20"
         >
-          <div className="relative mx-auto flex aspect-square w-full max-w-2xl items-center justify-center">
-            <motion.div
-              className="absolute inset-0"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
-            >
-              {[
-                { label: "1+ Years", sub: "of Experience", angle: 0 },
-                { label: "20+", sub: "Projects Shipped", angle: 120 },
-                { label: "Live on", sub: "Google Play", angle: 240 },
-              ].map((item) => {
-                const rad = (item.angle * Math.PI) / 180;
-                const radius = 75;
-                const x = 50 + radius * Math.cos(rad);
-                const y = 50 + radius * Math.sin(rad);
-                return (
-                  <div
-                    key={item.label}
-                    className="absolute -translate-x-1/2 -translate-y-1/2"
-                    style={{ left: `${x}%`, top: `${y}%` }}
-                  >
-                    <motion.div
-                      animate={{ rotate: -360 }}
-                      transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
-                      className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-md dark:border-line dark:bg-panel"
-                    >
-                      <div className="font-display text-base font-bold text-[#8a0303] dark:text-accent-green">
-                        {item.label}
-                      </div>
-                      <div className="text-xs text-[#6b7280] dark:text-text-dim">
-                        {item.sub}
-                      </div>
-                    </motion.div>
-                  </div>
-                );
-              })}
-            </motion.div>
-
-            <motion.div
-              className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
-              style={{ inset: "-25%" }}
-              animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div
-              className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
-              style={{ inset: "-10%" }}
-              animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-            />
-
-            <motion.div
-              className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
-              style={{ inset: "-10%" }}
-              animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-            />
-
-            <motion.div
-              className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
-              style={{ inset: "-30%" }}
-              animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-            />
-
-            <div className="relative aspect-[4/5] w-[90%] overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line">
-              <img
-                src="/images/About-Photo.jpeg"
-                alt="Ahmad Abdullah"
-                className="h-full w-full object-cover"
-                style={{ objectPosition: "50% 30%" }}
-              />
-            </div>
-          </div>
+          <OrbitPhoto />
         </motion.div>
       </div>
 
