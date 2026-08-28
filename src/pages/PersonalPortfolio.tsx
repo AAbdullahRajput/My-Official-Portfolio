@@ -1208,7 +1208,22 @@ function About() {
 // ─── CAREER ─────────────────────────────────────────────
 const CAREER_LINKEDIN_URL = "https://www.linkedin.com/in/ahmad-a-972497411";
 
-const career = [
+interface CareerProject {
+  name: string;
+  url?: string;
+}
+
+interface CareerItem {
+  type: "work";
+  role: string;
+  org: string;
+  period: string;
+  desc: string;
+  tags: string[];
+  projects: CareerProject[];
+}
+
+const career: CareerItem[] = [
   {
     type: "work" as const,
     role: "Python & MERN Stack Developer",
@@ -1216,7 +1231,11 @@ const career = [
     period: "May 2026 — Present",
     desc: "Building full-stack solutions with Python, React.js, Node.js, Express, and MongoDB for real client projects, alongside cross-platform mobile features.",
     tags: ["Python", "React.js", "Node.js", "Express", "MongoDB"],
-    projects: ["Client web applications", "Mobile app feature development", "REST API design & integration"],
+    projects: [
+      { name: "Client web applications" },
+      { name: "Mobile app feature development" },
+      { name: "REST API design & integration" },
+    ],
   },
   {
     type: "work" as const,
@@ -1225,7 +1244,9 @@ const career = [
     period: "May 2026",
     desc: "Built ProjectSync end to end — a Trello-style project management app with real-time board updates.",
     tags: ["React", "Vite", "Node.js", "Socket.io", "MongoDB Atlas", "AWS"],
-    projects: ["ProjectSync — real-time Trello-style PM app, deployed on AWS"],
+    projects: [
+      { name: "ProjectSync — real-time Trello-style PM app", url: "https://project-sync-alpha.vercel.app" },
+    ],
   },
   {
     type: "work" as const,
@@ -1234,18 +1255,72 @@ const career = [
     period: "Feb 2025 — Apr 2026",
     desc: "Designed, built, and deployed full-stack Flutter and web apps end to end — UI, REST APIs, auth, and cloud deployment.",
     tags: ["Flutter", "React Native", "Firebase", "Supabase", "Node.js"],
-    projects: ["Golazo — live on Google Play", "ConnectHub — deployed social platform", "Station Hub — travel & booking platform", "GetFit — trainer/user fitness ecosystem"],
-  },
-  {
-    type: "education" as const,
-    role: "B.S. Computer Science",
-    org: "PMAS Arid Agriculture University, Rawalpindi",
-    period: "May 2026 · CGPA 3.0/4.0",
-    desc: "",
-    tags: [] as string[],
-    projects: [] as string[],
+    projects: [
+      { name: "Golazo — live on Google Play", url: "https://play.google.com/store/apps/details?id=com.golazo" },
+      { name: "ConnectHub — deployed social platform", url: "https://github.com/AAbdullahRajput/Connect-Hub" },
+      { name: "Station Hub — travel & booking platform", url: "https://github.com/AAbdullahRajput/Station-Hub-Project" },
+      { name: "GetFit — trainer/user fitness ecosystem", url: "https://getfitai-ashen.vercel.app/" },
+    ],
   },
 ];
+
+const CAREER_OFFSET_CLASS: Record<number, string> = {
+  0: "",
+  1: "lg:ml-[220px]",
+  2: "lg:-ml-[70px]",
+  3: "lg:ml-[150px]",
+};
+
+const FOOT_PATH_D =
+  "M12 2C10.2 2 9 3.7 9 5.6c0 1.1.4 2 .5 2.9-.9.6-1.8 1.9-1.8 3.7 0 2.7 1.9 4.8 4.3 4.8s4.3-2.1 4.3-4.8c0-1.8-.9-3.1-1.8-3.7.1-.9.5-1.8.5-2.9C15 3.7 13.8 2 12 2Z";
+
+function FootIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d={FOOT_PATH_D} />
+    </svg>
+  );
+}
+
+function FootMark({
+  x,
+  y,
+  angle,
+  side,
+  ratio,
+  progress,
+  scrollDir,
+}: {
+  x: number;
+  y: number;
+  angle: number;
+  side: 1 | -1;
+  ratio: number;
+  progress: ReturnType<typeof useMotionValue<number>>;
+  scrollDir: 1 | -1;
+}) {
+  const opacity = useTransform(progress, [Math.max(ratio - 0.025, 0), ratio], [0, 1]);
+  const scale = useTransform(progress, [Math.max(ratio - 0.025, 0), ratio], [0.4, 1]);
+  const rotation = angle + 90 + (scrollDir === -1 ? 180 : 0);
+
+  return (
+    <motion.div
+      style={{
+        position: "absolute",
+        left: x,
+        top: y,
+        opacity,
+        scale,
+        rotate: rotation,
+        translateX: "-50%",
+        translateY: "-50%",
+      }}
+      className="text-[#8a0303] dark:text-accent-green"
+    >
+      <FootIcon className={`h-6 w-6 ${side === 1 ? "" : "-scale-x-100"}`} />
+    </motion.div>
+  );
+}
 
 function CareerNode({
   item,
@@ -1262,6 +1337,7 @@ function CareerNode({
 }) {
   const isRight = index % 2 === 1;
   const threshold = index / (total - 1);
+  const [detailOpen, setDetailOpen] = useState(false);
   const fill = useTransform(progress, [Math.max(threshold - 0.12, 0), threshold], [0, 1]);
   const dotScale = useTransform(fill, [0, 1], [0.8, 1.15]);
   const dotBg = useTransform(fill, [0, 1], ["#e5e7eb", "#8a0303"]);
@@ -1275,10 +1351,11 @@ function CareerNode({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className={`relative z-10 mb-16 flex flex-row items-start gap-5 last:mb-0 ${
-        isRight ? "lg:flex-row-reverse" : "lg:flex-row"
+      className={`relative z-10 mb-16 flex last:mb-0 ${
+        isRight ? "lg:justify-end" : "lg:justify-start"
       }`}
     >
+      <div className="flex flex-row items-start gap-5">
       {/* marker */}
       <div ref={markerRef} className="relative flex shrink-0 items-center justify-center">
         <motion.span
@@ -1341,15 +1418,134 @@ function CareerNode({
             </div>
             <ul className="space-y-1.5">
               {item.projects.map((p) => (
-                <li key={p} className="flex items-start gap-2 text-[12px] leading-relaxed text-[#374151] dark:text-white/75">
+                <li key={p.name} className="flex items-start gap-2 text-[12px] leading-relaxed text-[#374151] dark:text-white/75">
                   <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#8a0303] dark:bg-accent-green" />
-                  {p}
+                  {p.url ? (
+                    
+                    <a  href={p.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-cursor-hover
+                      className="hover:text-[#8a0303] hover:underline dark:hover:text-accent-green"
+                    >
+                      {p.name}
+                    </a>
+                  ) : (
+                    <span>{p.name}</span>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
         )}
+
+        <motion.button
+          data-cursor-hover
+          onClick={() => setDetailOpen(true)}
+          whileHover={{ rotateY: 360 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{ transformPerspective: 800 }}
+          className="relative mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#8a0303]/25 bg-[#8a0303]/5 py-2 font-mono text-[11px] font-medium text-[#8a0303] transition-colors hover:bg-[#8a0303]/10 dark:border-accent-green/25 dark:bg-accent-green/5 dark:text-accent-green dark:hover:bg-accent-green/10"
+        >
+          View more
+        </motion.button>
       </motion.div>
+      </div>
+
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {detailOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 z-[300] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+              onClick={() => setDetailOpen(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                onClick={(e) => e.stopPropagation()}
+                className="relative w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-white/[0.08] dark:bg-[#0f1117]/95 dark:backdrop-blur-xl sm:p-8"
+              >
+                <button
+                  data-cursor-hover
+                  onClick={() => setDetailOpen(false)}
+                  className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-[#6b7280] transition-colors hover:bg-gray-100 dark:border-white/10 dark:text-text-dim dark:hover:bg-white/10"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+
+                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-[#8a0303]/25 bg-[#8a0303]/5 px-2.5 py-1 font-mono text-[10px] font-medium text-[#8a0303] dark:border-accent-green/25 dark:bg-accent-green/5 dark:text-accent-green">
+                  {item.period}
+                </div>
+                <h3 className="font-display text-2xl font-bold text-[#0b0e13] dark:text-text">
+                  {item.role}
+                </h3>
+                <div className="mt-1 mb-4 text-sm font-medium text-[#8a0303] dark:text-accent-red">
+                  {item.org}
+                </div>
+
+                {item.desc && (
+                  <p className="mb-5 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted">
+                    {item.desc}
+                  </p>
+                )}
+
+                {item.tags.length > 0 && (
+                  <div className="mb-5 flex flex-wrap gap-1.5">
+                    {item.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 font-mono text-[10px] text-[#374151] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/70"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {item.projects.length > 0 && (
+                  <div className="border-t border-gray-100 pt-4 dark:border-white/[0.06]">
+                    <div className="mb-3 font-mono text-[10px] font-bold uppercase tracking-widest text-[#6b7280] dark:text-text-dim">
+                      Projects under {item.org}
+                    </div>
+                    <ul className="space-y-2.5">
+                      {item.projects.map((p) =>
+                        p.url ? (
+                          <li key={p.name}>
+                            
+                            <a  href={p.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              data-cursor-hover
+                              className="flex items-center gap-2 text-sm text-[#374151] transition-colors hover:text-[#8a0303] hover:underline dark:text-white/80 dark:hover:text-accent-green"
+                            >
+                              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#8a0303] dark:bg-accent-green" />
+                              {p.name}
+                            </a>
+                          </li>
+                        ) : (
+                          <li key={p.name} className="flex items-center gap-2 text-sm text-[#374151] dark:text-white/80">
+                            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#8a0303] dark:bg-accent-green" />
+                            {p.name}
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </motion.div>
   );
 }
@@ -1361,47 +1557,86 @@ function Career() {
   const pathRef = useRef<SVGPathElement>(null);
   const [pathD, setPathD] = useState("");
   const [pathLen, setPathLen] = useState(0);
+    const [footprints, setFootprints] = useState<
+    { x: number; y: number; angle: number; side: 1 | -1; ratio: number }[]
+  >([]);
+  const [scrollDir, setScrollDir] = useState<1 | -1>(1);
+  const lastScrollY = useRef(0);
 
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start 0.75", "end 0.4"],
+    target: trackRef,
+    offset: ["start 0.75", "end 0.75"],
   });
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 90, damping: 22, mass: 0.4 });
-  const dashOffset = useTransform(smoothProgress, [0, 1], [pathLen, 0]);
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 160, damping: 26, mass: 0.3 });
 
   useEffect(() => {
-    const computePath = () => {
-      if (!trackRef.current) return;
-      const trackRect = trackRef.current.getBoundingClientRect();
-      const points = markerRefs.current
-        .map((el) => {
-          if (!el) return null;
-          const r = el.getBoundingClientRect();
-          return { x: r.left + r.width / 2 - trackRect.left, y: r.top + r.height / 2 - trackRect.top };
-        })
-        .filter(Boolean) as { x: number; y: number }[];
-      if (points.length < 2) return;
-      let d = `M ${points[0].x} ${points[0].y}`;
-      for (let i = 1; i < points.length; i++) {
-        const prev = points[i - 1];
-        const curr = points[i];
-        const midY = (prev.y + curr.y) / 2;
-        d += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`;
-      }
-      setPathD(d);
+    const handleScroll = () => {
+      const current = window.scrollY;
+      const delta = current - lastScrollY.current;
+      lastScrollY.current = current;
+      if (Math.abs(delta) < 2) return;
+      setScrollDir(delta > 0 ? 1 : -1);
     };
-
-    computePath();
-    const t = setTimeout(computePath, 300);
-    window.addEventListener("resize", computePath);
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener("resize", computePath);
-    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const lastPathD = useRef("");
+
+  const computePath = () => {
+    if (!trackRef.current) return;
+    const trackRect = trackRef.current.getBoundingClientRect();
+    const points = markerRefs.current
+      .map((el) => {
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return { x: r.left + r.width / 2 - trackRect.left, y: r.top + r.height / 2 - trackRect.top };
+      })
+      .filter(Boolean) as { x: number; y: number }[];
+    if (points.length < 2) return;
+    let d = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const midY = (prev.y + curr.y) / 2;
+      d += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`;
+    }
+    if (d !== lastPathD.current) {
+      lastPathD.current = d;
+      setPathD(d);
+    }
+  };
+
+  useAnimationFrame(computePath);
+
   useEffect(() => {
-    if (pathRef.current) setPathLen(pathRef.current.getTotalLength());
+    if (!pathRef.current) return;
+    const len = pathRef.current.getTotalLength();
+    setPathLen(len);
+    if (len === 0) return;
+
+    const spacing = 30; // px between each footstep
+    const sideOffset = 11; // px perpendicular offset for left/right foot
+    const count = Math.max(2, Math.floor(len / spacing));
+    const marks: typeof footprints = [];
+
+    for (let i = 0; i <= count; i++) {
+      const dist = (i / count) * len;
+      const p = pathRef.current.getPointAtLength(dist);
+      const p2 = pathRef.current.getPointAtLength(Math.min(dist + 1, len));
+      const angle = (Math.atan2(p2.y - p.y, p2.x - p.x) * 180) / Math.PI;
+      const side: 1 | -1 = i % 2 === 0 ? 1 : -1;
+      const nx = -Math.sin((angle * Math.PI) / 180);
+      const ny = Math.cos((angle * Math.PI) / 180);
+      marks.push({
+        x: p.x + nx * sideOffset * side,
+        y: p.y + ny * sideOffset * side,
+        angle,
+        side,
+        ratio: dist / len,
+      });
+    }
+    setFootprints(marks);
   }, [pathD]);
 
   return (
@@ -1441,41 +1676,29 @@ function Career() {
           </a>
         </motion.div>
 
-        <div ref={trackRef} className="relative max-w-2xl">
-          {/* winding trail (desktop) */}
+        <div ref={trackRef} className="relative z-10 w-full max-w-9xl">
+          {/* hidden path — geometry source only, never stroked */}
           {pathD && (
-            <svg
-              className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full lg:block"
-              style={{ overflow: "visible" }}
-            >
-              <path
-                d={pathD}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeDasharray="1 13"
-                strokeLinecap="round"
-                className="text-gray-300 dark:text-line"
-              />
-              <motion.path
-                ref={pathRef}
-                d={pathD}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeDasharray={pathLen}
-                style={{ strokeDashoffset: dashOffset }}
-                className="text-[#8a0303] dark:text-accent-green"
-              />
+            <svg className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full lg:block" style={{ overflow: "visible" }}>
+              <path ref={pathRef} d={pathD} fill="none" stroke="none" />
             </svg>
           )}
 
-          {/* straight fallback line (mobile) */}
-          <div className="absolute left-5 top-1 bottom-1 w-0.5 rounded-full bg-gray-200 dark:bg-line lg:hidden" />
+          {/* footstep trail (desktop) */}
+          <div className="pointer-events-none absolute inset-0 z-0 hidden lg:block">
+            {footprints.map((f, i) => (
+              <FootMark key={i} x={f.x} y={f.y} angle={f.angle} side={f.side} ratio={f.ratio} progress={smoothProgress} scrollDir={scrollDir} />
+            ))}
+          </div>
+
+          {/* dotted fallback (mobile) */}
+          <div
+            className="absolute left-5 top-1 bottom-1 w-0.5 text-gray-300 dark:text-line lg:hidden"
+            style={{ backgroundImage: "repeating-linear-gradient(to bottom, currentColor 0 4px, transparent 4px 11px)" }}
+          />
           <motion.div
-            style={{ scaleY: smoothProgress }}
-            className="absolute left-5 top-1 bottom-1 w-0.5 origin-top rounded-full bg-[#8a0303] dark:bg-accent-green lg:hidden"
+            style={{ scaleY: smoothProgress, backgroundImage: "repeating-linear-gradient(to bottom, currentColor 0 4px, transparent 4px 11px)" }}
+            className="absolute left-5 top-1 bottom-1 w-0.5 origin-top text-[#8a0303] dark:text-accent-green lg:hidden"
           />
 
           {career.map((item, i) => (
@@ -1543,6 +1766,7 @@ function Contact() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, delay: 0.1 }}
           onSubmit={handleSubmit}
+          suppressHydrationWarning
           className="flex flex-col gap-4"
         >
           <input
