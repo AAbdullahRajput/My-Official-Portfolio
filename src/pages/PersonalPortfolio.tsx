@@ -531,17 +531,49 @@ function About() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="relative aspect-[4/5] w-full overflow-hidden lg:aspect-auto lg:h-[640px]"
+          className="relative mx-auto w-full max-w-md pr-6 sm:pr-10 lg:pr-16 xl:pr-20"
         >
-          <img
-            src="/images/About-Photo.jpeg"
-            alt="Ahmad Abdullah"
-            className="h-full w-full object-cover"
-          />
+          <div className="relative mx-auto aspect-square w-full">
+            <div className="absolute inset-0 rounded-full border border-[#8a0303]/25 dark:border-accent-green/25" />
+            <div className="absolute inset-[14px] overflow-hidden rounded-full shadow-xl">
+              <img
+                src="/images/About-Photo.png"
+                alt="Ahmad Abdullah"
+                className="h-full w-full object-cover"
+              />
+            </div>
+
+            <div className="absolute -right-4 top-6 rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-md dark:border-line dark:bg-panel sm:-right-8">
+              <div className="font-display text-lg font-bold text-[#8a0303] dark:text-accent-green">
+                1+ Years
+              </div>
+              <div className="text-xs text-[#6b7280] dark:text-text-dim">
+                of Experience
+              </div>
+            </div>
+
+            <div className="absolute -left-4 top-1/2 -translate-y-1/2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-md dark:border-line dark:bg-panel sm:-left-10">
+              <div className="font-display text-lg font-bold text-[#8a0303] dark:text-accent-green">
+                20+
+              </div>
+              <div className="text-xs text-[#6b7280] dark:text-text-dim">
+                Projects Shipped
+              </div>
+            </div>
+
+            <div className="absolute -right-2 bottom-8 rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-md dark:border-line dark:bg-panel sm:-right-6">
+              <div className="font-display text-base font-bold text-[#0b0e13] dark:text-text">
+                Live on
+              </div>
+              <div className="text-xs text-[#6b7280] dark:text-text-dim">
+                Google Play
+              </div>
+            </div>
+          </div>
         </motion.div>
       </div>
 
