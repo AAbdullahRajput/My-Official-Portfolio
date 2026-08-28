@@ -608,8 +608,17 @@ function PhotoTour() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<number | null>(null);
   const [toured, setToured] = useState(false);
+  const soundRef = useRef<HTMLAudioElement | null>(null);
+
+  function playSound() {
+    if (!soundRef.current) return;
+    soundRef.current.currentTime = 0;
+    soundRef.current.play().catch(() => {});
+  }
 
   function handleOpen() {
+    soundRef.current = new Audio("/song/location-pointing.mp3");
+    soundRef.current.play().catch(() => {});
     setOpen(true);
     setTimeout(() => setActive(0), 400);
   }
@@ -642,6 +651,7 @@ function PhotoTour() {
           scale: { duration: 0.4, ease: "easeOut" },
           boxShadow: { duration: 0.4 },
         }}
+        data-cursor-hover
         onClick={handleOpen}
       >
         <img
@@ -709,6 +719,7 @@ function PhotoTour() {
 
                 {/* close button */}
                 <button
+                  data-cursor-hover
                   onClick={handleClose}
                   className="absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
                 >
@@ -749,7 +760,8 @@ function PhotoTour() {
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}
                       transition={{ delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                      onClick={(e) => { e.stopPropagation(); goTo(i); }}
+                      data-cursor-hover
+onClick={(e) => { e.stopPropagation(); goTo(i); playSound(); }}
                       className="absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none z-10"
                       style={{ left: s.x, top: s.y }}
                     >
@@ -834,6 +846,7 @@ function PhotoTour() {
                         <div className="flex gap-1.5">
                           {TOUR_STEPS.map((_, i) => (
                             <button
+                              data-cursor-hover
                               key={i}
                               onClick={(e) => { e.stopPropagation(); goTo(i); }}
                               className={`h-1.5 rounded-full transition-all duration-300 ${
@@ -848,7 +861,8 @@ function PhotoTour() {
                         <div className="ml-auto flex gap-2">
                           {active! > 0 && (
                             <button
-                              onClick={(e) => { e.stopPropagation(); goTo(active! - 1); }}
+                              data-cursor-hover
+                              onClick={(e) => { e.stopPropagation(); goTo(active! - 1); playSound(); }}
                               className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white/70 transition-colors hover:bg-white/20"
                             >
                               <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5">
@@ -856,24 +870,16 @@ function PhotoTour() {
                               </svg>
                             </button>
                           )}
-                          {active! < TOUR_STEPS.length - 1 ? (
                             <button
-                              onClick={(e) => { e.stopPropagation(); goTo(active! + 1); }}
+                              data-cursor-hover
+                              onClick={(e) => { e.stopPropagation(); goTo((active! + 1) % TOUR_STEPS.length); playSound(); }}
                               className="flex h-8 items-center gap-1.5 rounded-xl bg-[#8a0303] px-4 font-mono text-[11px] font-medium text-white transition-colors hover:bg-[#6e0202]"
                             >
-                              Next
+                              {active! < TOUR_STEPS.length - 1 ? "Next" : "Again ↺"}
                               <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3">
                                 <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                             </button>
-                          ) : (
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleClose(); }}
-                              className="flex h-8 items-center gap-1.5 rounded-xl bg-[#8a0303] px-4 font-mono text-[11px] font-medium text-white transition-colors hover:bg-[#6e0202]"
-                            >
-                              Done ✓
-                            </button>
-                          )}
                         </div>
                       </div>
                     </motion.div>
