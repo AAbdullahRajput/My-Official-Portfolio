@@ -537,13 +537,28 @@ function About() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="relative mx-auto w-full max-w-md pr-6 sm:pr-10 lg:pr-16 xl:pr-20"
         >
-          <div className="relative mx-auto aspect-square w-full">
+          <div className="relative mx-auto aspect-square w-full max-w-lg">
+            <motion.div
+              className="absolute inset-0 rounded-full border border-[#8a0303]/30 dark:border-accent-green/30"
+              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0, 0.6] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute inset-0 rounded-full border border-[#8a0303]/30 dark:border-accent-green/30"
+              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0, 0.6] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            />
+            <motion.div
+              className="absolute inset-0 rounded-full border border-[#8a0303]/30 dark:border-accent-green/30"
+              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0, 0.6] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            />
             <div className="absolute inset-0 rounded-full border border-[#8a0303]/25 dark:border-accent-green/25" />
-            <div className="absolute inset-[14px] overflow-hidden rounded-full shadow-xl">
+            <div className="absolute inset-[6px] overflow-hidden rounded-full shadow-xl">
               <img
                 src="/images/About-Photo.png"
                 alt="Ahmad Abdullah"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover scale-125 object-top"
               />
             </div>
 
