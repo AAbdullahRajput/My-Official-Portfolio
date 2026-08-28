@@ -537,41 +537,64 @@ function About() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="relative mx-auto w-full max-w-md pr-6 sm:pr-10 lg:pr-16 xl:pr-20"
         >
-          <div className="relative mx-auto aspect-[4/5] w-full max-w-lg">
-            <div className="absolute inset-0 overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line">
+          <div className="relative mx-auto flex aspect-square w-full max-w-xl items-center justify-center">
+            <motion.div
+              className="absolute inset-0"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+            >
+              {[
+                { label: "1+ Years", sub: "of Experience", angle: 0 },
+                { label: "20+", sub: "Projects Shipped", angle: 120 },
+                { label: "Live on", sub: "Google Play", angle: 240 },
+              ].map((item) => {
+                const rad = (item.angle * Math.PI) / 180;
+                const radius = 55;
+                const x = 50 + radius * Math.cos(rad);
+                const y = 50 + radius * Math.sin(rad);
+                return (
+                  <div
+                    key={item.label}
+                    className="absolute -translate-x-1/2 -translate-y-1/2"
+                    style={{ left: `${x}%`, top: `${y}%` }}
+                  >
+                    <motion.div
+                      animate={{ rotate: -360 }}
+                      transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+                      className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-md dark:border-line dark:bg-panel"
+                    >
+                      <div className="font-display text-base font-bold text-[#8a0303] dark:text-accent-green">
+                        {item.label}
+                      </div>
+                      <div className="text-xs text-[#6b7280] dark:text-text-dim">
+                        {item.sub}
+                      </div>
+                    </motion.div>
+                  </div>
+                );
+              })}
+            </motion.div>
+
+            <motion.div
+              className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
+              style={{ inset: "8%" }}
+              animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
+              style={{ inset: "8%" }}
+              animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+            />
+
+            <div className="relative aspect-[4/5] w-[52%] overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line">
               <img
                 src="/images/About-Photo.jpeg"
                 alt="Ahmad Abdullah"
                 className="h-full w-full object-cover"
                 style={{ objectPosition: "50% 30%" }}
               />
-            </div>
-
-            <div className="absolute -right-4 top-6 rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-md dark:border-line dark:bg-panel sm:-right-8">
-              <div className="font-display text-lg font-bold text-[#8a0303] dark:text-accent-green">
-                1+ Years
-              </div>
-              <div className="text-xs text-[#6b7280] dark:text-text-dim">
-                of Experience
-              </div>
-            </div>
-
-            <div className="absolute -left-4 top-1/2 -translate-y-1/2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-md dark:border-line dark:bg-panel sm:-left-10">
-              <div className="font-display text-lg font-bold text-[#8a0303] dark:text-accent-green">
-                20+
-              </div>
-              <div className="text-xs text-[#6b7280] dark:text-text-dim">
-                Projects Shipped
-              </div>
-            </div>
-
-            <div className="absolute -right-2 bottom-8 rounded-xl border border-gray-200 bg-white px-4 py-2.5 shadow-md dark:border-line dark:bg-panel sm:-right-6">
-              <div className="font-display text-base font-bold text-[#0b0e13] dark:text-text">
-                Live on
-              </div>
-              <div className="text-xs text-[#6b7280] dark:text-text-dim">
-                Google Play
-              </div>
             </div>
           </div>
         </motion.div>
