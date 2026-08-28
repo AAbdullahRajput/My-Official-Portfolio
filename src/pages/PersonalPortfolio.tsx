@@ -1206,81 +1206,287 @@ function About() {
 }
 
 // ─── CAREER ─────────────────────────────────────────────
+const CAREER_LINKEDIN_URL = "https://www.linkedin.com/in/ahmad-a-972497411";
+
 const career = [
   {
+    type: "work" as const,
     role: "Python & MERN Stack Developer",
     org: "Mehdi Technologies Pvt. Ltd.",
     period: "May 2026 — Present",
-    desc: "Building full-stack solutions with Python, React.js, Node.js, Express, MongoDB, and cross-platform mobile features for real client projects.",
+    desc: "Building full-stack solutions with Python, React.js, Node.js, Express, and MongoDB for real client projects, alongside cross-platform mobile features.",
+    tags: ["Python", "React.js", "Node.js", "Express", "MongoDB"],
+    projects: ["Client web applications", "Mobile app feature development", "REST API design & integration"],
   },
   {
+    type: "work" as const,
     role: "Full Stack Development Intern",
     org: "CodeAlpha",
     period: "May 2026",
-    desc: "Built ProjectSync, a Trello-style PM app with React/Vite, Node.js/Express, MongoDB Atlas, and Socket.io — deployed on AWS.",
+    desc: "Built ProjectSync end to end — a Trello-style project management app with real-time board updates.",
+    tags: ["React", "Vite", "Node.js", "Socket.io", "MongoDB Atlas", "AWS"],
+    projects: ["ProjectSync — real-time Trello-style PM app, deployed on AWS"],
   },
   {
+    type: "work" as const,
     role: "Independent Full Stack Developer",
     org: "Self-Directed",
     period: "Feb 2025 — Apr 2026",
-    desc: "Designed, built, and deployed full-stack Flutter and web apps end to end — UI, REST APIs, Firebase/Supabase integration, and cloud deployment.",
+    desc: "Designed, built, and deployed full-stack Flutter and web apps end to end — UI, REST APIs, auth, and cloud deployment.",
+    tags: ["Flutter", "React Native", "Firebase", "Supabase", "Node.js"],
+    projects: ["Golazo — live on Google Play", "ConnectHub — deployed social platform", "Station Hub — travel & booking platform", "GetFit — trainer/user fitness ecosystem"],
   },
   {
+    type: "education" as const,
     role: "B.S. Computer Science",
-    org: "University of Arid Agriculture, Rawalpindi",
+    org: "PMAS Arid Agriculture University, Rawalpindi",
     period: "May 2026 · CGPA 3.0/4.0",
     desc: "",
+    tags: [] as string[],
+    projects: [] as string[],
   },
 ];
 
+function CareerNode({
+  item,
+  index,
+  total,
+  progress,
+  markerRef,
+}: {
+  item: typeof career[number];
+  index: number;
+  total: number;
+  progress: ReturnType<typeof useMotionValue<number>>;
+  markerRef: (el: HTMLDivElement | null) => void;
+}) {
+  const isRight = index % 2 === 1;
+  const threshold = index / (total - 1);
+  const fill = useTransform(progress, [Math.max(threshold - 0.12, 0), threshold], [0, 1]);
+  const dotScale = useTransform(fill, [0, 1], [0.8, 1.15]);
+  const dotBg = useTransform(fill, [0, 1], ["#e5e7eb", "#8a0303"]);
+  const dotText = useTransform(fill, [0, 1], ["#6b7280", "#ffffff"]);
+  const ringOpacity = useTransform(fill, [0, 1], [0, 0.5]);
+  const cardOpacity = useTransform(fill, [0, 1], [0.55, 1]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className={`relative z-10 mb-16 flex flex-row items-start gap-5 last:mb-0 ${
+        isRight ? "lg:flex-row-reverse" : "lg:flex-row"
+      }`}
+    >
+      {/* marker */}
+      <div ref={markerRef} className="relative flex shrink-0 items-center justify-center">
+        <motion.span
+          style={{ opacity: ringOpacity }}
+          className="absolute h-10 w-10 rounded-full bg-[#8a0303] dark:bg-accent-green animate-ping"
+        />
+        <motion.span
+          style={{ scale: dotScale, backgroundColor: dotBg }}
+          className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-white shadow-md dark:border-ink"
+        >
+          <motion.span style={{ color: dotText }} className="font-mono text-[11px] font-bold">
+            {index + 1}
+          </motion.span>
+        </motion.span>
+      </div>
+
+      {/* card */}
+      <motion.div
+        style={{ opacity: cardOpacity }}
+        className="group relative w-full max-w-md overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#8a0303]/40 hover:shadow-lg dark:border-white/[0.08] dark:bg-white/[0.04] dark:backdrop-blur-sm dark:hover:border-accent-green/30 dark:hover:bg-white/[0.07] sm:p-6"
+      >
+        <div
+          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          style={{ background: "radial-gradient(circle at 0% 0%, rgba(138,3,3,0.06) 0%, transparent 70%)" }}
+        />
+
+        <div className="relative mb-2 inline-flex items-center gap-2 rounded-full border border-[#8a0303]/25 bg-[#8a0303]/5 px-2.5 py-1 font-mono text-[10px] font-medium text-[#8a0303] dark:border-accent-green/25 dark:bg-accent-green/5 dark:text-accent-green">
+          {item.period}
+        </div>
+        <h3 className="relative font-display text-lg font-bold text-[#0b0e13] dark:text-text sm:text-xl">
+          {item.role}
+        </h3>
+        <div className="relative mt-0.5 mb-3 text-sm font-medium text-[#8a0303] dark:text-accent-red">
+          {item.org}
+        </div>
+
+        {item.desc && (
+          <p className="relative mb-4 text-[13px] leading-relaxed text-[#6b7280] dark:text-text-muted">
+            {item.desc}
+          </p>
+        )}
+
+        {item.tags.length > 0 && (
+          <div className="relative mb-4 flex flex-wrap gap-1.5">
+            {item.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 font-mono text-[10px] text-[#374151] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/70"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {item.projects.length > 0 && (
+          <div className="relative border-t border-gray-100 pt-3 dark:border-white/[0.06]">
+            <div className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#6b7280] dark:text-text-dim">
+              What I built
+            </div>
+            <ul className="space-y-1.5">
+              {item.projects.map((p) => (
+                <li key={p} className="flex items-start gap-2 text-[12px] leading-relaxed text-[#374151] dark:text-white/75">
+                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#8a0303] dark:bg-accent-green" />
+                  {p}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function Career() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const markerRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const pathRef = useRef<SVGPathElement>(null);
+  const [pathD, setPathD] = useState("");
+  const [pathLen, setPathLen] = useState(0);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start 0.75", "end 0.4"],
+  });
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 90, damping: 22, mass: 0.4 });
+  const dashOffset = useTransform(smoothProgress, [0, 1], [pathLen, 0]);
+
+  useEffect(() => {
+    const computePath = () => {
+      if (!trackRef.current) return;
+      const trackRect = trackRef.current.getBoundingClientRect();
+      const points = markerRefs.current
+        .map((el) => {
+          if (!el) return null;
+          const r = el.getBoundingClientRect();
+          return { x: r.left + r.width / 2 - trackRect.left, y: r.top + r.height / 2 - trackRect.top };
+        })
+        .filter(Boolean) as { x: number; y: number }[];
+      if (points.length < 2) return;
+      let d = `M ${points[0].x} ${points[0].y}`;
+      for (let i = 1; i < points.length; i++) {
+        const prev = points[i - 1];
+        const curr = points[i];
+        const midY = (prev.y + curr.y) / 2;
+        d += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`;
+      }
+      setPathD(d);
+    };
+
+    computePath();
+    const t = setTimeout(computePath, 300);
+    window.addEventListener("resize", computePath);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("resize", computePath);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (pathRef.current) setPathLen(pathRef.current.getTotalLength());
+  }, [pathD]);
+
   return (
     <section
       id="career"
-      className="relative bg-gray-50 px-6 py-28 sm:px-10 lg:px-16 dark:bg-ink"
+      ref={sectionRef}
+      className="relative overflow-hidden bg-gray-50 py-28 dark:bg-ink"
     >
-      <div className="mx-auto max-w-3xl">
+      <div className="pl-6 sm:pl-10 lg:pl-20 xl:pl-32 pr-6 sm:pr-10 lg:pr-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6 }}
-          className="mb-14"
+          className="mb-16 flex max-w-3xl flex-wrap items-end justify-between gap-4"
         >
-          <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
-            CAREER
+          <div>
+            <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
+              CAREER
+            </div>
+            <h2 className="font-display text-3xl font-bold text-[#0b0e13] dark:text-text sm:text-4xl">
+              Where I&rsquo;ve been.
+            </h2>
           </div>
-          <h2 className="font-display text-3xl font-bold text-[#0b0e13] dark:text-text sm:text-4xl">
-            Where I&rsquo;ve been.
-          </h2>
+
+          
+          <a  href={CAREER_LINKEDIN_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor-hover
+            className="flex items-center gap-1.5 rounded-full border border-[#8a0303]/20 px-3.5 py-2 font-mono text-xs text-[#0b0e13] transition-colors hover:bg-white dark:border-white/10 dark:text-white dark:hover:bg-white/10"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
+              <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z" />
+            </svg>
+            LinkedIn
+          </a>
         </motion.div>
 
-        <div className="relative border-l border-gray-200 dark:border-line pl-8">
-          {career.map((item, i) => (
-            <motion.div
-              key={item.role}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="relative mb-10 last:mb-0"
+        <div ref={trackRef} className="relative max-w-2xl">
+          {/* winding trail (desktop) */}
+          {pathD && (
+            <svg
+              className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full lg:block"
+              style={{ overflow: "visible" }}
             >
-              <span className="absolute -left-[2.35rem] top-1.5 h-3 w-3 rounded-full bg-[#8a0303] dark:bg-accent-green" />
-              <div className="mb-1 font-mono text-xs text-[#6b7280] dark:text-text-dim">
-                {item.period}
-              </div>
-              <h3 className="font-display text-lg font-semibold text-[#0b0e13] dark:text-text">
-                {item.role}
-              </h3>
-              <div className="mb-2 text-sm text-[#8a0303] dark:text-accent-red">
-                {item.org}
-              </div>
-              {item.desc && (
-                <p className="text-sm leading-relaxed text-[#6b7280] dark:text-text-muted">
-                  {item.desc}
-                </p>
-              )}
-            </motion.div>
+              <path
+                d={pathD}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeDasharray="1 13"
+                strokeLinecap="round"
+                className="text-gray-300 dark:text-line"
+              />
+              <motion.path
+                ref={pathRef}
+                d={pathD}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeDasharray={pathLen}
+                style={{ strokeDashoffset: dashOffset }}
+                className="text-[#8a0303] dark:text-accent-green"
+              />
+            </svg>
+          )}
+
+          {/* straight fallback line (mobile) */}
+          <div className="absolute left-5 top-1 bottom-1 w-0.5 rounded-full bg-gray-200 dark:bg-line lg:hidden" />
+          <motion.div
+            style={{ scaleY: smoothProgress }}
+            className="absolute left-5 top-1 bottom-1 w-0.5 origin-top rounded-full bg-[#8a0303] dark:bg-accent-green lg:hidden"
+          />
+
+          {career.map((item, i) => (
+            <CareerNode
+              key={item.role}
+              item={item}
+              index={i}
+              total={career.length}
+              progress={smoothProgress}
+              markerRef={(el) => { markerRefs.current[i] = el; }}
+            />
           ))}
         </div>
       </div>

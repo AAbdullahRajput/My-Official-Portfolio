@@ -12,6 +12,9 @@ import {
   FiSun,
   FiMoon,
 } from "react-icons/fi";
+import { FaLinkedin } from "react-icons/fa";
+
+const LINKEDIN_URL = "https://www.linkedin.com/in/ahmad-a-972497411";
 
 const links = [
   { label: "Work", href: "#projects" },
@@ -128,6 +131,15 @@ export default function Navbar() {
             <FiGithub size={15} />
           </a>
 
+          <a  href={LINKEDIN_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor-hover
+            className="text-[#6b7280] transition-colors hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
+          >
+            <FaLinkedin size={15} />
+          </a>
+
           
           <a  href="mailto:ahmadabdullah4972@gmail.com"
             data-cursor-hover
@@ -198,6 +210,14 @@ export default function Navbar() {
             className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
           >
             GitHub
+          </a>
+
+          <a  href={LINKEDIN_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
+          >
+            LinkedIn
           </a>
 
           
