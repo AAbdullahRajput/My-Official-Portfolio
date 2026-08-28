@@ -566,24 +566,11 @@ function OrbitBadge({
 
 const TOUR_STEPS = [
   {
-    id: "person",
-    x: "48%",
-    y: "38%",
-    title: "Ahmad Abdullah",
-    body: "That's me — full-stack developer, currently building production apps at Mehdi Technologies in Islamabad.",
-    icon: (
-      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
     id: "hills",
-    x: "72%",
-    y: "22%",
+    x: "60%",
+    y: "60%",
     title: "Margalla Hills",
-    body: "The green ridgeline behind me — Margalla Hills, the foothills of the Himalayas that frame Islamabad's northern edge. A 15-minute drive from my desk.",
+    body: "The green ridgeline stretching across the horizon — Margalla Hills, the foothills of the Himalayas that frame Islamabad's northern edge. A 15-minute drive from my desk.",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
         <path d="M2 16l5-8 4 5 3-4 4 7H2Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
@@ -592,10 +579,10 @@ const TOUR_STEPS = [
   },
   {
     id: "skyline",
-    x: "60%",
-    y: "55%",
-    title: "Islamabad Skyline",
-    body: "The towers below are Centaurus — Islamabad's landmark mixed-use skyscraper in F-8. One of the few high-rises that breaks the city's low-rise grid.",
+    x: "72%",
+    y: "32%",
+    title: "Centaurus, Islamabad",
+    body: "The trio of towers cutting through the haze — Centaurus, Islamabad's landmark mixed-use skyscraper complex in F-8. One of the few high-rises that breaks the city's low-rise grid.",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 17V9l4-4 4 4V7l3-3 3 3v10H3Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
@@ -603,16 +590,15 @@ const TOUR_STEPS = [
     ),
   },
   {
-    id: "vibe",
-    x: "25%",
-    y: "65%",
-    title: "The Vantage Point",
-    body: "Shot from a hiking trail above the city — I come up here to think through system architecture and debug problems that IDEs can't solve.",
+    id: "person",
+    x: "36%",
+    y: "48%",
+    title: "Ahmad Abdullah",
+    body: "That's me — full-stack developer, currently building production apps at Mehdi Technologies in Islamabad. Shot from a hiking trail above the city.",
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M2 10h2M16 10h2M10 2v2M10 16v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        <path d="M4.93 4.93l1.41 1.41M13.66 13.66l1.41 1.41M4.93 15.07l1.41-1.41M13.66 6.34l1.41-1.41" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+        <circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
     ),
   },
