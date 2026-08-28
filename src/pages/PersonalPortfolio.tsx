@@ -968,7 +968,7 @@ function SkillChips() {
             <button
               data-cursor-hover
               onClick={() => setActiveSkill(skill)}
-              className="rounded-full border border-gray-200 bg-white px-3 py-1.5 font-mono text-[11px] text-[#0b0e13] transition-all duration-200 hover:border-[#8a0303]/40 hover:text-[#8a0303] hover:shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-accent-blue dark:hover:border-accent-green/30 dark:hover:text-accent-green"
+              className="rounded-full border border-gray-200 bg-white px-3 py-1.5 font-mono text-[11px] text-[#0b0e13] transition-all duration-200 hover:border-[#8a0303]/40 hover:text-[#8a0303] hover:shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:hover:border-accent-green/30 dark:hover:text-accent-green"
             >
               {skill.label}
             </button>
@@ -1051,7 +1051,7 @@ function About() {
         >
           <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">ABOUT</div>
           <h2 className="font-display mb-8 text-3xl font-bold leading-tight text-[#0b0e13] dark:text-text sm:text-4xl">
-            Full-stack, end to end.
+            Full-Stack Website & Mobile App Developer
           </h2>
 
           <motion.p
@@ -1104,7 +1104,7 @@ function About() {
                 label: "English · Urdu",
               },
             ].map(({ icon, label }) => (
-              <span key={label} className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1 font-mono text-[11px] text-[#6b7280] transition-all duration-200 hover:border-[#8a0303]/40 hover:text-[#8a0303] hover:shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-text-dim dark:hover:border-accent-green/30 dark:hover:text-accent-green">
+              <span key={label} className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1 font-mono text-[11px] text-[#6b7280] transition-all duration-200 hover:border-[#8a0303]/40 hover:text-[#8a0303] hover:shadow-sm dark:border-white/[0.15] dark:bg-white/[0.06] dark:text-white dark:hover:border-accent-green/30 dark:hover:text-accent-green [&>svg]:stroke-current">
                 {icon}
                 {label}
               </span>
