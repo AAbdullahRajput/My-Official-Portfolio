@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useScroll, useAnimationFrame, animate } from "framer-motion";
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
@@ -618,21 +619,19 @@ const TOUR_STEPS = [
 ];
 
 function PhotoTour() {
+  const [open, setOpen] = useState(false);
   const [active, setActive] = useState<number | null>(null);
   const [toured, setToured] = useState(false);
-  const [flipped, setFlipped] = useState(false);
 
-  function handleClick() {
-    if (active === null) {
-      setFlipped(true);
-      setTimeout(() => {
-        setActive(0);
-        setFlipped(false);
-      }, 400);
-    } else {
-      setActive(null);
-      setToured(true);
-    }
+  function handleOpen() {
+    setOpen(true);
+    setTimeout(() => setActive(0), 400);
+  }
+
+  function handleClose() {
+    setActive(null);
+    setOpen(false);
+    setToured(true);
   }
 
   function goTo(i: number) {
@@ -642,168 +641,234 @@ function PhotoTour() {
   const step = active !== null ? TOUR_STEPS[active] : null;
 
   return (
-    <motion.div
-      className="relative aspect-[4/5] w-[90%] overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line cursor-pointer"
-      style={{ transformPerspective: 900, transformStyle: "preserve-3d" }}
-      whileHover={active === null ? {
-        rotateY: 360,
-        scale: 1.03,
-        boxShadow: "0 25px 50px rgba(138,3,3,0.25)",
-      } : {}}
-      transition={{
-        rotateY: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
-        scale: { duration: 0.4, ease: "easeOut" },
-        boxShadow: { duration: 0.4 },
-      }}
-      onClick={handleClick}
-    >
-      <img
-        src="/images/About-Photo.jpeg"
-        alt="Ahmad Abdullah"
-        className="h-full w-full object-cover"
-        style={{ objectPosition: "50% 30%" }}
-      />
+    <>
+      {/* ── thumbnail card ── */}
+      <motion.div
+        className="relative aspect-[4/5] w-[90%] overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line cursor-pointer"
+        style={{ transformPerspective: 900, transformStyle: "preserve-3d" }}
+        whileHover={{
+          rotateY: 360,
+          scale: 1.03,
+          boxShadow: "0 25px 50px rgba(138,3,3,0.25)",
+        }}
+        transition={{
+          rotateY: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+          scale: { duration: 0.4, ease: "easeOut" },
+          boxShadow: { duration: 0.4 },
+        }}
+        onClick={handleOpen}
+      >
+        <img
+          src="/images/About-Photo.jpeg"
+          alt="Ahmad Abdullah"
+          className="h-full w-full object-cover"
+          style={{ objectPosition: "50% 30%" }}
+        />
 
-      {/* dim overlay when touring */}
-      <AnimatePresence>
-        {active !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/30 backdrop-blur-[1px]"
-          />
-        )}
-      </AnimatePresence>
-
-      {/* hint badge when not yet toured */}
-      <AnimatePresence>
-        {active === null && !toured && (
-          <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 6 }}
-            transition={{ delay: 0.6 }}
-            className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full border border-[#8a0303]/30 bg-white/90 px-3 py-1.5 shadow-md backdrop-blur-sm dark:bg-panel/90"
-          >
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#8a0303] opacity-60" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#8a0303]" />
-            </span>
-            <span className="font-mono text-[10px] text-[#8a0303] dark:text-accent-green">
-              Click to explore
-            </span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* dot markers */}
-      <AnimatePresence>
-        {active !== null && TOUR_STEPS.map((s, i) => (
-          <motion.button
-            key={s.id}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            transition={{ delay: i * 0.07 }}
-            onClick={(e) => { e.stopPropagation(); goTo(i); }}
-            className="absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none"
-            style={{ left: s.x, top: s.y }}
-          >
-            <span className="relative flex h-5 w-5 items-center justify-center">
-              <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-50 ${i === active ? "bg-[#8a0303]" : "bg-white"}`} />
-              <span className={`relative inline-flex h-4 w-4 items-center justify-center rounded-full border-2 font-mono text-[9px] font-bold shadow-md ${
-                i === active
-                  ? "border-[#8a0303] bg-[#8a0303] text-white"
-                  : "border-white bg-white/90 text-[#8a0303]"
-              }`}>
-                {i + 1}
+        {/* hint badge */}
+        <AnimatePresence>
+          {!toured && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              transition={{ delay: 0.6 }}
+              className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full border border-[#8a0303]/30 bg-white/90 px-3 py-1.5 shadow-md backdrop-blur-sm dark:bg-panel/90"
+            >
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#8a0303] opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#8a0303]" />
               </span>
-            </span>
-          </motion.button>
-        ))}
-      </AnimatePresence>
-
-      {/* tooltip popup */}
-      <AnimatePresence mode="wait">
-        {step && (
-          <motion.div
-            key={step.id}
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -6, scale: 0.95 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            onClick={(e) => e.stopPropagation()}
-            className="absolute bottom-4 left-3 right-3 z-10 rounded-2xl border border-[#8a0303]/20 bg-white/95 p-4 shadow-2xl backdrop-blur-md dark:border-accent-green/20 dark:bg-panel/95"
-          >
-            {/* header */}
-            <div className="mb-2 flex items-center gap-2">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green">
-                {step.icon}
+              <span className="font-mono text-[10px] text-[#8a0303] dark:text-accent-green">
+                Click to explore
               </span>
-              <span className="font-display text-[13px] font-bold text-[#8a0303] dark:text-accent-green">
-                {step.title}
-              </span>
-              <span className="ml-auto font-mono text-[10px] text-[#6b7280] dark:text-text-dim">
-                {active! + 1} / {TOUR_STEPS.length}
-              </span>
-            </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
-            {/* body */}
-            <p className="mb-3 text-[11px] leading-relaxed text-[#374151] dark:text-text-muted">
-              {step.body}
-            </p>
+      {/* ── fullscreen overlay portal ── */}
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35 }}
+              className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+              onClick={handleClose}
+            >
+              <motion.div
+                initial={{ scale: 0.08, opacity: 0, borderRadius: "24px" }}
+                animate={{ scale: 1, opacity: 1, borderRadius: "20px" }}
+                exit={{ scale: 0.08, opacity: 0, borderRadius: "24px" }}
+                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                onClick={(e) => e.stopPropagation()}
+                className="relative w-full max-w-2xl overflow-hidden shadow-2xl"
+                style={{ maxHeight: "90vh", aspectRatio: "4/5" }}
+              >
+                {/* photo */}
+                <img
+                  src="/images/About-Photo.jpeg"
+                  alt="Ahmad Abdullah"
+                  className="h-full w-full object-cover"
+                  style={{ objectPosition: "50% 30%" }}
+                />
 
-            {/* nav */}
-            <div className="flex items-center gap-2">
-              {/* step dots */}
-              <div className="flex gap-1">
-                {TOUR_STEPS.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={(e) => { e.stopPropagation(); goTo(i); }}
-                    className={`h-1.5 rounded-full transition-all duration-200 ${
-                      i === active ? "w-4 bg-[#8a0303] dark:bg-accent-green" : "w-1.5 bg-gray-300 dark:bg-text-dim"
-                    }`}
-                  />
-                ))}
-              </div>
+                {/* top gradient */}
+                <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/60 to-transparent" />
+                {/* bottom gradient */}
+                <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/80 to-transparent" />
 
-              <div className="ml-auto flex gap-1.5">
-                {active! > 0 && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); goTo(active! - 1); }}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-line dark:bg-panel dark:text-text-dim"
-                  >
-                    <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-                )}
-                {active! < TOUR_STEPS.length - 1 ? (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); goTo(active! + 1); }}
-                    className="flex h-7 items-center gap-1 rounded-lg bg-[#8a0303] px-3 font-mono text-[10px] text-white transition-colors hover:bg-[#6e0202] dark:bg-accent-green dark:text-ink"
-                  >
-                    Next
-                    <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-                ) : (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setActive(null); setToured(true); }}
-                    className="flex h-7 items-center gap-1 rounded-lg bg-[#8a0303] px-3 font-mono text-[10px] text-white transition-colors hover:bg-[#6e0202] dark:bg-accent-green dark:text-ink"
-                  >
-                    Done ✓
-                  </button>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+                {/* close button */}
+                <button
+                  onClick={handleClose}
+                  className="absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+
+                {/* top label */}
+                <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#8a0303] opacity-70" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[#8a0303]" />
+                  </span>
+                  <span className="font-mono text-[11px] font-medium text-white/80 tracking-wide">
+                    INTERACTIVE TOUR
+                  </span>
+                </div>
+
+                {/* dim overlay when step active */}
+                <AnimatePresence>
+                  {active !== null && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 bg-black/20"
+                    />
+                  )}
+                </AnimatePresence>
+
+                {/* numbered dot markers */}
+                <AnimatePresence>
+                  {active !== null && TOUR_STEPS.map((s, i) => (
+                    <motion.button
+                      key={s.id}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                      onClick={(e) => { e.stopPropagation(); goTo(i); }}
+                      className="absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none z-10"
+                      style={{ left: s.x, top: s.y }}
+                    >
+                      <span className="relative flex h-7 w-7 items-center justify-center">
+                        <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-40 ${i === active ? "bg-[#8a0303]" : "bg-white"}`} />
+                        <span className={`relative inline-flex h-6 w-6 items-center justify-center rounded-full border-2 font-mono text-[10px] font-bold shadow-lg transition-all ${
+                          i === active
+                            ? "border-[#8a0303] bg-[#8a0303] text-white scale-125"
+                            : "border-white/80 bg-white/20 text-white backdrop-blur-sm"
+                        }`}>
+                          {i + 1}
+                        </span>
+                      </span>
+                    </motion.button>
+                  ))}
+                </AnimatePresence>
+
+                {/* tooltip card */}
+                <AnimatePresence mode="wait">
+                  {step && (
+                    <motion.div
+                      key={step.id}
+                      initial={{ opacity: 0, y: 16, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="absolute bottom-5 left-4 right-4 z-20 rounded-2xl border border-white/10 bg-black/70 p-4 shadow-2xl backdrop-blur-xl"
+                    >
+                      {/* header */}
+                      <div className="mb-2.5 flex items-center gap-2.5">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[#8a0303]/90 text-white">
+                          {step.icon}
+                        </span>
+                        <span className="font-display text-[14px] font-bold text-white">
+                          {step.title}
+                        </span>
+                        <span className="ml-auto font-mono text-[10px] text-white/40">
+                          {active! + 1} / {TOUR_STEPS.length}
+                        </span>
+                      </div>
+
+                      {/* body */}
+                      <p className="mb-3.5 text-[12px] leading-relaxed text-white/70">
+                        {step.body}
+                      </p>
+
+                      {/* nav row */}
+                      <div className="flex items-center gap-2">
+                        {/* progress dots */}
+                        <div className="flex gap-1.5">
+                          {TOUR_STEPS.map((_, i) => (
+                            <button
+                              key={i}
+                              onClick={(e) => { e.stopPropagation(); goTo(i); }}
+                              className={`h-1.5 rounded-full transition-all duration-300 ${
+                                i === active
+                                  ? "w-5 bg-[#8a0303]"
+                                  : "w-1.5 bg-white/25 hover:bg-white/50"
+                              }`}
+                            />
+                          ))}
+                        </div>
+
+                        <div className="ml-auto flex gap-2">
+                          {active! > 0 && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); goTo(active! - 1); }}
+                              className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white/70 transition-colors hover:bg-white/20"
+                            >
+                              <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5">
+                                <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </button>
+                          )}
+                          {active! < TOUR_STEPS.length - 1 ? (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); goTo(active! + 1); }}
+                              className="flex h-8 items-center gap-1.5 rounded-xl bg-[#8a0303] px-4 font-mono text-[11px] font-medium text-white transition-colors hover:bg-[#6e0202]"
+                            >
+                              Next
+                              <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3">
+                                <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleClose(); }}
+                              className="flex h-8 items-center gap-1.5 rounded-xl bg-[#8a0303] px-4 font-mono text-[11px] font-medium text-white transition-colors hover:bg-[#6e0202]"
+                            >
+                              Done ✓
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </>
   );
 }
 
