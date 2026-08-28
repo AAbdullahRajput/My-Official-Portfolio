@@ -618,15 +618,17 @@ function PhotoTour() {
 
   function handleOpen() {
     soundRef.current = new Audio("/song/location-pointing.mp3");
+    soundRef.current.loop = true;
     soundRef.current.play().catch(() => {});
     setOpen(true);
     setTimeout(() => setActive(0), 400);
   }
 
   function handleClose() {
+    if (soundRef.current) { soundRef.current.pause(); soundRef.current.currentTime = 0; }
     setActive(null);
     setOpen(false);
-    setToured(true);
+    setToured(false);
   }
 
   function goTo(i: number) {
