@@ -750,6 +750,7 @@ export default function PersonalPortfolio({ splashDone = false }: { splashDone?:
       <Hero splashDone={splashDone} />
       <Projects />
       <About />
+      <Career />
       <Contact />
       <Footer />
     </main>
