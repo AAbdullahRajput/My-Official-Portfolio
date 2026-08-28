@@ -567,8 +567,8 @@ function OrbitBadge({
 const TOUR_STEPS = [
   {
     id: "hills",
-    x: "60%",
-    y: "60%",
+    x: "75%",
+    y: "55%",
     title: "Margalla Hills",
     body: "The green ridgeline stretching across the horizon — Margalla Hills, the foothills of the Himalayas that frame Islamabad's northern edge. A 15-minute drive from my desk.",
     icon: (
@@ -579,7 +579,7 @@ const TOUR_STEPS = [
   },
   {
     id: "skyline",
-    x: "72%",
+    x: "67%",
     y: "32%",
     title: "Centaurus, Islamabad",
     body: "The trio of towers cutting through the haze — Centaurus, Islamabad's landmark mixed-use skyscraper complex in F-8. One of the few high-rises that breaks the city's low-rise grid.",
@@ -591,7 +591,7 @@ const TOUR_STEPS = [
   },
   {
     id: "person",
-    x: "36%",
+    x: "33%",
     y: "48%",
     title: "Ahmad Abdullah",
     body: "That's me — full-stack developer, currently building production apps at Mehdi Technologies in Islamabad. Shot from a hiking trail above the city.",
@@ -740,7 +740,7 @@ function PhotoTour() {
                   )}
                 </AnimatePresence>
 
-                {/* numbered dot markers */}
+                {/* numbered dot markers with animated arrows */}
                 <AnimatePresence>
                   {active !== null && TOUR_STEPS.map((s, i) => (
                     <motion.button
@@ -753,16 +753,47 @@ function PhotoTour() {
                       className="absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none z-10"
                       style={{ left: s.x, top: s.y }}
                     >
-                      <span className="relative flex h-7 w-7 items-center justify-center">
-                        <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-40 ${i === active ? "bg-[#8a0303]" : "bg-white"}`} />
-                        <span className={`relative inline-flex h-6 w-6 items-center justify-center rounded-full border-2 font-mono text-[10px] font-bold shadow-lg transition-all ${
-                          i === active
-                            ? "border-[#8a0303] bg-[#8a0303] text-white scale-125"
-                            : "border-white/80 bg-white/20 text-white backdrop-blur-sm"
-                        }`}>
-                          {i + 1}
+                      <div className="flex items-center gap-0">
+                        {/* animated arrow chain pointing left */}
+                        <div className="flex items-center mr-1">
+                          {[0, 1, 2].map((j) => (
+                            <motion.svg
+                              key={j}
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              className="h-4 w-4 -ml-1.5"
+                              xmlns="http://www.w3.org/2000/svg"
+                              animate={{ opacity: [0, 1, 0], x: [-4, 0, -4] }}
+                              transition={{
+                                duration: 1.1,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: j * 0.18,
+                              }}
+                            >
+                              <path
+                                d="M10 3L5 8l5 5"
+                                stroke={i === active ? "#8a0303" : "rgba(255,255,255,0.85)"}
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </motion.svg>
+                          ))}
+                        </div>
+
+                        {/* dot */}
+                        <span className="relative flex h-7 w-7 items-center justify-center">
+                          <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-40 ${i === active ? "bg-[#8a0303]" : "bg-white"}`} />
+                          <span className={`relative inline-flex h-6 w-6 items-center justify-center rounded-full border-2 font-mono text-[10px] font-bold shadow-lg transition-all ${
+                            i === active
+                              ? "border-[#8a0303] bg-[#8a0303] text-white scale-125"
+                              : "border-white/80 bg-white/20 text-white backdrop-blur-sm"
+                          }`}>
+                            {i + 1}
+                          </span>
                         </span>
-                      </span>
+                      </div>
                     </motion.button>
                   ))}
                 </AnimatePresence>
