@@ -537,7 +537,7 @@ function About() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="relative mx-auto w-full max-w-md pr-6 sm:pr-10 lg:pr-16 xl:pr-20"
         >
-          <div className="relative mx-auto flex aspect-square w-full max-w-xl items-center justify-center">
+          <div className="relative mx-auto flex aspect-square w-full max-w-2xl items-center justify-center">
             <motion.div
               className="absolute inset-0"
               animate={{ rotate: 360 }}
@@ -549,7 +549,7 @@ function About() {
                 { label: "Live on", sub: "Google Play", angle: 240 },
               ].map((item) => {
                 const rad = (item.angle * Math.PI) / 180;
-                const radius = 55;
+                const radius = 75;
                 const x = 50 + radius * Math.cos(rad);
                 const y = 50 + radius * Math.sin(rad);
                 return (
@@ -577,18 +577,32 @@ function About() {
 
             <motion.div
               className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
-              style={{ inset: "8%" }}
+              style={{ inset: "-25%" }}
               animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div
               className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
-              style={{ inset: "8%" }}
+              style={{ inset: "-10%" }}
               animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
             />
 
-            <div className="relative aspect-[4/5] w-[52%] overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line">
+            <motion.div
+              className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
+              style={{ inset: "-10%" }}
+              animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+            />
+
+            <motion.div
+              className="absolute rounded-full border border-[#8a0303]/25 dark:border-accent-green/25"
+              style={{ inset: "-30%" }}
+              animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+            />
+
+            <div className="relative aspect-[4/5] w-[90%] overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line">
               <img
                 src="/images/About-Photo.jpeg"
                 alt="Ahmad Abdullah"
