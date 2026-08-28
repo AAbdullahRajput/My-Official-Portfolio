@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useScroll, useAnimationFrame, animate } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useMotionValueEvent, useSpring, useTransform, useScroll, useAnimationFrame, useAnimation, animate, type Variants } from "framer-motion";
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
 import Navbar from "@/components/Navbar";
@@ -1206,8 +1206,6 @@ function About() {
 }
 
 // ─── CAREER ─────────────────────────────────────────────
-const CAREER_LINKEDIN_URL = "https://www.linkedin.com/in/ahmad-a-972497411";
-
 interface CareerProject {
   name: string;
   url?: string;
@@ -1232,9 +1230,12 @@ const career: CareerItem[] = [
     desc: "Building full-stack solutions with Python, React.js, Node.js, Express, and MongoDB for real client projects, alongside cross-platform mobile features.",
     tags: ["Python", "React.js", "Node.js", "Express", "MongoDB"],
     projects: [
-      { name: "Client web applications" },
-      { name: "Mobile app feature development" },
-      { name: "REST API design & integration" },
+      { name: "GetFit AI — user app", url: "https://getfitai-ashen.vercel.app/" },
+      { name: "GetFit AI — trainer app", url: "https://getfitai-ashen.vercel.app/" },
+      { name: "Golazo — live on Google Play", url: "https://play.google.com/store/apps/details?id=com.golazo" },
+      { name: "Station Hub — travel & booking platform", url: "https://github.com/AAbdullahRajput/Station-Hub-Project" },
+      { name: "Scan-Chat AI — SaaS chatbot platform", url: "https://scan-chat.ai" },
+      { name: "AI Tools Hub — Framer AI tools directory" },
     ],
   },
   {
@@ -1242,10 +1243,12 @@ const career: CareerItem[] = [
     role: "Full Stack Development Intern",
     org: "CodeAlpha",
     period: "May 2026",
-    desc: "Built ProjectSync end to end — a Trello-style project management app with real-time board updates.",
+    desc: "Full-stack development internship building real-time, production-style web applications.",
     tags: ["React", "Vite", "Node.js", "Socket.io", "MongoDB Atlas", "AWS"],
     projects: [
+      { name: "ConnectHub — real-time social platform", url: "https://github.com/AAbdullahRajput/Connect-Hub" },
       { name: "ProjectSync — real-time Trello-style PM app", url: "https://project-sync-alpha.vercel.app" },
+      { name: "E-Commerce Fullstack — store with admin panel", url: "https://github.com/AAbdullahRajput/E-Commerce-Fullstack-Design" },
     ],
   },
   {
@@ -1253,13 +1256,18 @@ const career: CareerItem[] = [
     role: "Independent Full Stack Developer",
     org: "Self-Directed",
     period: "Feb 2025 — Apr 2026",
-    desc: "Designed, built, and deployed full-stack Flutter and web apps end to end — UI, REST APIs, auth, and cloud deployment.",
-    tags: ["Flutter", "React Native", "Firebase", "Supabase", "Node.js"],
+    desc: "Designed, built, and deployed full-stack Flutter, web, mobile, and desktop apps end to end — UI, REST APIs, auth, and cloud deployment.",
+    tags: ["Flutter", "React Native", "Java", "Python", "C#"],
     projects: [
-      { name: "Golazo — live on Google Play", url: "https://play.google.com/store/apps/details?id=com.golazo" },
-      { name: "ConnectHub — deployed social platform", url: "https://github.com/AAbdullahRajput/Connect-Hub" },
-      { name: "Station Hub — travel & booking platform", url: "https://github.com/AAbdullahRajput/Station-Hub-Project" },
-      { name: "GetFit — trainer/user fitness ecosystem", url: "https://getfitai-ashen.vercel.app/" },
+      { name: "The Royal Restaurant — React restaurant website", url: "https://github.com/AAbdullahRajput/-The-Royal-Restaurant-Website-Using-React-" },
+      { name: "FitLife — AI fitness app with Gemini Vision", url: "https://github.com/AAbdullahRajput/FitLife" },
+      { name: "Campus Entry Guide — face recognition attendance app", url: "https://github.com/AAbdullahRajput/Campus_Entry_Guide" },
+      { name: "SabziDukan — role-based shop management system", url: "https://github.com/AAbdullahRajput/SabziDukan" },
+      { name: "Mighty Meals — Java restaurant management system", url: "https://github.com/AAbdullahRajput/Mighty-Meals" },
+      { name: "LexiParse Tools — Python lexical analyzer", url: "https://github.com/AAbdullahRajput/LexiParse-Tools" },
+      { name: "Musicfy — Android music player", url: "https://github.com/AAbdullahRajput/Musicfy" },
+      { name: "Maze Game — OpenGL maze game", url: "https://github.com/AAbdullahRajput/Maze-Game" },
+      { name: "Mini Market Management System — C# WinForms POS", url: "https://github.com/AAbdullahRajput/Mini-Market-Management-System" },
     ],
   },
 ];
@@ -1271,13 +1279,11 @@ const CAREER_OFFSET_CLASS: Record<number, string> = {
   3: "lg:ml-[150px]",
 };
 
-const FOOT_PATH_D =
-  "M12 2C10.2 2 9 3.7 9 5.6c0 1.1.4 2 .5 2.9-.9.6-1.8 1.9-1.8 3.7 0 2.7 1.9 4.8 4.3 4.8s4.3-2.1 4.3-4.8c0-1.8-.9-3.1-1.8-3.7.1-.9.5-1.8.5-2.9C15 3.7 13.8 2 12 2Z";
-
 function FootIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d={FOOT_PATH_D} />
+      <ellipse cx="12" cy="9" rx="3.3" ry="4.2" />
+      <ellipse cx="12" cy="14" rx="4.4" ry="5" />
     </svg>
   );
 }
@@ -1301,7 +1307,7 @@ function FootMark({
 }) {
   const opacity = useTransform(progress, [Math.max(ratio - 0.025, 0), ratio], [0, 1]);
   const scale = useTransform(progress, [Math.max(ratio - 0.025, 0), ratio], [0.4, 1]);
-  const rotation = angle + 90 + (scrollDir === -1 ? 180 : 0);
+  const rotation = angle + 90 + (scrollDir === 1 ? 180 : 0);
 
   return (
     <motion.div
@@ -1322,6 +1328,18 @@ function FootMark({
   );
 }
 
+const waveContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.07 } },
+} satisfies Variants;
+const waveItem = {
+  hidden: { y: 0 },
+  visible: {
+    y: [0, -6, 0],
+    transition: { duration: 0.45, ease: "easeOut" as const },
+  },
+} satisfies Variants;
+
 function CareerNode({
   item,
   index,
@@ -1337,13 +1355,42 @@ function CareerNode({
 }) {
   const isRight = index % 2 === 1;
   const threshold = index / (total - 1);
+  const rangeStart = Math.min(Math.max(threshold - 0.12, 0), threshold - 0.02);
   const [detailOpen, setDetailOpen] = useState(false);
-  const fill = useTransform(progress, [Math.max(threshold - 0.12, 0), threshold], [0, 1]);
+  const fill = useTransform(progress, [rangeStart, threshold], [0, 1]);
+  const [activated, setActivated] = useState(() => fill.get() >= 0.98);
+  const [jumpCycle, setJumpCycle] = useState(() => (fill.get() >= 0.98 ? 1 : 0));
   const dotScale = useTransform(fill, [0, 1], [0.8, 1.15]);
   const dotBg = useTransform(fill, [0, 1], ["#e5e7eb", "#8a0303"]);
   const dotText = useTransform(fill, [0, 1], ["#6b7280", "#ffffff"]);
   const ringOpacity = useTransform(fill, [0, 1], [0, 0.5]);
-  const cardOpacity = useTransform(fill, [0, 1], [0.55, 1]);
+
+  const waveControls = useAnimation();
+
+  useMotionValueEvent(fill, "change", (v) => {
+    if (v >= 0.98 && !activated) {
+      setActivated(true);
+      setJumpCycle((c) => c + 1);
+      waveControls.set("hidden");
+      waveControls.start("visible");
+    } else if (v < 0.98 && activated) {
+      setActivated(false);
+    }
+  });
+
+  const cardBgClass = activated
+    ? "bg-[#8a0303] border-[#8a0303] dark:bg-accent-green dark:border-accent-green"
+    : "bg-white border-gray-200 dark:bg-white/[0.04] dark:border-white/[0.08]";
+  const headingClass = activated ? "text-white" : "text-[#0b0e13] dark:text-text";
+  const orgClass = activated ? "text-white/90" : "text-[#8a0303] dark:text-accent-red";
+  const descClass = activated ? "text-white/80" : "text-[#6b7280] dark:text-text-muted";
+  const tagClass = activated
+    ? "border-white/30 bg-white/10 text-white"
+    : "border-gray-200 bg-gray-50 text-[#374151] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/70";
+  const builtBorderClass = activated ? "border-white/20" : "border-gray-100 dark:border-white/[0.06]";
+  const builtLabelTextClass = activated ? "text-white/70" : "text-[#6b7280] dark:text-text-dim";
+  const listTextClass = activated ? "text-white/85" : "text-[#374151] dark:text-white/75";
+  const listDotClass = activated ? "bg-white" : "bg-[#8a0303] dark:bg-accent-green";
 
   return (
     <motion.div
@@ -1364,6 +1411,8 @@ function CareerNode({
         />
         <motion.span
           style={{ scale: dotScale, backgroundColor: dotBg }}
+          animate={{ rotate: activated ? 360 : 0 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-white shadow-md dark:border-ink"
         >
           <motion.span style={{ color: dotText }} className="font-mono text-[11px] font-bold">
@@ -1374,59 +1423,73 @@ function CareerNode({
 
       {/* card */}
       <motion.div
-        style={{ opacity: cardOpacity }}
-        className="group relative w-full max-w-md overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#8a0303]/40 hover:shadow-lg dark:border-white/[0.08] dark:bg-white/[0.04] dark:backdrop-blur-sm dark:hover:border-accent-green/30 dark:hover:bg-white/[0.07] sm:p-6"
+        key={jumpCycle}
+        style={{
+          transformPerspective: 800,
+          transformStyle: "preserve-3d",
+        }}
+        initial={{ rotateY: 0 }}
+        animate={{ rotateY: activated ? 360 : 0 }}
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+        className={`group relative w-full max-w-md overflow-hidden rounded-2xl border p-5 shadow-sm hover:-translate-y-1 hover:shadow-lg sm:p-6 ${cardBgClass} ${
+          activated ? "" : "hover:border-[#8a0303]/40 dark:hover:border-accent-green/30 dark:hover:bg-white/[0.07]"
+        }`}
       >
         <div
           className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
           style={{ background: "radial-gradient(circle at 0% 0%, rgba(138,3,3,0.06) 0%, transparent 70%)" }}
         />
 
-        <div className="relative mb-2 inline-flex items-center gap-2 rounded-full border border-[#8a0303]/25 bg-[#8a0303]/5 px-2.5 py-1 font-mono text-[10px] font-medium text-[#8a0303] dark:border-accent-green/25 dark:bg-accent-green/5 dark:text-accent-green">
+        <motion.div
+          variants={waveContainer}
+          initial="hidden"
+          animate={waveControls}
+        >
+        <motion.div variants={waveItem} className="relative mb-2 inline-flex items-center gap-2 rounded-full border border-[#8a0303]/25 bg-[#8a0303]/5 px-2.5 py-1 font-mono text-[10px] font-medium text-[#8a0303] dark:border-accent-green/25 dark:bg-accent-green/5 dark:text-accent-green">
           {item.period}
-        </div>
-        <h3 className="relative font-display text-lg font-bold text-[#0b0e13] dark:text-text sm:text-xl">
+        </motion.div>
+        <motion.h3 variants={waveItem} className={`relative font-display text-lg font-bold sm:text-xl ${headingClass}`}>
           {item.role}
-        </h3>
-        <div className="relative mt-0.5 mb-3 text-sm font-medium text-[#8a0303] dark:text-accent-red">
+        </motion.h3>
+        <motion.div variants={waveItem} className={`relative mt-0.5 mb-3 text-sm font-medium ${orgClass}`}>
           {item.org}
-        </div>
+        </motion.div>
 
         {item.desc && (
-          <p className="relative mb-4 text-[13px] leading-relaxed text-[#6b7280] dark:text-text-muted">
+          <motion.p variants={waveItem} className={`relative mb-4 text-[13px] leading-relaxed ${descClass}`}>
             {item.desc}
-          </p>
+          </motion.p>
         )}
 
         {item.tags.length > 0 && (
-          <div className="relative mb-4 flex flex-wrap gap-1.5">
+          <motion.div variants={waveItem} className="relative mb-4 flex flex-wrap gap-1.5">
             {item.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 font-mono text-[10px] text-[#374151] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/70"
+                className={`rounded-full border px-2.5 py-1 font-mono text-[10px] ${tagClass}`}
               >
                 {tag}
               </span>
             ))}
-          </div>
+          </motion.div>
         )}
 
         {item.projects.length > 0 && (
-          <div className="relative border-t border-gray-100 pt-3 dark:border-white/[0.06]">
-            <div className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#6b7280] dark:text-text-dim">
+          <motion.div variants={waveItem} className={`relative border-t pt-3 ${builtBorderClass}`}>
+            <div className={`mb-2 font-mono text-[10px] font-bold uppercase tracking-widest ${builtLabelTextClass}`}>
               What I built
             </div>
             <ul className="space-y-1.5">
               {item.projects.map((p) => (
-                <li key={p.name} className="flex items-start gap-2 text-[12px] leading-relaxed text-[#374151] dark:text-white/75">
-                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#8a0303] dark:bg-accent-green" />
+                <li key={p.name} className={`flex items-start gap-2 text-[12px] leading-relaxed ${listTextClass}`}>
+                  <span className={`mt-1.5 h-1 w-1 shrink-0 rounded-full ${listDotClass}`} />
                   {p.url ? (
                     
                     <a  href={p.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       data-cursor-hover
-                      className="hover:text-[#8a0303] hover:underline dark:hover:text-accent-green"
+                      className={activated ? "hover:underline hover:text-white" : "hover:text-[#8a0303] hover:underline dark:hover:text-accent-green"}
                     >
                       {p.name}
                     </a>
@@ -1436,19 +1499,25 @@ function CareerNode({
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
         )}
 
         <motion.button
+          variants={waveItem}
           data-cursor-hover
           onClick={() => setDetailOpen(true)}
           whileHover={{ rotateY: 360 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           style={{ transformPerspective: 800 }}
-          className="relative mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#8a0303]/25 bg-[#8a0303]/5 py-2 font-mono text-[11px] font-medium text-[#8a0303] transition-colors hover:bg-[#8a0303]/10 dark:border-accent-green/25 dark:bg-accent-green/5 dark:text-accent-green dark:hover:bg-accent-green/10"
+          className={`relative mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl border py-2 font-mono text-[11px] font-medium transition-colors ${
+            activated
+              ? "border-white/30 bg-white/10 text-white hover:bg-white/20"
+              : "border-[#8a0303]/25 bg-[#8a0303]/5 text-[#8a0303] hover:bg-[#8a0303]/10 dark:border-accent-green/25 dark:bg-accent-green/5 dark:text-accent-green dark:hover:bg-accent-green/10"
+          }`}
         >
           View more
         </motion.button>
+        </motion.div>
       </motion.div>
       </div>
 
@@ -1643,7 +1712,7 @@ function Career() {
     <section
       id="career"
       ref={sectionRef}
-      className="relative overflow-hidden bg-gray-50 py-28 dark:bg-ink"
+      className="relative overflow-hidden bg-gray-50 pb-28 pt-8 dark:bg-ink"
     >
       <div className="pl-6 sm:pl-10 lg:pl-20 xl:pl-32 pr-6 sm:pr-10 lg:pr-16">
         <motion.div
@@ -1661,19 +1730,6 @@ function Career() {
               Where I&rsquo;ve been.
             </h2>
           </div>
-
-          
-          <a  href={CAREER_LINKEDIN_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-cursor-hover
-            className="flex items-center gap-1.5 rounded-full border border-[#8a0303]/20 px-3.5 py-2 font-mono text-xs text-[#0b0e13] transition-colors hover:bg-white dark:border-white/10 dark:text-white dark:hover:bg-white/10"
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
-              <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z" />
-            </svg>
-            LinkedIn
-          </a>
         </motion.div>
 
         <div ref={trackRef} className="relative z-10 w-full max-w-9xl">
