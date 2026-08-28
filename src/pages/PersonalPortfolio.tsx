@@ -6,6 +6,10 @@ import { motion, AnimatePresence, useMotionValue, useMotionValueEvent, useSpring
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
 import Navbar from "@/components/Navbar";
+import { FiGithub, FiMail } from "react-icons/fi";
+import { FaLinkedin } from "react-icons/fa";
+
+const LINKEDIN_URL = "https://www.linkedin.com/in/ahmad-a-972497411";
 
 // ─── DATA ───────────────────────────────────────────────
 const skills = [
@@ -1381,16 +1385,30 @@ function CareerNode({
   const cardBgClass = activated
     ? "bg-[#8a0303] border-[#8a0303] dark:bg-accent-green dark:border-accent-green"
     : "bg-white border-gray-200 dark:bg-white/[0.04] dark:border-white/[0.08]";
-  const headingClass = activated ? "text-white" : "text-[#0b0e13] dark:text-text";
-  const orgClass = activated ? "text-white/90" : "text-[#8a0303] dark:text-accent-red";
-  const descClass = activated ? "text-white/80" : "text-[#6b7280] dark:text-text-muted";
+  const headingClass = activated
+    ? "text-white dark:text-[#0b0e13]"
+    : "text-[#0b0e13] dark:text-text";
+  const orgClass = activated
+    ? "text-white/90 dark:text-[#0b0e13]/80"
+    : "text-[#8a0303] dark:text-accent-red";
+  const descClass = activated
+    ? "text-white/80 dark:text-[#0b0e13]/75"
+    : "text-[#6b7280] dark:text-text-muted";
   const tagClass = activated
-    ? "border-white/30 bg-white/10 text-white"
+    ? "border-white/30 bg-white/10 text-white dark:border-[#0b0e13]/25 dark:bg-[#0b0e13]/10 dark:text-[#0b0e13]"
     : "border-gray-200 bg-gray-50 text-[#374151] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/70";
-  const builtBorderClass = activated ? "border-white/20" : "border-gray-100 dark:border-white/[0.06]";
-  const builtLabelTextClass = activated ? "text-white/70" : "text-[#6b7280] dark:text-text-dim";
-  const listTextClass = activated ? "text-white/85" : "text-[#374151] dark:text-white/75";
-  const listDotClass = activated ? "bg-white" : "bg-[#8a0303] dark:bg-accent-green";
+  const builtBorderClass = activated
+    ? "border-white/20 dark:border-[#0b0e13]/20"
+    : "border-gray-100 dark:border-white/[0.06]";
+  const builtLabelTextClass = activated
+    ? "text-white/70 dark:text-[#0b0e13]/70"
+    : "text-[#6b7280] dark:text-text-dim";
+  const listTextClass = activated
+    ? "text-white/85 dark:text-[#0b0e13]/85"
+    : "text-[#374151] dark:text-white/75";
+  const listDotClass = activated
+    ? "bg-white dark:bg-[#0b0e13]"
+    : "bg-[#8a0303] dark:bg-accent-green";
 
   return (
     <motion.div
@@ -1714,7 +1732,7 @@ function Career() {
       ref={sectionRef}
       className="relative overflow-hidden bg-gray-50 pb-28 pt-8 dark:bg-ink"
     >
-      <div className="pl-6 sm:pl-10 lg:pl-20 xl:pl-32 pr-6 sm:pr-10 lg:pr-16">
+      <div className="pl-6 sm:pl-10 lg:pl-20 xl:pl-32 pr-6 sm:pr-10 lg:pr-20 xl:pr-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1871,44 +1889,118 @@ function Contact() {
 function Footer() {
   const year = new Date().getFullYear();
 
-  return (
-    <footer className="relative border-t border-gray-200 bg-[#F5F7F6] px-6 py-10 sm:px-10 lg:px-16 dark:border-line dark:bg-ink">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
-        <p className="font-mono text-xs text-[#6b7280] dark:text-text-dim">
-          &copy; {year} Ahmad Abdullah. All rights reserved.
-        </p>
+  const exploreLinks = [
+    { label: "Work", href: "#projects" },
+    { label: "About", href: "#about" },
+    { label: "Career", href: "#career" },
+    { label: "Contact", href: "#contact" },
+  ];
 
-        <div className="flex items-center gap-5">
-          
-          <a  href="https://github.com/AAbdullahRajput"
-            target="_blank"
-            rel="noopener noreferrer"
+  return (
+    <footer className="relative border-t border-gray-200 bg-[#F5F7F6] dark:border-line dark:bg-ink">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 py-16 sm:grid-cols-2 sm:px-10 lg:grid-cols-4 lg:px-16">
+        {/* Brand */}
+        <div className="sm:col-span-2">
+          <button
+            type="button"
             data-cursor-hover
-            className="font-mono text-xs text-[#6b7280] underline-offset-4 hover:text-[#0b0e13] hover:underline dark:text-text-dim dark:hover:text-text"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="font-display text-2xl font-bold text-[#0b0e13] dark:text-text"
           >
-            GitHub
-          </a>
+            Ahmad Abdullah
+          </button>
+          <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+            Full-Stack Developer
+          </p>
+          <p className="mt-4 max-w-xs text-[13px] leading-relaxed text-[#6b7280] dark:text-text-muted">
+            Building cross-platform mobile &amp; web systems &mdash; Flutter, React Native, and Next.js wired to real-time backends.
+          </p>
+
+          <div className="mt-5 flex items-center gap-3">
+            
+            <a  href="https://github.com/AAbdullahRajput"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor-hover
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-[#6b7280] transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:text-text-dim dark:hover:border-accent-green/30 dark:hover:text-accent-green"
+            >
+              <FiGithub size={15} />
+            </a>
+            
+            <a  href={LINKEDIN_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor-hover
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-[#6b7280] transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:text-text-dim dark:hover:border-accent-green/30 dark:hover:text-accent-green"
+            >
+              <FaLinkedin size={15} />
+            </a>
+            
+            <a  href="mailto:ahmadabdullah4972@gmail.com"
+              data-cursor-hover
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-[#6b7280] transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:text-text-dim dark:hover:border-accent-green/30 dark:hover:text-accent-green"
+            >
+              <FiMail size={15} />
+            </a>
+          </div>
+        </div>
+
+        {/* Explore */}
+        <div>
+          <div className="mb-4 font-mono text-[10px] font-bold uppercase tracking-widest text-[#0b0e13] dark:text-text">
+            Explore
+          </div>
+          <ul className="space-y-2.5">
+            {exploreLinks.map((link) => (
+              <li key={link.label}>
+                
+                <a  href={link.href}
+                  data-cursor-hover
+                  className="text-[13px] text-[#6b7280] transition-colors hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Get in touch */}
+        <div>
+          <div className="mb-4 font-mono text-[10px] font-bold uppercase tracking-widest text-[#0b0e13] dark:text-text">
+            Get in touch
+          </div>
           
           <a  href="mailto:ahmadabdullah4972@gmail.com"
             data-cursor-hover
-            className="font-mono text-xs text-[#6b7280] underline-offset-4 hover:text-[#0b0e13] hover:underline dark:text-text-dim dark:hover:text-text"
+            className="block text-[13px] text-[#6b7280] transition-colors hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
           >
-            Email
+            ahmadabdullah4972@gmail.com
           </a>
-          
-          <a  href="#projects"
-            data-cursor-hover
-            className="font-mono text-xs text-[#6b7280] underline-offset-4 hover:text-[#0b0e13] hover:underline dark:text-text-dim dark:hover:text-text"
-          >
-            Work
-          </a>
+          <p className="mt-2 text-[13px] text-[#6b7280] dark:text-text-muted">
+            Islamabad, Pakistan
+          </p>
           
           <a  href="#contact"
             data-cursor-hover
-            className="font-mono text-xs text-[#6b7280] underline-offset-4 hover:text-[#0b0e13] hover:underline dark:text-text-dim dark:hover:text-text"
+            className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-[#0b0e13] px-4 py-2 font-mono text-[11px] font-medium text-white transition-all duration-200 hover:scale-105 hover:bg-[#8a0303] dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
           >
-            Contact
+            Start a project
+            <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3">
+              <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </a>
+        </div>
+      </div>
+
+      <div className="border-t border-gray-200 dark:border-line">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-6 py-6 sm:flex-row sm:px-10 lg:px-16">
+          <p className="font-mono text-xs text-[#6b7280] dark:text-text-dim">
+            &copy; {year} Ahmad Abdullah. All rights reserved.
+          </p>
+          <p className="font-mono text-xs text-[#6b7280] dark:text-text-dim">
+            Islamabad, PK &middot; Available for freelance
+          </p>
         </div>
       </div>
     </footer>
