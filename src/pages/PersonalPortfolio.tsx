@@ -456,63 +456,117 @@ function Projects() {
 
 
 // ─── ABOUT ──────────────────────────────────────────────
+const highlights = [
+  {
+    title: "Cross-platform by default",
+    desc: "One product, shipped to Flutter, React Native, and web — sharing logic instead of rebuilding it three times.",
+  },
+  {
+    title: "Real-time systems",
+    desc: "Agora video calls, Socket.io feeds, Supabase realtime — apps where data has to stay in sync live, not on refresh.",
+  },
+  {
+    title: "End-to-end ownership",
+    desc: "UI, REST APIs, database schema, auth, deployment — I take a project from a blank repo to a live URL.",
+  },
+  {
+    title: "Production-ready, not prototypes",
+    desc: "Golazo is live on Google Play with real users. ConnectHub is deployed and running. I ship things people actually use.",
+  },
+];
+
 function About() {
   return (
     <section
       id="about"
       className="relative overflow-hidden bg-gray-50 px-6 py-28 sm:px-10 lg:px-16 dark:bg-ink-soft"
     >
-      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 lg:grid-cols-2">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
-            ABOUT
-          </div>
-          <h2 className="font-display mb-6 text-3xl font-bold text-[#0b0e13] dark:text-text sm:text-4xl">
-            Full-stack, end to end.
-          </h2>
-          <p className="mb-4 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
-            I build production apps across mobile and web — Flutter and React
-            Native on the client side, Node.js and FastAPI on the backend,
-            Supabase for auth, storage, and real-time data.
-          </p>
-          <p className="text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
-            My focus is on systems that stay in sync — live video calls,
-            push notifications, payments, and real-time updates — shipped as
-            complete, deployed products rather than prototypes.
-          </p>
-        </motion.div>
+      <div className="mx-auto max-w-6xl">
+        <div className="grid grid-cols-1 items-start gap-16 lg:grid-cols-2">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
+              ABOUT
+            </div>
+            <h2 className="font-display mb-6 text-3xl font-bold leading-tight text-[#0b0e13] dark:text-text sm:text-4xl">
+              Full-stack, end to end.
+            </h2>
+            <p className="mb-4 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
+              I&rsquo;m a full-stack developer based in Islamabad, currently
+              building production apps at Mehdi Technologies — Flutter and
+              React Native on the client side, Node.js and FastAPI on the
+              backend, Supabase and Firebase for auth, storage, and
+              real-time data.
+            </p>
+            <p className="mb-4 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
+              My focus is on systems that stay in sync — live video calls,
+              push notifications, payments, and real-time updates — shipped
+              as complete, deployed products rather than prototypes. Golazo,
+              my World Cup 2026 prediction app, is live on the Google Play
+              Store with real users and a Supabase backend secured with
+              row-level security.
+            </p>
+            <p className="text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
+              I care about clean architecture and code I can hand off — SOLID
+              principles, JWT auth done properly, and APIs designed so a
+              Flutter frontend and a React frontend can both consume them
+              without duplicated logic. From idea to deployed app is my
+              favorite part of the job.
+            </p>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="relative mx-auto aspect-square w-full max-w-md"
-        >
-          <div className="absolute inset-0 rounded-full border border-gray-200 dark:border-line" />
-          {skills.map((skill) => {
-            const rad = (skill.angle * Math.PI) / 180;
-            const radius = 42;
-            const x = 50 + radius * Math.cos(rad);
-            const y = 50 + radius * Math.sin(rad);
-            return (
-              <div
-                key={skill.label}
-                data-cursor-hover
-                className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-gray-200 bg-white px-3 py-1.5 font-mono text-[11px] text-[#0b0e13] whitespace-nowrap shadow-sm dark:border-line dark:bg-panel dark:text-accent-blue dark:shadow-none"
-                style={{ left: `${x}%`, top: `${y}%` }}
-              >
-                {skill.label}
-              </div>
-            );
-          })}
-          <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#8a0303] dark:bg-accent-green" />
-        </motion.div>
+            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs text-[#6b7280] dark:text-text-dim">
+              <span>📍 Islamabad, Pakistan</span>
+              <span>💼 Available for freelance</span>
+              <span>🗣️ English · Urdu</span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-2xl border border-gray-200 dark:border-line">
+              <img
+                src="/images/About-Photo.jpeg"
+                alt="Ahmad Abdullah"
+                className="h-full w-full object-cover"
+              />
+            </div>
+
+            <div className="mx-auto mt-6 grid max-w-sm grid-cols-2 gap-3">
+              {highlights.map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-xl border border-gray-200 bg-white p-4 dark:border-line dark:bg-panel"
+                >
+                  <h3 className="mb-1 font-display text-sm font-semibold text-[#0b0e13] dark:text-text">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs leading-relaxed text-[#6b7280] dark:text-text-muted">
+                    {item.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mx-auto mt-6 flex max-w-sm flex-wrap justify-center gap-2">
+              {skills.map((skill) => (
+                <span
+                  key={skill.label}
+                  className="rounded-full border border-gray-200 bg-white px-3 py-1.5 font-mono text-[11px] text-[#0b0e13] dark:border-line dark:bg-panel dark:text-accent-blue"
+                >
+                  {skill.label}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
