@@ -60,6 +60,12 @@ export default function SpiderWebBackground() {
       ctx.clearRect(0, 0, width, height);
 
       const isDark = document.documentElement.classList.contains("dark");
+
+      if (isDark) {
+        ctx.fillStyle = "#0b0e13";
+        ctx.fillRect(0, 0, width, height);
+      }
+
       const color = isDark
         ? "rgba(200, 200, 210, 0.14)"
         : "rgba(120, 120, 120, 0.22)";
@@ -88,7 +94,7 @@ export default function SpiderWebBackground() {
         <canvas
       ref={canvasRef}
       className="pointer-events-none absolute top-0 left-0 z-0"
-      style={{ position: "absolute", top: 0, left: 0, backgroundColor: "#F5F7F6" }}
+      style={{ position: "absolute", top: 0, left: 0 }}
     />
   );
 }

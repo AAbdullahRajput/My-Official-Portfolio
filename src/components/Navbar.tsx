@@ -16,8 +16,16 @@ import {
 const links = [
   { label: "Work", href: "#projects" },
   { label: "About", href: "#about" },
+  { label: "Career", href: "#career" },
   { label: "Contact", href: "#contact" },
 ];
+
+function smoothScrollTo(href: string) {
+  const id = href.replace("#", "");
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: "smooth" });
+}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -82,7 +90,7 @@ export default function Navbar() {
         }`}
       >
         {/* Logo */}
-        <a href="#" data-cursor-hover className="flex items-center gap-2">
+        <a href="#" data-cursor-hover onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2">
           <Image
             src="/images/profile.jpeg"
             alt="Ahmad Abdullah"
@@ -96,9 +104,11 @@ export default function Navbar() {
         <nav className="hidden items-center gap-6 sm:flex">
           {links.map((link) => (
             
-            <a  key={link.href}
-             href={link.href}
+            
+          <a  key={link.href}
+              href={link.href}
               data-cursor-hover
+              onClick={(e) => { e.preventDefault(); smoothScrollTo(link.href); }}
               className="font-mono text-xs text-[#6b7280] transition-colors hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
             >
               {link.label}
@@ -167,13 +177,14 @@ export default function Navbar() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          className="mt-2 flex flex-col gap-1 rounded-2xl border border-[#8a0303]/15 bg-white px-6 py-4 shadow-lg dark:border-white/10 dark:bg-ink"
+          className="mt-2 flex flex-col gap-1 rounded-2xl border border-[#8a0303]/15 bg-white px-6 py-4 shadow-lg dark:border-white/[0.08] dark:bg-ink/95 dark:backdrop-blur-md"
         >
           {links.map((link) => (
             
-         <a   key={link.href}
+            
+            <a  key={link.href}
               href={link.href}
-              onClick={() => setMenuOpen(false)}
+              onClick={(e) => { e.preventDefault(); setMenuOpen(false); smoothScrollTo(link.href); }}
               className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
             >
               {link.label}

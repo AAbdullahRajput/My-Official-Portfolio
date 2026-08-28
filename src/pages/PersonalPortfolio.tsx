@@ -9,13 +9,13 @@ import Navbar from "@/components/Navbar";
 
 // ─── DATA ───────────────────────────────────────────────
 const skills = [
-  { label: "Flutter / Dart", angle: 0 },
-  { label: "React Native", angle: 51 },
-  { label: "Next.js / React", angle: 102 },
-  { label: "Node.js / Express", angle: 153 },
-  { label: "FastAPI", angle: 204 },
-  { label: "Supabase", angle: 255 },
-  { label: "Agora RTC", angle: 306 },
+  { label: "Flutter / Dart", angle: 0, desc: "Cross-platform mobile & web framework by Google. Powers GetFit and Golazo with a single Dart codebase on Android, iOS, and web." },
+  { label: "React Native", angle: 51, desc: "Facebook's cross-platform mobile framework. Used in Station Hub and Golazo — native performance with a JavaScript/TypeScript codebase." },
+  { label: "Next.js / React", angle: 102, desc: "React meta-framework for production web apps. Handles SSR, routing, and API routes — used in this portfolio and ConnectHub's frontend." },
+  { label: "Node.js / Express", angle: 153, desc: "JavaScript runtime for backend APIs. Handles REST endpoints, JWT auth, and real-time Socket.io connections across multiple projects." },
+  { label: "FastAPI", angle: 204, desc: "High-performance Python API framework. Powers Station Hub's backend with async endpoints, Firebase auth, and automatic OpenAPI docs." },
+  { label: "Supabase", angle: 255, desc: "Open-source Firebase alternative built on PostgreSQL. Used for auth, real-time subscriptions, and Row Level Security in Golazo and ConnectHub." },
+  { label: "Agora RTC", angle: 306, desc: "Real-time video & audio SDK. Powers live trainer-to-user video call sessions inside GetFit with low-latency peer-to-peer streaming." },
 ];
 
 const fadeUp = {
@@ -947,13 +947,101 @@ function OrbitPhoto() {
   );
 }
 
+const bioCards: never[] = [];
+
+const highlightIcons = [
+  <svg key="cross" viewBox="0 0 20 20" fill="none" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg"><path d="M3 10h14M10 3v14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>,
+  <svg key="rt" viewBox="0 0 20 20" fill="none" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.6"/><path d="M10 3v2M10 15v2M3 10h2M15 10h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>,
+  <svg key="e2e" viewBox="0 0 20 20" fill="none" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg"><path d="M4 3.5 15.5 10 4 16.5V3.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/></svg>,
+  <svg key="prod" viewBox="0 0 20 20" fill="none" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg"><path d="M3 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5Z" stroke="currentColor" strokeWidth="1.6"/><path d="M7 10l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+];
+
+function SkillChips() {
+  const [activeSkill, setActiveSkill] = useState<typeof skills[0] | null>(null);
+
+  return (
+    <>
+      <div className="mt-10 flex flex-wrap justify-center gap-2 px-6">
+        {skills.map((skill) => (
+          <div key={skill.label} className="group relative">
+            {/* chip */}
+            <button
+              data-cursor-hover
+              onClick={() => setActiveSkill(skill)}
+              className="rounded-full border border-gray-200 bg-white px-3 py-1.5 font-mono text-[11px] text-[#0b0e13] transition-all duration-200 hover:border-[#8a0303]/40 hover:text-[#8a0303] hover:shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-accent-blue dark:hover:border-accent-green/30 dark:hover:text-accent-green"
+            >
+              {skill.label}
+            </button>
+
+            {/* desktop tooltip */}
+            <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2.5 w-56 -translate-x-1/2 scale-95 opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 hidden sm:block">
+              <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-xl dark:border-line dark:bg-panel">
+                <div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+                  {skill.label}
+                </div>
+                <p className="text-[11px] leading-relaxed text-[#6b7280] dark:text-text-muted">
+                  {skill.desc}
+                </p>
+                {/* arrow */}
+                <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-200 dark:border-t-line" />
+                <div className="absolute left-1/2 top-full mt-[-1px] -translate-x-1/2 border-4 border-transparent border-t-white dark:border-t-panel" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* mobile modal */}
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {activeSkill && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+              onClick={() => setActiveSkill(null)}
+            >
+              <motion.div
+                initial={{ y: 60, opacity: 0, scale: 0.96 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: 60, opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-white/[0.08] dark:bg-[#0f1117]/90 dark:backdrop-blur-xl"
+              >
+                <div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+                  {activeSkill.label}
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted">
+                  {activeSkill.desc}
+                </p>
+                <button
+                  data-cursor-hover
+                  onClick={() => setActiveSkill(null)}
+                  className="mt-5 w-full rounded-xl bg-[#0b0e13] py-2.5 font-mono text-[11px] font-medium text-white transition-colors hover:bg-[#8a0303] dark:bg-white/[0.06] dark:border dark:border-white/[0.08] dark:text-text dark:hover:border-accent-green/30 dark:hover:bg-white/[0.10]"
+                >
+                  Close
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </>
+  );
+}
+
 function About() {
   return (
     <section
       id="about"
-      className="relative overflow-hidden bg-gray-50 py-28 dark:bg-ink-soft"
+      className="relative overflow-hidden bg-gray-50 py-28 dark:bg-ink"
     >
       <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
+        {/* ── Left: bio cards ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -961,47 +1049,70 @@ function About() {
           transition={{ duration: 0.6 }}
           className="pl-6 sm:pl-10 lg:pl-20 xl:pl-32 lg:pr-10"
         >
-          <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
-            ABOUT
-          </div>
-          <h2 className="font-display mb-6 text-3xl font-bold leading-tight text-[#0b0e13] dark:text-text sm:text-4xl">
+          <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">ABOUT</div>
+          <h2 className="font-display mb-8 text-3xl font-bold leading-tight text-[#0b0e13] dark:text-text sm:text-4xl">
             Full-stack, end to end.
           </h2>
-          <p className="mb-4 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
-            I&rsquo;m a full-stack developer based in Islamabad, currently
-            building production apps at Mehdi Technologies — Flutter and
-            React Native on the client side, Node.js and FastAPI on the
-            backend, Supabase and Firebase for auth, storage, and real-time
-            data.
-          </p>
-          <p className="mb-4 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
-            My focus is on systems that stay in sync — live video calls,
-            push notifications, payments, and real-time updates — shipped
-            as complete, deployed products rather than prototypes. Golazo,
-            my World Cup 2026 prediction app, is live on the Google Play
-            Store with real users and a Supabase backend secured with
-            row-level security.
-          </p>
-          <p className="mb-4 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
-            I care about clean architecture and code I can hand off — SOLID
-            principles, JWT auth done properly, and APIs designed so a
-            Flutter frontend and a React frontend can both consume them
-            without duplicated logic.
-          </p>
-          <p className="text-sm leading-relaxed text-[#6b7280] dark:text-text-muted sm:text-base">
-            Outside of client work I&rsquo;m usually deep in a side project —
-            right now that&rsquo;s AI Tools Hub, a Framer-driven CMS site, and
-            polishing Get Fit&rsquo;s trainer-booking flow. From idea to
-            deployed app is still my favorite part of the job.
-          </p>
 
-          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs text-[#6b7280] dark:text-text-dim">
-            <span>📍 Islamabad, Pakistan</span>
-            <span>💼 Available for freelance</span>
-            <span>🗣️ English · Urdu</span>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.5 }}
+            className="text-sm leading-relaxed text-[#6b7280] dark:text-text-muted"
+          >
+            I&rsquo;m Ahmad Abdullah, a full-stack developer at Mehdi Technologies in Islamabad. I build cross-platform mobile apps with Flutter and React Native, web frontends with Next.js, and backend APIs with Node.js and FastAPI — wiring them together with real-time features like live video calls, push notifications, and payments. I take projects from a blank repo to a live, deployed product and care about clean architecture, proper auth, and code that doesn&rsquo;t need rewriting six months later.
+          </motion.p>
+
+          <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {highlights.map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.45, delay: i * 0.08 }}
+                className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 hover:border-[#8a0303]/40 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.04] dark:backdrop-blur-sm dark:hover:border-accent-green/30 dark:hover:bg-white/[0.07]"
+              >
+                <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-2xl"
+                  style={{ background: "radial-gradient(circle at 0% 0%, rgba(138,3,3,0.06) 0%, transparent 70%)" }} />
+                <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green">
+                  {highlightIcons[i]}
+                </div>
+                <h3 className="mb-1 font-display text-[13px] font-bold text-[#0b0e13] dark:text-text">
+                  {item.title}
+                </h3>
+                <p className="text-[11px] leading-relaxed text-[#6b7280] dark:text-text-muted">
+                  {item.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-2">
+            {[
+              {
+                icon: <svg viewBox="0 0 20 20" fill="none" className="h-3.5 w-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a6 6 0 0 1 6 6c0 4-6 10-6 10S4 12 4 8a6 6 0 0 1 6-6Z" stroke="currentColor" strokeWidth="1.5"/><circle cx="10" cy="8" r="2" stroke="currentColor" strokeWidth="1.5"/></svg>,
+                label: "Islamabad, Pakistan",
+              },
+              {
+                icon: <svg viewBox="0 0 20 20" fill="none" className="h-3.5 w-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="6" width="16" height="11" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M7 6V5a3 3 0 0 1 6 0v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+                label: "Available for freelance",
+              },
+              {
+                icon: <svg viewBox="0 0 20 20" fill="none" className="h-3.5 w-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg"><path d="M2 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5Z" stroke="currentColor" strokeWidth="1.5"/><path d="M2 8h16" stroke="currentColor" strokeWidth="1.5"/><path d="M8 12h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+                label: "English · Urdu",
+              },
+            ].map(({ icon, label }) => (
+              <span key={label} className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1 font-mono text-[11px] text-[#6b7280] transition-all duration-200 hover:border-[#8a0303]/40 hover:text-[#8a0303] hover:shadow-sm dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-text-dim dark:hover:border-accent-green/30 dark:hover:text-accent-green">
+                {icon}
+                {label}
+              </span>
+            ))}
           </div>
         </motion.div>
 
+        {/* ── Right: orbit photo ── */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -1013,32 +1124,36 @@ function About() {
         </motion.div>
       </div>
 
-      <div className="mt-16 grid grid-cols-1 gap-px bg-gray-200 dark:bg-line sm:grid-cols-2 lg:grid-cols-4">
-        {highlights.map((item) => (
-          <div
-            key={item.title}
-            className="bg-gray-50 p-8 dark:bg-ink-soft"
-          >
-            <h3 className="mb-2 font-display text-base font-semibold text-[#0b0e13] dark:text-text">
-              {item.title}
-            </h3>
-            <p className="text-sm leading-relaxed text-[#6b7280] dark:text-text-muted">
-              {item.desc}
-            </p>
-          </div>
-        ))}
-      </div>
+      {/* ── Highlights grid ──
+      <div className="mt-20 px-6 sm:px-10 lg:px-24 xl:px-32">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {highlights.map((item, i) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.45, delay: i * 0.08 }}
+              className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-[#8a0303]/40 hover:shadow-lg dark:border-white/[0.08] dark:bg-white/[0.04] dark:backdrop-blur-sm dark:hover:border-accent-green/30 dark:hover:bg-white/[0.07]"
+            >
+              <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-2xl"
+                style={{ background: "radial-gradient(circle at 50% 0%, rgba(138,3,3,0.07) 0%, transparent 70%)" }} />
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green">
+                {highlightIcons[i]}
+              </div>
+              <h3 className="mb-2 font-display text-[15px] font-bold text-[#0b0e13] dark:text-text">
+                {item.title}
+              </h3>
+              <p className="text-[12px] leading-relaxed text-[#6b7280] dark:text-text-muted">
+                {item.desc}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div> */}
 
-      <div className="mt-16 flex flex-wrap justify-center gap-2 px-6">
-        {skills.map((skill) => (
-          <span
-            key={skill.label}
-            className="rounded-full border border-gray-200 bg-white px-3 py-1.5 font-mono text-[11px] text-[#0b0e13] dark:border-line dark:bg-panel dark:text-accent-blue"
-          >
-            {skill.label}
-          </span>
-        ))}
-      </div>
+      {/* ── Skills chips ── */}
+      <SkillChips />
     </section>
   );
 }
@@ -1075,7 +1190,7 @@ function Career() {
   return (
     <section
       id="career"
-      className="relative bg-gray-50 px-6 py-28 sm:px-10 lg:px-16 dark:bg-ink-soft"
+      className="relative bg-gray-50 px-6 py-28 sm:px-10 lg:px-16 dark:bg-ink"
     >
       <div className="mx-auto max-w-3xl">
         <motion.div
