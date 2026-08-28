@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, useMotionValue, useSpring, useTransform, useScroll, useAnimationFrame, animate } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useScroll, useAnimationFrame, animate } from "framer-motion";
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
 import Navbar from "@/components/Navbar";
@@ -516,7 +516,6 @@ function OrbitBadge({
   iconKey,
   label,
   sub,
-  accent = false,
 }: {
   orbitAngle: ReturnType<typeof useMotionValue<number>>;
   baseAngle: number;
@@ -524,7 +523,6 @@ function OrbitBadge({
   iconKey: keyof typeof BADGE_ICONS;
   label: string;
   sub: string;
-  accent?: boolean;
 }) {
   const left = useTransform(orbitAngle, (v) => {
     const rad = ((v + baseAngle) * Math.PI) / 180;
@@ -543,30 +541,17 @@ function OrbitBadge({
       <div
         className={[
           "flex items-center gap-2.5 rounded-2xl border px-3.5 py-2.5 shadow-lg backdrop-blur-sm",
-          accent
-            ? "border-[#8a0303]/20 bg-[#8a0303]/5 dark:border-accent-green/20 dark:bg-accent-green/5"
-            : "border-gray-200/80 bg-white/90 dark:border-line dark:bg-panel/90",
+          "border-[#8a0303]/25 bg-white shadow-[#8a0303]/10",
+          "dark:border-accent-green/20 dark:bg-panel/90 dark:shadow-accent-green/10",
         ].join(" ")}
       >
         <span
-          className={[
-            "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
-            accent
-              ? "bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green"
-              : "bg-gray-100 text-[#6b7280] dark:bg-white/10 dark:text-text-dim",
-          ].join(" ")}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green"
         >
           {BADGE_ICONS[iconKey]}
         </span>
         <div>
-          <div
-            className={[
-              "font-display text-[13px] font-bold leading-tight",
-              accent
-                ? "text-[#8a0303] dark:text-accent-green"
-                : "text-[#0b0e13] dark:text-text",
-            ].join(" ")}
-          >
+          <div className="font-display text-[13px] font-bold leading-tight text-[#8a0303] dark:text-accent-green">
             {label}
           </div>
           <div className="text-[10px] font-medium tracking-wide text-[#6b7280] dark:text-text-dim">
@@ -574,6 +559,250 @@ function OrbitBadge({
           </div>
         </div>
       </div>
+    </motion.div>
+  );
+}
+
+const TOUR_STEPS = [
+  {
+    id: "person",
+    x: "48%",
+    y: "38%",
+    title: "Ahmad Abdullah",
+    body: "That's me — full-stack developer, currently building production apps at Mehdi Technologies in Islamabad.",
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    id: "hills",
+    x: "72%",
+    y: "22%",
+    title: "Margalla Hills",
+    body: "The green ridgeline behind me — Margalla Hills, the foothills of the Himalayas that frame Islamabad's northern edge. A 15-minute drive from my desk.",
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 16l5-8 4 5 3-4 4 7H2Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    id: "skyline",
+    x: "60%",
+    y: "55%",
+    title: "Islamabad Skyline",
+    body: "The towers below are Centaurus — Islamabad's landmark mixed-use skyscraper in F-8. One of the few high-rises that breaks the city's low-rise grid.",
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 17V9l4-4 4 4V7l3-3 3 3v10H3Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    id: "vibe",
+    x: "25%",
+    y: "65%",
+    title: "The Vantage Point",
+    body: "Shot from a hiking trail above the city — I come up here to think through system architecture and debug problems that IDEs can't solve.",
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M2 10h2M16 10h2M10 2v2M10 16v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        <path d="M4.93 4.93l1.41 1.41M13.66 13.66l1.41 1.41M4.93 15.07l1.41-1.41M13.66 6.34l1.41-1.41" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+];
+
+function PhotoTour() {
+  const [active, setActive] = useState<number | null>(null);
+  const [toured, setToured] = useState(false);
+  const [flipped, setFlipped] = useState(false);
+
+  function handleClick() {
+    if (active === null) {
+      setFlipped(true);
+      setTimeout(() => {
+        setActive(0);
+        setFlipped(false);
+      }, 400);
+    } else {
+      setActive(null);
+      setToured(true);
+    }
+  }
+
+  function goTo(i: number) {
+    setActive(i);
+  }
+
+  const step = active !== null ? TOUR_STEPS[active] : null;
+
+  return (
+    <motion.div
+      className="relative aspect-[4/5] w-[90%] overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line cursor-pointer"
+      style={{ transformPerspective: 900, transformStyle: "preserve-3d" }}
+      whileHover={active === null ? {
+        rotateY: 360,
+        scale: 1.03,
+        boxShadow: "0 25px 50px rgba(138,3,3,0.25)",
+      } : {}}
+      transition={{
+        rotateY: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+        scale: { duration: 0.4, ease: "easeOut" },
+        boxShadow: { duration: 0.4 },
+      }}
+      onClick={handleClick}
+    >
+      <img
+        src="/images/About-Photo.jpeg"
+        alt="Ahmad Abdullah"
+        className="h-full w-full object-cover"
+        style={{ objectPosition: "50% 30%" }}
+      />
+
+      {/* dim overlay when touring */}
+      <AnimatePresence>
+        {active !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/30 backdrop-blur-[1px]"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* hint badge when not yet toured */}
+      <AnimatePresence>
+        {active === null && !toured && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ delay: 0.6 }}
+            className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full border border-[#8a0303]/30 bg-white/90 px-3 py-1.5 shadow-md backdrop-blur-sm dark:bg-panel/90"
+          >
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#8a0303] opacity-60" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#8a0303]" />
+            </span>
+            <span className="font-mono text-[10px] text-[#8a0303] dark:text-accent-green">
+              Click to explore
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* dot markers */}
+      <AnimatePresence>
+        {active !== null && TOUR_STEPS.map((s, i) => (
+          <motion.button
+            key={s.id}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ delay: i * 0.07 }}
+            onClick={(e) => { e.stopPropagation(); goTo(i); }}
+            className="absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none"
+            style={{ left: s.x, top: s.y }}
+          >
+            <span className="relative flex h-5 w-5 items-center justify-center">
+              <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-50 ${i === active ? "bg-[#8a0303]" : "bg-white"}`} />
+              <span className={`relative inline-flex h-4 w-4 items-center justify-center rounded-full border-2 font-mono text-[9px] font-bold shadow-md ${
+                i === active
+                  ? "border-[#8a0303] bg-[#8a0303] text-white"
+                  : "border-white bg-white/90 text-[#8a0303]"
+              }`}>
+                {i + 1}
+              </span>
+            </span>
+          </motion.button>
+        ))}
+      </AnimatePresence>
+
+      {/* tooltip popup */}
+      <AnimatePresence mode="wait">
+        {step && (
+          <motion.div
+            key={step.id}
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.95 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            onClick={(e) => e.stopPropagation()}
+            className="absolute bottom-4 left-3 right-3 z-10 rounded-2xl border border-[#8a0303]/20 bg-white/95 p-4 shadow-2xl backdrop-blur-md dark:border-accent-green/20 dark:bg-panel/95"
+          >
+            {/* header */}
+            <div className="mb-2 flex items-center gap-2">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green">
+                {step.icon}
+              </span>
+              <span className="font-display text-[13px] font-bold text-[#8a0303] dark:text-accent-green">
+                {step.title}
+              </span>
+              <span className="ml-auto font-mono text-[10px] text-[#6b7280] dark:text-text-dim">
+                {active! + 1} / {TOUR_STEPS.length}
+              </span>
+            </div>
+
+            {/* body */}
+            <p className="mb-3 text-[11px] leading-relaxed text-[#374151] dark:text-text-muted">
+              {step.body}
+            </p>
+
+            {/* nav */}
+            <div className="flex items-center gap-2">
+              {/* step dots */}
+              <div className="flex gap-1">
+                {TOUR_STEPS.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={(e) => { e.stopPropagation(); goTo(i); }}
+                    className={`h-1.5 rounded-full transition-all duration-200 ${
+                      i === active ? "w-4 bg-[#8a0303] dark:bg-accent-green" : "w-1.5 bg-gray-300 dark:bg-text-dim"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <div className="ml-auto flex gap-1.5">
+                {active! > 0 && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); goTo(active! - 1); }}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-line dark:bg-panel dark:text-text-dim"
+                  >
+                    <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                )}
+                {active! < TOUR_STEPS.length - 1 ? (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); goTo(active! + 1); }}
+                    className="flex h-7 items-center gap-1 rounded-lg bg-[#8a0303] px-3 font-mono text-[10px] text-white transition-colors hover:bg-[#6e0202] dark:bg-accent-green dark:text-ink"
+                  >
+                    Next
+                    <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                ) : (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setActive(null); setToured(true); }}
+                    className="flex h-7 items-center gap-1 rounded-lg bg-[#8a0303] px-3 font-mono text-[10px] text-white transition-colors hover:bg-[#6e0202] dark:bg-accent-green dark:text-ink"
+                  >
+                    Done ✓
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -615,22 +844,15 @@ function OrbitPhoto() {
 
       {mounted && (
         <>
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={0}   radius={75} iconKey="experience" label="1+ Years"     sub="Production Experience" accent />
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={72}  radius={75} iconKey="projects"   label="20+ Apps"     sub="Shipped to Production" />
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={144} radius={75} iconKey="playstore"  label="Google Play"  sub="Live with Real Users"  accent />
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={216} radius={75} iconKey="realtime"   label="Real-Time"    sub="Video · Sockets · RTC" />
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={288} radius={75} iconKey="stack"      label="Full-Stack"   sub="Mobile · Web · API"    accent />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={0}   radius={75} iconKey="experience" label="1+ Years"    sub="Production Experience" />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={72}  radius={75} iconKey="projects"   label="20+ Apps"    sub="Shipped to Production" />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={144} radius={75} iconKey="playstore"  label="Google Play" sub="Live with Real Users"  />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={216} radius={75} iconKey="realtime"   label="Real-Time"   sub="Video · Sockets · RTC" />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={288} radius={75} iconKey="stack"      label="Full-Stack"  sub="Mobile · Web · API"    />
         </>
       )}
 
-      <div className="relative aspect-[4/5] w-[90%] overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line">
-        <img
-          src="/images/About-Photo.jpeg"
-          alt="Ahmad Abdullah"
-          className="h-full w-full object-cover"
-          style={{ objectPosition: "50% 30%" }}
-        />
-      </div>
+      <PhotoTour />
     </div>
   );
 }
