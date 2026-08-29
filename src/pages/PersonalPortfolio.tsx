@@ -189,7 +189,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
           <motion.img
             src="/images/black-spider.png"
             alt=""
-            className="w-10 select-none dark:invert"
+            className="w-64 select-none dark:invert"
             animate={{ rotate: [0, 7, -7, 5, -5, 0] }}
             transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 1.6 }}
             style={{ transformOrigin: "top center" }}
