@@ -22,6 +22,27 @@ const skills = [
   { label: "Agora RTC", angle: 306, desc: "Real-time video & audio SDK. Powers live trainer-to-user video call sessions inside GetFit with low-latency peer-to-peer streaming." },
 ];
 
+const TECH_INFO: Record<string, string> = {
+  "Flutter": "Cross-platform mobile & web framework by Google using Dart — single codebase for Android, iOS, and web.",
+  "React Native": "Facebook's cross-platform mobile framework — native performance with a JavaScript/TypeScript codebase.",
+  "Next.js": "React meta-framework for production web apps — SSR, routing, and API routes.",
+  "Node.js": "JavaScript runtime for backend APIs — REST endpoints, auth, and real-time connections.",
+  "FastAPI": "High-performance Python API framework with async endpoints and automatic OpenAPI docs.",
+  "Supabase": "Open-source Firebase alternative built on PostgreSQL — auth, realtime, and Row Level Security.",
+  "Agora RTC": "Real-time video & audio SDK powering low-latency peer-to-peer streaming.",
+  "Python": "General-purpose language used here for backend services, scripting, and automation.",
+  "React.js": "JavaScript library for building component-based user interfaces.",
+  "Express": "Minimal Node.js web framework for building REST APIs and middleware.",
+  "MongoDB": "NoSQL document database used for flexible, schema-less data storage.",
+  "React": "JavaScript library for building component-based user interfaces.",
+  "Vite": "Fast frontend build tool with instant dev server startup and HMR.",
+  "Socket.io": "Library for real-time, bidirectional communication between client and server.",
+  "MongoDB Atlas": "Fully managed cloud version of MongoDB used for hosting production databases.",
+  "AWS": "Amazon Web Services — cloud infrastructure used for hosting and deployment.",
+  "Java": "Object-oriented language used here for desktop and backend applications.",
+  "C#": "Microsoft's object-oriented language used here for Windows desktop applications.",
+};
+
 const fadeUp = {
   hidden: { opacity: 0, y: -140, rotate: -6 },
   show: (i: number = 0) => ({
@@ -1355,6 +1376,8 @@ function CareerNode({
   const threshold = index / (total - 1);
   const rangeStart = Math.min(Math.max(threshold - 0.12, 0), threshold - 0.02);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [hoveredTag, setHoveredTag] = useState<string | null>(null);
   const fill = useTransform(progress, [rangeStart, threshold], [0, 1]);
   const [activated, setActivated] = useState(() => fill.get() >= 0.98);
   const [jumpCycle, setJumpCycle] = useState(() => (fill.get() >= 0.98 ? 1 : 0));
@@ -1457,7 +1480,14 @@ function CareerNode({
           initial="hidden"
           animate={waveControls}
         >
-        <motion.div variants={waveItem} className="relative mb-2 inline-flex items-center gap-2 rounded-full border border-[#8a0303]/25 bg-[#8a0303]/5 px-2.5 py-1 font-mono text-[10px] font-medium text-[#8a0303] dark:border-accent-green/25 dark:bg-accent-green/5 dark:text-accent-green">
+        <motion.div
+          variants={waveItem}
+          className={`relative mb-2 inline-flex items-center gap-2 rounded-full border px-2.5 py-1 font-mono text-[10px] font-medium ${
+            activated
+              ? "border-white/40 bg-white/10 text-white dark:border-[#0b0e13]/30 dark:bg-[#0b0e13]/10 dark:text-[#0b0e13]"
+              : "border-[#8a0303]/25 bg-[#8a0303]/5 text-[#8a0303] dark:border-accent-green/25 dark:bg-accent-green/5 dark:text-accent-green"
+          }`}
+        >
           {item.period}
         </motion.div>
         <motion.h3 variants={waveItem} className={`relative font-display text-lg font-bold sm:text-xl ${headingClass}`}>
@@ -1476,14 +1506,76 @@ function CareerNode({
         {item.tags.length > 0 && (
           <motion.div variants={waveItem} className="relative mb-4 flex flex-wrap gap-1.5">
             {item.tags.map((tag) => (
-              <span
+              <div
                 key={tag}
-                className={`rounded-full border px-2.5 py-1 font-mono text-[10px] ${tagClass}`}
+                className="relative"
+                onMouseEnter={() => setHoveredTag(tag)}
+                onMouseLeave={() => setHoveredTag((t) => (t === tag ? null : t))}
               >
-                {tag}
-              </span>
+                <button
+                  type="button"
+                  data-cursor-hover
+                  onClick={(e) => { e.stopPropagation(); setActiveTag(tag); }}
+                  className={`rounded-full border px-2.5 py-1 font-mono text-[10px] transition-transform duration-150 hover:scale-105 ${tagClass}`}
+                >
+                  {tag}
+                </button>
+                {TECH_INFO[tag] && hoveredTag === tag && (
+                  <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-52 -translate-x-1/2 hidden sm:block">
+                    <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-xl dark:border-line dark:bg-panel">
+                      <div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+                        {tag}
+                      </div>
+                      <p className="text-[11px] leading-relaxed text-[#6b7280] dark:text-text-muted">
+                        {TECH_INFO[tag]}
+                      </p>
+                      <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-200 dark:border-t-line" />
+                      <div className="absolute left-1/2 top-full mt-[-1px] -translate-x-1/2 border-4 border-transparent border-t-white dark:border-t-panel" />
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
           </motion.div>
+        )}
+
+        {typeof document !== "undefined" && createPortal(
+          <AnimatePresence>
+            {activeTag && TECH_INFO[activeTag] && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+                onClick={() => setActiveTag(null)}
+              >
+                <motion.div
+                  initial={{ y: 60, opacity: 0, scale: 0.96 }}
+                  animate={{ y: 0, opacity: 1, scale: 1 }}
+                  exit={{ y: 60, opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-white/[0.08] dark:bg-[#0f1117]/90 dark:backdrop-blur-xl"
+                >
+                  <div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+                    {activeTag}
+                  </div>
+                  <p className="mt-2 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted">
+                    {TECH_INFO[activeTag]}
+                  </p>
+                  <button
+                    data-cursor-hover
+                    onClick={() => setActiveTag(null)}
+                    className="mt-5 w-full rounded-xl bg-[#0b0e13] py-2.5 font-mono text-[11px] font-medium text-white transition-colors hover:bg-[#8a0303] dark:bg-white/[0.06] dark:border dark:border-white/[0.08] dark:text-text dark:hover:border-accent-green/30 dark:hover:bg-white/[0.10]"
+                  >
+                    Close
+                  </button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
 
         {item.projects.length > 0 && (
