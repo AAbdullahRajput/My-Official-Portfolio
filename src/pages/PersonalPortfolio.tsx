@@ -1988,9 +1988,13 @@ function Footer() {
             type="button"
             data-cursor-hover
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="font-display text-2xl font-bold text-[#0b0e13] dark:text-text"
+            className="block"
           >
-            Ahmad Abdullah
+            <img
+              src="/images/signature.svg"
+              alt="Ahmad Abdullah signature"
+              className="h-16 w-auto opacity-90 dark:invert select-none"
+            />
           </button>
           <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
             Full-Stack Developer
