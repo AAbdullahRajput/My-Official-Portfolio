@@ -168,18 +168,11 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
         onMouseMove={handleFaceMouseMove}
       />
 
-      {/* Hanging spider — drops in with gravity/bounce, then idles on its thread */}
+      {/* Hanging spider — drops in with gravity/bounce, then idles */}
       <div
-        className="pointer-events-none absolute right-[8%] top-0 z-30 hidden flex-col items-center lg:flex"
+        className="pointer-events-none absolute right-[-1%] top-0 z-30 hidden flex-col items-center lg:flex"
         style={{ transformOrigin: "top center" }}
       >
-        <motion.div
-          initial={{ scaleY: 0 }}
-          animate={splashDone ? { scaleY: 1 } : { scaleY: 0 }}
-          transition={{ duration: 1.1, ease: "easeOut", delay: 0.25 }}
-          style={{ transformOrigin: "top" }}
-          className="h-36 w-px bg-[#0b0e13]/30 dark:bg-white/25"
-        />
         <motion.div
           initial={{ y: -320 }}
           animate={splashDone ? { y: 0 } : { y: -320 }}
@@ -189,7 +182,13 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
           <motion.img
             src="/images/black-spider.png"
             alt=""
-            className="w-64 select-none dark:invert"
+            className="pointer-events-auto w-104 cursor-grab select-none active:cursor-grabbing dark:invert"
+            drag
+            dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
+            dragElastic={0.9}
+            dragSnapToOrigin
+            dragTransition={{ bounceStiffness: 280, bounceDamping: 9 }}
+            whileDrag={{ cursor: "grabbing" }}
             animate={{ rotate: [0, 7, -7, 5, -5, 0] }}
             transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 1.6 }}
             style={{ transformOrigin: "top center" }}
