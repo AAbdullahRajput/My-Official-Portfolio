@@ -61,44 +61,68 @@ const fadeUp = {
 
 // ─── HANGING SPIDER (with real, screen-anchored web thread) ─────
 function SpiderWeb({ splashDone }: { splashDone: boolean }) {
-  const spiderY = useMotionValue(0);
-  const threadHeight = useTransform(spiderY, (v) => 140 + Math.max(0, v));
+  const REST_Y = 140; // resting distance from ceiling anchor to spider top
+  const spiderX = useMotionValue(0);
+  const spiderY = useMotionValue(-320);
+  const [drag, setDrag] = useState({ x: 0, y: -320 });
+
+  useMotionValueEvent(spiderX, "change", (v) => setDrag((d) => ({ ...d, x: v })));
+  useMotionValueEvent(spiderY, "change", (v) => setDrag((d) => ({ ...d, y: v })));
+
+  useEffect(() => {
+    if (splashDone) {
+      animate(spiderY, 0, { type: "spring", stiffness: 65, damping: 6.5, mass: 1, delay: 0.25 });
+    }
+  }, [splashDone]);
+
+  const anchorX = 64; // matches spider's horizontal center in its box below
+  const tipX = anchorX + drag.x;
+  const tipY = REST_Y + drag.y;
 
   return (
     <div
-      className="pointer-events-none absolute right-[-1%] top-0 z-30 hidden flex-col items-center lg:flex"
-      style={{ transformOrigin: "top center" }}
+      className="pointer-events-none absolute right-[2%] top-0 z-30 hidden lg:block"
+      style={{ width: 260, height: 500 }}
     >
-      {/* dynamic thread — top stays fixed to the screen, bottom stretches with the spider */}
-      <motion.div
-        style={{ height: threadHeight, transformOrigin: "top" }}
-        className="w-px bg-[#0b0e13]/40 dark:bg-white/40"
-      />
+      {/* dynamic thread — SVG line, top fixed to the ceiling, bottom follows the spider anywhere */}
+      <svg className="absolute inset-0 h-full w-full overflow-visible">
+        <line
+          x1={anchorX}
+          y1={0}
+          x2={tipX}
+          y2={tipY}
+          stroke="currentColor"
+          strokeWidth={1}
+          className="text-[#0b0e13]/40 dark:text-white/40"
+        />
+      </svg>
 
       <motion.div
-        initial={{ y: -320 }}
-        animate={splashDone ? { y: 0 } : { y: -320 }}
-        transition={{ delay: 0.25, type: "spring", stiffness: 65, damping: 6.5, mass: 1 }}
-        style={{ transformOrigin: "top center" }}
-      >
-        {/* crop wrapper — hides the thread baked into the PNG, keeps only the spider body */}
-        <div className="h-56 w-64 overflow-hidden" style={{ transformOrigin: "top center" }}>
-          <motion.img
-            src="/images/black-spider.png"
-            alt=""
-            className="pointer-events-auto w-64 -translate-y-12 cursor-grab select-none active:cursor-grabbing dark:invert"
-            drag="y"
-            style={{ y: spiderY }}
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={0.9}
-            dragSnapToOrigin
-            dragTransition={{ bounceStiffness: 280, bounceDamping: 9 }}
-            whileDrag={{ cursor: "grabbing" }}
-            animate={{ rotate: [0, 7, -7, 5, -5, 0] }}
-            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 1.6 }}
-          />
-        </div>
-      </motion.div>
+        role="img"
+        aria-label=""
+        className="pointer-events-auto absolute w-32 h-32 cursor-grab select-none active:cursor-grabbing dark:invert"
+        style={{
+          left: anchorX - 64,
+          top: 0,
+          x: spiderX,
+          y: spiderY,
+          transformOrigin: "top center",
+          backgroundImage: "url(/images/black-spider.png)",
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "top center",
+          touchAction: "none",
+          userSelect: "none",
+        }}
+        drag
+        dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
+        dragElastic={0.9}
+        dragSnapToOrigin
+        dragTransition={{ bounceStiffness: 280, bounceDamping: 9 }}
+        whileDrag={{ cursor: "grabbing" }}
+        animate={{ rotate: [0, 7, -7, 5, -5, 0] }}
+        transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 1.6 }}
+      />
     </div>
   );
 }
@@ -282,8 +306,8 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
         document.body
       )}
 
-      <div className="relative z-30 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-4 lg:pr-6">
-        <div className="max-w-lg lg:w-[48%] lg:-ml-60 lg:mt-20">
+      <div className="pointer-events-none relative z-30 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-4 lg:pr-6">
+        <div className="pointer-events-auto max-w-lg lg:w-[48%] lg:-ml-60 lg:mt-20">
 
           <motion.div
             variants={fadeUp}
