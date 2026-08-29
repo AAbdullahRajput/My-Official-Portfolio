@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence, useMotionValue, useMotionValueEvent, useSpring, useTransform, useScroll, useAnimationFrame, useAnimation, animate, type Variants } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useMotionValueEvent, useMotionTemplate, useSpring, useTransform, useScroll, useAnimationFrame, useAnimation, animate, type Variants } from "framer-motion";
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
 import Navbar from "@/components/Navbar";
@@ -43,15 +43,20 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
   const heroImgRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const [revealing, setRevealing] = useState(false);
-  const [spotPos, setSpotPos] = useState({ x: 50, y: 8 });
   const [activeHeroTag, setActiveHeroTag] = useState<{ label: string; desc: string } | null>(null);
+
+  // cursor-tracked reveal spot (percentages), smoothed for a silky follow
+  const spotX = useMotionValue(50);
+  const spotY = useMotionValue(30);
+  const smoothSpotX = useSpring(spotX, { stiffness: 150, damping: 22, mass: 0.3 });
+  const smoothSpotY = useSpring(spotY, { stiffness: 150, damping: 22, mass: 0.3 });
+  const revealMaskImage = useMotionTemplate`radial-gradient(circle 200px at ${smoothSpotX}% ${smoothSpotY}%, black 45%, transparent 100%)`;
 
   const handleFaceMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = heroImgRef.current?.getBoundingClientRect();
     if (!rect) return;
-    const xPct = ((e.clientX - rect.left) / rect.width) * 100;
-    const yPct = ((e.clientY - rect.top) / rect.height) * 100;
-    setSpotPos({ x: xPct, y: yPct });
+    spotX.set(((e.clientX - rect.left) / rect.width) * 100);
+    spotY.set(((e.clientY - rect.top) / rect.height) * 100);
     setRevealing(true);
   };
 
@@ -117,40 +122,29 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
         style={{
           zIndex: 6,
           opacity: revealing ? 1 : 0,
-          transition: "opacity 0.3s ease-out",
-          maskImage: "radial-gradient(ellipse 38% 45% at 50% 38%, black 55%, transparent 100%)",
-          WebkitMaskImage: "radial-gradient(ellipse 38% 45% at 50% 38%, black 55%, transparent 100%)",
+          transition: "opacity 0.25s ease-out",
+          maskImage: revealMaskImage,
+          WebkitMaskImage: revealMaskImage,
           rotateX,
           rotateY,
           transformStyle: "preserve-3d",
         }}
       >
         <img
-          src="/images/Main-Me.jpg"
+          src="/images/Spiderman-Main-me.png"
           alt="Ahmad"
-          className="h-full w-full object-cover object-top"
-                    style={{ objectPosition: "50% 8%" }}
+          className="h-full w-full object-cover object-top select-none pointer-events-none"
         />
       </motion.div>
-
-      {/* Eye hover zone — above everything */}
+      {/* Full-image hover zone — tracks cursor for the reveal spotlight */}
       <div
-        className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block pointer-events-none"
+        className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block pointer-events-auto"
         style={{ zIndex: 20 }}
-      >
-        <div
-          className="absolute pointer-events-auto"
-          data-cursor-surface="dark"
-          onMouseEnter={() => setRevealing(true)}
-          onMouseLeave={() => setRevealing(false)}
-          style={{
-            top: "18%",
-            left: "33%",
-            width: "34%",
-            height: "22%",
-          }}
-        />
-      </div>
+        data-cursor-surface="dark"
+        onMouseEnter={() => setRevealing(true)}
+        onMouseLeave={() => setRevealing(false)}
+        onMouseMove={handleFaceMouseMove}
+      />
 
       {typeof document !== "undefined" && createPortal(
         <AnimatePresence>
