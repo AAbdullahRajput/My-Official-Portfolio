@@ -1981,25 +1981,63 @@ function Footer() {
 
   return (
     <footer className="relative border-t border-gray-200 bg-[#F5F7F6] dark:border-line dark:bg-ink">
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 py-16 sm:grid-cols-2 sm:px-10 lg:grid-cols-4 lg:px-16">
+      <div className="grid grid-cols-1 gap-12 px-6 py-16 sm:grid-cols-2 sm:px-10 lg:grid-cols-4 lg:pl-20 xl:pl-32 lg:pr-20 xl:pr-32">
         {/* Brand */}
-        <div className="sm:col-span-2">
-          <motion.button
-            type="button"
-            data-cursor-hover
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="block overflow-hidden"
+        <div className="sm:col-span-2 lg:pl-0">
+          <motion.div
+            className="relative inline-block"
             initial={{ clipPath: "inset(0 100% 0 0)" }}
-            whileInView={{ clipPath: "inset(0 0% 0 0)" }}
-            viewport={{ once: false, margin: "-40px" }}
-            transition={{ duration: 1.4, ease: [0.65, 0, 0.35, 1] }}
+            whileInView={{
+              clipPath: [
+                "inset(0 100% 0 0)",
+                "inset(0 78% 0 0)",
+                "inset(0 78% 0 0)",
+                "inset(0 52% 0 0)",
+                "inset(0 52% 0 0)",
+                "inset(0 24% 0 0)",
+                "inset(0 24% 0 0)",
+                "inset(0 0% 0 0)",
+              ],
+              transition: {
+                duration: 2.4,
+                times: [0, 0.22, 0.28, 0.5, 0.56, 0.78, 0.84, 1],
+                ease: "easeInOut",
+              },
+            }}
+            whileHover={{
+              clipPath: [
+                "inset(0 100% 0 0)",
+                "inset(0 78% 0 0)",
+                "inset(0 78% 0 0)",
+                "inset(0 52% 0 0)",
+                "inset(0 52% 0 0)",
+                "inset(0 24% 0 0)",
+                "inset(0 24% 0 0)",
+                "inset(0 0% 0 0)",
+              ],
+              transition: {
+                duration: 1.4,
+                times: [0, 0.22, 0.28, 0.5, 0.56, 0.78, 0.84, 1],
+                ease: "easeInOut",
+              },
+            }}
+            viewport={{ once: false, amount: 0, margin: "0px 0px -100px 0px" }}
           >
-            <img
-              src="/images/signature.svg"
-              alt="Ahmad Abdullah signature"
-              className="h-38 w-auto opacity-90 dark:invert select-none"
-            />
-          </motion.button>
+            <button
+              type="button"
+              data-cursor-hover
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="block"
+            >
+              <div className="h-16 w-72 overflow-hidden">
+                <img
+                  src="/images/signature.svg"
+                  alt="Ahmad Abdullah signature"
+                  className="h-full w-full object-contain dark:invert select-none"
+                />
+              </div>
+            </button>
+          </motion.div>
           <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
             Full-Stack Developer
           </p>
@@ -2085,7 +2123,7 @@ function Footer() {
       </div>
 
       <div className="border-t border-gray-200 dark:border-line">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-6 py-6 sm:flex-row sm:px-10 lg:px-16">
+        <div className="flex flex-col items-center justify-between gap-3 px-6 py-6 sm:flex-row sm:px-10 lg:pl-20 xl:pl-32 lg:pr-20 xl:pr-32">
           <p className="font-mono text-xs text-[#6b7280] dark:text-text-dim">
             &copy; {year} Ahmad Abdullah. All rights reserved.
           </p>
