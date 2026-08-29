@@ -93,13 +93,31 @@ export default function Navbar() {
         }`}
       >
         {/* Logo */}
-        <a href="#" data-cursor-hover onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="flex items-center gap-2">
+        
+        <a  href="#"
+          data-cursor-hover
+          onClick={(e) => {
+            e.preventDefault();
+            const atTop = window.scrollY < 10;
+            if (atTop) {
+              window.location.href = "/";
+            } else {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          }}
+          className="flex items-center gap-2.5"
+        >
           <Image
             src="/images/profile.jpeg"
             alt="Ahmad Abdullah"
-            width={32}
-            height={32}
-            className="h-8 w-8 rounded-full border border-[#8a0303]/20 object-cover"
+            width={36}
+            height={36}
+            className="h-9 w-9 rounded-full border border-[#8a0303]/20 object-cover"
+          />
+          <img
+            src="/images/signature.svg"
+            alt="Ahmad Abdullah signature"
+            className="hidden sm:block h-8 w-36 object-contain dark:invert select-none"
           />
         </a>
 
