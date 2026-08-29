@@ -83,10 +83,10 @@ export default function Navbar() {
       initial={{ y: -40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6 }}
-      className="fixed top-4 left-1/2 z-50 w-[92%] max-w-3xl -translate-x-1/2"
+      className="fixed top-4 left-1/2 z-50 w-[95%] max-w-5xl -translate-x-1/2"
     >
       <div
-        className={`flex items-center justify-between rounded-full border px-4 py-2 transition-colors duration-300 sm:px-6 ${
+        className={`flex items-center justify-between rounded-full border px-5 py-3 transition-colors duration-300 sm:px-8 ${
           scrolled
             ? "border-[#8a0303]/20 bg-white/90 shadow-lg shadow-black/10 backdrop-blur-md dark:border-white/10 dark:bg-ink/90"
             : "border-[#8a0303]/15 bg-white/80 backdrop-blur-sm dark:border-white/10 dark:bg-ink/80"
