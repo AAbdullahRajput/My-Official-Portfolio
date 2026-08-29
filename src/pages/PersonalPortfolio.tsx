@@ -1120,7 +1120,7 @@ function SkillChips() {
                 <div className="absolute left-1/2 top-full mt-[-1px] -translate-x-1/2 border-4 border-transparent border-t-white dark:border-t-panel" />
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
