@@ -114,10 +114,45 @@ export default function Navbar() {
             height={36}
             className="h-9 w-9 rounded-full border border-[#8a0303]/20 object-cover"
           />
-          <img
+          <motion.img
             src="/images/signature.svg"
             alt="Ahmad Abdullah signature"
             className="hidden sm:block h-8 w-36 object-contain dark:invert select-none"
+            initial={{ clipPath: "inset(0 100% 0 0)" }}
+            animate={{
+              clipPath: [
+                "inset(0 100% 0 0)",
+                "inset(0 78% 0 0)",
+                "inset(0 78% 0 0)",
+                "inset(0 52% 0 0)",
+                "inset(0 52% 0 0)",
+                "inset(0 24% 0 0)",
+                "inset(0 24% 0 0)",
+                "inset(0 0% 0 0)",
+              ],
+              transition: {
+                duration: 2.4,
+                times: [0, 0.22, 0.28, 0.5, 0.56, 0.78, 0.84, 1],
+                ease: "easeInOut",
+              },
+            }}
+            whileHover={{
+              clipPath: [
+                "inset(0 100% 0 0)",
+                "inset(0 78% 0 0)",
+                "inset(0 78% 0 0)",
+                "inset(0 52% 0 0)",
+                "inset(0 52% 0 0)",
+                "inset(0 24% 0 0)",
+                "inset(0 24% 0 0)",
+                "inset(0 0% 0 0)",
+              ],
+              transition: {
+                duration: 1.4,
+                times: [0, 0.22, 0.28, 0.5, 0.56, 0.78, 0.84, 1],
+                ease: "easeInOut",
+              },
+            }}
           />
         </a>
 

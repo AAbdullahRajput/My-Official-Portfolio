@@ -209,15 +209,54 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-4 lg:pr-6">
         <div className="max-w-lg lg:w-[48%] lg:-ml-60 lg:mt-20">
 
-          <motion.h1
+          <motion.div
             variants={fadeUp}
             initial="hidden"
             animate={splashDone ? "show" : "hidden"}
             custom={1}
-            className="font-display text-4xl font-bold tracking-tight leading-[1.05] text-[#0b0e13] dark:text-text sm:text-5xl lg:text-6xl"
           >
-            Ahmad Abdullah
-          </motion.h1>
+            <motion.img
+              src="/images/signature.svg"
+              alt="Ahmad Abdullah"
+              className="h-20 w-auto max-w-sm object-contain dark:invert select-none sm:h-24 lg:h-28"
+              initial={{ clipPath: "inset(0 100% 0 0)" }}
+              animate={{
+                clipPath: [
+                  "inset(0 100% 0 0)",
+                  "inset(0 78% 0 0)",
+                  "inset(0 78% 0 0)",
+                  "inset(0 52% 0 0)",
+                  "inset(0 52% 0 0)",
+                  "inset(0 24% 0 0)",
+                  "inset(0 24% 0 0)",
+                  "inset(0 0% 0 0)",
+                ],
+                transition: {
+                  duration: 2.4,
+                  delay: 0.15,
+                  times: [0, 0.22, 0.28, 0.5, 0.56, 0.78, 0.84, 1],
+                  ease: "easeInOut",
+                },
+              }}
+              whileHover={{
+                clipPath: [
+                  "inset(0 100% 0 0)",
+                  "inset(0 78% 0 0)",
+                  "inset(0 78% 0 0)",
+                  "inset(0 52% 0 0)",
+                  "inset(0 52% 0 0)",
+                  "inset(0 24% 0 0)",
+                  "inset(0 24% 0 0)",
+                  "inset(0 0% 0 0)",
+                ],
+                transition: {
+                  duration: 1.4,
+                  times: [0, 0.22, 0.28, 0.5, 0.56, 0.78, 0.84, 1],
+                  ease: "easeInOut",
+                },
+              }}
+            />
+          </motion.div>
 
           <motion.p
             variants={fadeUp}
@@ -268,7 +307,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             initial="hidden"
             animate={splashDone ? "show" : "hidden"}
             custom={5}
-            className="mt-10 flex flex-wrap gap-2"
+            className="mt-10 flex flex-wrap gap-2 overflow-visible"
           >
             {[
               { label: "Flutter", desc: "Cross-platform mobile & web framework by Google. Powers GetFit and Golazo with a single Dart codebase on Android, iOS, and web." },
@@ -284,7 +323,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
                 >
                   {tag.label}
                 </button>
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2.5 w-56 -translate-x-1/2 scale-95 opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 hidden sm:block">
+                <div className="pointer-events-none absolute bottom-full left-1/2 z-[200] mb-2.5 w-56 -translate-x-1/2 scale-95 opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 hidden sm:block">
                   <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-xl dark:border-line dark:bg-panel">
                     <div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
                       {tag.label}
