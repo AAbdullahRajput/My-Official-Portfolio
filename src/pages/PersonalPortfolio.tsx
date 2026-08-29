@@ -65,6 +65,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [revealing, setRevealing] = useState(false);
   const [activeHeroTag, setActiveHeroTag] = useState<{ label: string; desc: string } | null>(null);
+  const [hoveredHeroTag, setHoveredHeroTag] = useState<{ tag: { label: string; desc: string }; rect: DOMRect } | null>(null);
 
   // cursor-tracked reveal spot (percentages), smoothed for a silky follow
   const spotX = useMotionValue(50);
@@ -206,7 +207,35 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
         document.body
       )}
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-4 lg:pr-6">
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {hoveredHeroTag && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={{ duration: 0.15 }}
+              className="pointer-events-none fixed z-[250] hidden w-56 sm:block"
+              style={{
+                left: Math.max(12, Math.min(hoveredHeroTag.rect.left + hoveredHeroTag.rect.width / 2 - 112, window.innerWidth - 224 - 12)),
+                top: hoveredHeroTag.rect.bottom + 10,
+              }}
+            >
+              <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-xl dark:border-line dark:bg-panel">
+                <div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+                  {hoveredHeroTag.tag.label}
+                </div>
+                <p className="text-[11px] leading-relaxed text-[#6b7280] dark:text-text-muted">
+                  {hoveredHeroTag.tag.desc}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+
+      <div className="relative z-30 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-4 lg:pr-6">
         <div className="max-w-lg lg:w-[48%] lg:-ml-60 lg:mt-20">
 
           <motion.div
@@ -307,7 +336,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             initial="hidden"
             animate={splashDone ? "show" : "hidden"}
             custom={5}
-            className="mt-10 flex flex-wrap gap-2 overflow-visible"
+            className="mt-10 flex flex-wrap gap-2"
           >
             {[
               { label: "Flutter", desc: "Cross-platform mobile & web framework by Google. Powers GetFit and Golazo with a single Dart codebase on Android, iOS, and web." },
@@ -315,27 +344,16 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
               { label: "Supabase", desc: "Open-source Firebase alternative built on PostgreSQL. Used for auth, real-time subscriptions, and Row Level Security in Golazo and ConnectHub." },
               { label: "Agora RTC", desc: "Real-time video & audio SDK. Powers live trainer-to-user video call sessions inside GetFit with low-latency peer-to-peer streaming." },
             ].map((tag) => (
-              <div key={tag.label} className="group relative">
-                <button
-                  data-cursor-hover
-                  onClick={() => setActiveHeroTag(tag)}
-                  className="rounded-full border border-[#8a0303]/30 bg-[#8a0303]/5 px-3 py-1 font-mono text-xs text-[#8a0303] transition-all duration-200 hover:bg-[#8a0303]/10 dark:border-white/30 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
-                >
-                  {tag.label}
-                </button>
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-[200] mb-2.5 w-56 -translate-x-1/2 scale-95 opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 hidden sm:block">
-                  <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-xl dark:border-line dark:bg-panel">
-                    <div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
-                      {tag.label}
-                    </div>
-                    <p className="text-[11px] leading-relaxed text-[#6b7280] dark:text-text-muted">
-                      {tag.desc}
-                    </p>
-                    <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-200 dark:border-t-line" />
-                    <div className="absolute left-1/2 top-full mt-[-1px] -translate-x-1/2 border-4 border-transparent border-t-white dark:border-t-panel" />
-                  </div>
-                </div>
-              </div>
+              <button
+                key={tag.label}
+                data-cursor-hover
+                onClick={() => setActiveHeroTag(tag)}
+                onMouseEnter={(e) => setHoveredHeroTag({ tag, rect: e.currentTarget.getBoundingClientRect() })}
+                onMouseLeave={() => setHoveredHeroTag(null)}
+                className="rounded-full border border-[#8a0303]/30 bg-[#8a0303]/5 px-3 py-1 font-mono text-xs text-[#8a0303] transition-all duration-200 hover:border-[#8a0303] hover:bg-[#8a0303] hover:text-white dark:border-white/30 dark:bg-white/5 dark:text-white/80 dark:hover:border-accent-green dark:hover:bg-accent-green dark:hover:text-[#0b0e13]"
+              >
+                {tag.label}
+              </button>
             ))}
           </motion.div>
         </div>
