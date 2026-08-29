@@ -597,7 +597,7 @@ export default function ProjectCard({
                 </a>
               )}
             </div>
-            <span className="text-[10px] text-gray-300 dark:text-white/20 group-hover:text-[#8a0303]/50 transition-colors">
+            <span className="text-[10px] text-gray-300 dark:text-white/50 group-hover:text-[#8a0303] dark:group-hover:text-amber-300 transition-colors">
               click to view →
             </span>
           </div>
