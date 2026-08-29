@@ -1572,10 +1572,12 @@ function CareerNode({
 
         {item.tags.length > 0 && (
           <motion.div variants={waveItem} className="relative mb-4 flex flex-wrap gap-1.5">
-            {item.tags.map((tag) => (
-              <div
+            {item.tags.map((tag, ti) => (
+              <motion.div
                 key={tag}
                 className="relative"
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: ti * 0.12 }}
                 onMouseEnter={() => setHoveredTag(tag)}
                 onMouseLeave={() => setHoveredTag((t) => (t === tag ? null : t))}
               >
