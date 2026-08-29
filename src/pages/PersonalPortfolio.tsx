@@ -168,6 +168,35 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
         onMouseMove={handleFaceMouseMove}
       />
 
+      {/* Hanging spider — drops in with gravity/bounce, then idles on its thread */}
+      <div
+        className="pointer-events-none absolute right-[8%] top-0 z-30 hidden flex-col items-center lg:flex"
+        style={{ transformOrigin: "top center" }}
+      >
+        <motion.div
+          initial={{ scaleY: 0 }}
+          animate={splashDone ? { scaleY: 1 } : { scaleY: 0 }}
+          transition={{ duration: 1.1, ease: "easeOut", delay: 0.25 }}
+          style={{ transformOrigin: "top" }}
+          className="h-36 w-px bg-[#0b0e13]/30 dark:bg-white/25"
+        />
+        <motion.div
+          initial={{ y: -320 }}
+          animate={splashDone ? { y: 0 } : { y: -320 }}
+          transition={{ delay: 0.25, type: "spring", stiffness: 65, damping: 6.5, mass: 1 }}
+          style={{ transformOrigin: "top center" }}
+        >
+          <motion.img
+            src="/images/black-spider.png"
+            alt=""
+            className="w-10 select-none dark:invert"
+            animate={{ rotate: [0, 7, -7, 5, -5, 0] }}
+            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 1.6 }}
+            style={{ transformOrigin: "top center" }}
+          />
+        </motion.div>
+      </div>
+
       {typeof document !== "undefined" && createPortal(
         <AnimatePresence>
           {activeHeroTag && (
@@ -346,8 +375,8 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             ].map((tag, i) => (
               <motion.div
                 key={tag.label}
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: i * 0.18 }}
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 2.8, repeat: Infinity, ease: [0.45, 0, 0.55, 1], delay: i * 0.18 }}
               >
                 <button
                   data-cursor-hover
@@ -1093,8 +1122,8 @@ function SkillChips() {
         {skills.map((skill, i) => (
           <motion.div
             key={skill.label}
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: i * 0.14 }}
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 2.8, repeat: Infinity, ease: [0.45, 0, 0.55, 1], delay: i * 0.14 }}
             className="group relative"
           >
             {/* chip */}
@@ -1576,8 +1605,8 @@ function CareerNode({
               <motion.div
                 key={tag}
                 className="relative"
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: ti * 0.12 }}
+                animate={{ y: [0, -9, 0] }}
+                transition={{ duration: 2.6, repeat: Infinity, ease: [0.45, 0, 0.55, 1], delay: ti * 0.12 }}
                 onMouseEnter={() => setHoveredTag(tag)}
                 onMouseLeave={() => setHoveredTag((t) => (t === tag ? null : t))}
               >
