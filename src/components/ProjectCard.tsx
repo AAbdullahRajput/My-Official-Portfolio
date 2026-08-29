@@ -591,7 +591,7 @@ export default function ProjectCard({
               )}
               {project.live && (
                 <a href={project.live} target="_blank" rel="noopener noreferrer"
-                  className="text-gray-400 underline-offset-4 transition-colors hover:text-[#8a0303] hover:underline dark:text-white/40 dark:hover:text-amber-300"
+                  className="text-gray-400 underline-offset-4 transition-colors hover:text-[#8a0303] hover:underline dark:text-white/70 dark:hover:text-amber-300"
                 >
                   Live
                 </a>
