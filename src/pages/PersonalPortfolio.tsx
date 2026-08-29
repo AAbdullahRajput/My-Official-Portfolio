@@ -1984,18 +1984,22 @@ function Footer() {
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 py-16 sm:grid-cols-2 sm:px-10 lg:grid-cols-4 lg:px-16">
         {/* Brand */}
         <div className="sm:col-span-2">
-          <button
+          <motion.button
             type="button"
             data-cursor-hover
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="block"
+            className="block overflow-hidden"
+            initial={{ clipPath: "inset(0 100% 0 0)" }}
+            whileInView={{ clipPath: "inset(0 0% 0 0)" }}
+            viewport={{ once: false, margin: "-40px" }}
+            transition={{ duration: 1.4, ease: [0.65, 0, 0.35, 1] }}
           >
             <img
               src="/images/signature.svg"
               alt="Ahmad Abdullah signature"
-              className="h-16 w-auto opacity-90 dark:invert select-none"
+              className="h-38 w-auto opacity-90 dark:invert select-none"
             />
-          </button>
+          </motion.button>
           <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
             Full-Stack Developer
           </p>
