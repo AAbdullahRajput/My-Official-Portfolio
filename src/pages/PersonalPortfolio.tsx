@@ -59,6 +59,50 @@ const fadeUp = {
   }),
 };
 
+// ─── HANGING SPIDER (with real, screen-anchored web thread) ─────
+function SpiderWeb({ splashDone }: { splashDone: boolean }) {
+  const spiderY = useMotionValue(0);
+  const threadHeight = useTransform(spiderY, (v) => 140 + Math.max(0, v));
+
+  return (
+    <div
+      className="pointer-events-none absolute right-[-1%] top-0 z-30 hidden flex-col items-center lg:flex"
+      style={{ transformOrigin: "top center" }}
+    >
+      {/* dynamic thread — top stays fixed to the screen, bottom stretches with the spider */}
+      <motion.div
+        style={{ height: threadHeight, transformOrigin: "top" }}
+        className="w-px bg-[#0b0e13]/40 dark:bg-white/40"
+      />
+
+      <motion.div
+        initial={{ y: -320 }}
+        animate={splashDone ? { y: 0 } : { y: -320 }}
+        transition={{ delay: 0.25, type: "spring", stiffness: 65, damping: 6.5, mass: 1 }}
+        style={{ transformOrigin: "top center" }}
+      >
+        {/* crop wrapper — hides the thread baked into the PNG, keeps only the spider body */}
+        <div className="h-56 w-64 overflow-hidden" style={{ transformOrigin: "top center" }}>
+          <motion.img
+            src="/images/black-spider.png"
+            alt=""
+            className="pointer-events-auto w-64 -translate-y-12 cursor-grab select-none active:cursor-grabbing dark:invert"
+            drag="y"
+            style={{ y: spiderY }}
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.9}
+            dragSnapToOrigin
+            dragTransition={{ bounceStiffness: 280, bounceDamping: 9 }}
+            whileDrag={{ cursor: "grabbing" }}
+            animate={{ rotate: [0, 7, -7, 5, -5, 0] }}
+            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 1.6 }}
+          />
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // ─── HERO ───────────────────────────────────────────────
 function Hero({ splashDone = false }: { splashDone?: boolean }) {
   const heroImgRef = useRef<HTMLDivElement>(null);
@@ -169,32 +213,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
       />
 
       {/* Hanging spider — drops in with gravity/bounce, then idles */}
-      <div
-        className="pointer-events-none absolute right-[-1%] top-0 z-30 hidden flex-col items-center lg:flex"
-        style={{ transformOrigin: "top center" }}
-      >
-        <motion.div
-          initial={{ y: -320 }}
-          animate={splashDone ? { y: 0 } : { y: -320 }}
-          transition={{ delay: 0.25, type: "spring", stiffness: 65, damping: 6.5, mass: 1 }}
-          style={{ transformOrigin: "top center" }}
-        >
-          <motion.img
-            src="/images/black-spider.png"
-            alt=""
-            className="pointer-events-auto w-104 cursor-grab select-none active:cursor-grabbing dark:invert"
-            drag
-            dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
-            dragElastic={0.9}
-            dragSnapToOrigin
-            dragTransition={{ bounceStiffness: 280, bounceDamping: 9 }}
-            whileDrag={{ cursor: "grabbing" }}
-            animate={{ rotate: [0, 7, -7, 5, -5, 0] }}
-            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 1.6 }}
-            style={{ transformOrigin: "top center" }}
-          />
-        </motion.div>
-      </div>
+      <SpiderWeb splashDone={splashDone} />
 
       {typeof document !== "undefined" && createPortal(
         <AnimatePresence>
