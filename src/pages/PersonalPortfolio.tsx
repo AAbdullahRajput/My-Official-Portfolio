@@ -1520,7 +1520,7 @@ function CareerNode({
           onClick={() => setDetailOpen(true)}
           className={`relative mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl border py-2 font-mono text-[11px] font-medium transition-all duration-200 ${
             activated
-              ? "border-white/90 text-black hover:bg-black hover:border-black"
+              ? "border-white/90 text-white dark:text-black hover:bg-black hover:border-white hover:text-white"
               : "border-[#0b0e13]/25 text-[#0b0e13] hover:bg-[#0b0e13] hover:text-white hover:border-[#0b0e13] dark:border-white/20 dark:text-white dark:hover:bg-black dark:hover:border-black"
           }`}
         >
