@@ -343,17 +343,22 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
               { label: "Next.js", desc: "React meta-framework for production web apps. Handles SSR, routing, and API routes — used in this portfolio and ConnectHub's frontend." },
               { label: "Supabase", desc: "Open-source Firebase alternative built on PostgreSQL. Used for auth, real-time subscriptions, and Row Level Security in Golazo and ConnectHub." },
               { label: "Agora RTC", desc: "Real-time video & audio SDK. Powers live trainer-to-user video call sessions inside GetFit with low-latency peer-to-peer streaming." },
-            ].map((tag) => (
-              <button
+            ].map((tag, i) => (
+              <motion.div
                 key={tag.label}
-                data-cursor-hover
-                onClick={() => setActiveHeroTag(tag)}
-                onMouseEnter={(e) => setHoveredHeroTag({ tag, rect: e.currentTarget.getBoundingClientRect() })}
-                onMouseLeave={() => setHoveredHeroTag(null)}
-                className="rounded-full border border-[#8a0303]/30 bg-[#8a0303]/5 px-3 py-1 font-mono text-xs text-[#8a0303] transition-all duration-200 hover:border-[#8a0303] hover:bg-[#8a0303] hover:text-white dark:border-white/30 dark:bg-white/5 dark:text-white/80 dark:hover:border-accent-green dark:hover:bg-accent-green dark:hover:text-[#0b0e13]"
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: i * 0.18 }}
               >
-                {tag.label}
-              </button>
+                <button
+                  data-cursor-hover
+                  onClick={() => setActiveHeroTag(tag)}
+                  onMouseEnter={(e) => setHoveredHeroTag({ tag, rect: e.currentTarget.getBoundingClientRect() })}
+                  onMouseLeave={() => setHoveredHeroTag(null)}
+                  className="rounded-full border border-[#8a0303]/30 bg-[#8a0303]/5 px-3 py-1 font-mono text-xs text-[#8a0303] transition-all duration-200 hover:border-[#8a0303] hover:bg-[#8a0303] hover:text-white dark:border-white/30 dark:bg-white/5 dark:text-white/80 dark:hover:border-accent-green dark:hover:bg-accent-green dark:hover:text-[#0b0e13]"
+                >
+                  {tag.label}
+                </button>
+              </motion.div>
             ))}
           </motion.div>
         </div>
@@ -1085,8 +1090,13 @@ function SkillChips() {
   return (
     <>
       <div className="mt-10 flex flex-wrap justify-center gap-2 px-6">
-        {skills.map((skill) => (
-          <div key={skill.label} className="group relative">
+        {skills.map((skill, i) => (
+          <motion.div
+            key={skill.label}
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: i * 0.14 }}
+            className="group relative"
+          >
             {/* chip */}
             <button
               data-cursor-hover
