@@ -67,9 +67,9 @@ export default function Navbar() {
   function handleLogoPointerUp() {
     clearHoldTimer();
 
+    // Photo was opened by the hold — leave it open, only the
+    // close button (or backdrop) should dismiss it now.
     if (holdTriggeredRef.current) {
-      setPhotoOpen(false);
-      setPhotoHover(false);
       holdTriggeredRef.current = false;
       return;
     }
@@ -89,12 +89,16 @@ export default function Navbar() {
   }
 
   function handleLogoPointerLeave() {
-    clearHoldTimer();
-    if (holdTriggeredRef.current) {
-      setPhotoOpen(false);
-      setPhotoHover(false);
-      holdTriggeredRef.current = false;
+    // Only cancel a pending (not-yet-triggered) hold — never
+    // close a photo that's already open.
+    if (!holdTriggeredRef.current) {
+      clearHoldTimer();
     }
+  }
+
+  function handleClosePhoto() {
+    setPhotoOpen(false);
+    setPhotoHover(false);
   }
 
   // Detect scroll position
@@ -393,42 +397,62 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="fixed inset-0 z-[400] flex items-center justify-center bg-black/90"
-              onMouseEnter={() => setPhotoHover(true)}
-              onMouseLeave={() => setPhotoHover(false)}
+              className="fixed inset-0 z-[400] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+              onClick={handleClosePhoto}
             >
-              <motion.img
-                initial={{ scale: 1.08, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 1.08, opacity: 0 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                src="/images/profile.jpeg"
-                alt="Ahmad Abdullah"
-                draggable={false}
-                className="h-full w-full select-none object-cover"
-              />
+              <motion.div
+                initial={{ scale: 0.85, opacity: 0, y: 12 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.85, opacity: 0, y: 12 }}
+                transition={{ type: "spring", stiffness: 260, damping: 24 }}
+                onClick={(e) => e.stopPropagation()}
+                onMouseEnter={() => setPhotoHover(true)}
+                onMouseLeave={() => setPhotoHover(false)}
+                className="relative w-full max-w-xs overflow-hidden rounded-2xl shadow-2xl sm:max-w-sm"
+                style={{ aspectRatio: "4/5" }}
+              >
+                <img
+                  src="/images/profile.jpeg"
+                  alt="Ahmad Abdullah"
+                  draggable={false}
+                  className="h-full w-full select-none object-cover"
+                />
 
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/70 to-transparent" />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/60 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/75 to-transparent" />
 
-              <AnimatePresence>
-                {photoHover && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute bottom-8 left-1/2 -translate-x-1/2 rounded-2xl border border-white/10 bg-black/70 px-5 py-3 text-center backdrop-blur-xl"
-                  >
-                    <div className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
-                      Ahmad Abdullah
-                    </div>
-                    <div className="mt-1 font-mono text-[11px] text-white/70">
-                      Full-Stack Developer &middot; Islamabad, PK
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                {/* close button */}
+                <button
+                  type="button"
+                  data-cursor-hover
+                  onClick={handleClosePhoto}
+                  aria-label="Close"
+                  className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+
+                <AnimatePresence>
+                  {photoHover && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute bottom-4 left-4 right-4 z-10 rounded-xl border border-white/10 bg-black/70 px-4 py-2.5 text-center backdrop-blur-xl"
+                    >
+                      <div className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+                        Ahmad Abdullah
+                      </div>
+                      <div className="mt-1 font-mono text-[11px] text-white/70">
+                        Full-Stack Developer &middot; Islamabad, PK
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>,
