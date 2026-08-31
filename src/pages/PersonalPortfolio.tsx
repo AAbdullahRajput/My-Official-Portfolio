@@ -1896,7 +1896,7 @@ function FallingSpiderman({ x, y }: { x: number; y: number }) {
     <div
       ref={ref}
       className="pointer-events-none absolute z-20 hidden -translate-x-1/2 lg:block"
-      style={{ left: x, top: 0, width: 120, height: y }}
+      style={{ left: x, top: 0, width: 220, height: y }}
     >
       <AnimatePresence>
         {triggered && (
