@@ -17,6 +17,47 @@ import { FaLinkedin } from "react-icons/fa";
 
 const LINKEDIN_URL = "https://www.linkedin.com/in/ahmad-a-972497411";
 
+const NAV_TOUR_STEPS = [
+  {
+    id: "hills",
+    x: "50%",
+    y: "18%",
+    title: "Margalla Hills",
+    body: "The forested ridge behind me — Margalla Hills, the range that lines Islamabad's northern edge. Shot on one of the hiking trails there.",
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 16l5-8 4 5 3-4 4 7H2Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    id: "trail",
+    x: "78%",
+    y: "58%",
+    title: "The Trail",
+    body: "Dense greenery lining the hiking trail up Margalla Hills — a quiet break from screens and deploys.",
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 2v6M10 12v6M4 10h2M14 10h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        <circle cx="10" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.6" />
+      </svg>
+    ),
+  },
+  {
+    id: "person",
+    x: "38%",
+    y: "62%",
+    title: "Ahmad Abdullah",
+    body: "That's me — full-stack developer, currently building production apps at Mehdi Technologies in Islamabad. Taken mid-hike above the city.",
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+];
+
 const links = [
   { label: "Work", href: "#projects" },
   { label: "About", href: "#about" },
@@ -40,10 +81,12 @@ export default function Navbar() {
   // Logo photo: hold to reveal, 1 click = scroll top, 2 clicks = home
   const [photoOpen, setPhotoOpen] = useState(false);
   const [photoHover, setPhotoHover] = useState(false);
+  const [tourActive, setTourActive] = useState<number | null>(null);
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdTriggeredRef = useRef(false);
   const clickCountRef = useRef(0);
   const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const photoSoundRef = useRef<HTMLAudioElement | null>(null);
 
   const HOLD_MS = 350;
   const CLICK_DELAY_MS = 280;
@@ -61,6 +104,11 @@ export default function Navbar() {
     holdTimerRef.current = setTimeout(() => {
       holdTriggeredRef.current = true;
       setPhotoOpen(true);
+
+      photoSoundRef.current = new Audio("/song/location-pointing.mp3");
+      photoSoundRef.current.loop = true;
+      photoSoundRef.current.play().catch(() => {});
+      setTimeout(() => setTourActive(0), 400);
     }, HOLD_MS);
   }
 
@@ -97,8 +145,23 @@ export default function Navbar() {
   }
 
   function handleClosePhoto() {
+    if (photoSoundRef.current) {
+      photoSoundRef.current.pause();
+      photoSoundRef.current.currentTime = 0;
+    }
     setPhotoOpen(false);
     setPhotoHover(false);
+    setTourActive(null);
+  }
+
+  function playPhotoSound() {
+    if (!photoSoundRef.current) return;
+    photoSoundRef.current.currentTime = 0;
+    photoSoundRef.current.play().catch(() => {});
+  }
+
+  function goToTourStep(i: number) {
+    setTourActive(i);
   }
 
   // Detect scroll position
@@ -406,9 +469,7 @@ export default function Navbar() {
                 exit={{ scale: 0.85, opacity: 0, y: 12 }}
                 transition={{ type: "spring", stiffness: 260, damping: 24 }}
                 onClick={(e) => e.stopPropagation()}
-                onMouseEnter={() => setPhotoHover(true)}
-                onMouseLeave={() => setPhotoHover(false)}
-                className="relative w-full max-w-xs overflow-hidden rounded-2xl shadow-2xl sm:max-w-sm"
+                className="relative w-full max-w-sm overflow-hidden rounded-2xl shadow-2xl sm:max-w-lg"
                 style={{ aspectRatio: "4/5" }}
               >
                 <img
@@ -419,7 +480,7 @@ export default function Navbar() {
                 />
 
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/60 to-transparent" />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/75 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/80 to-transparent" />
 
                 {/* close button */}
                 <button
@@ -427,27 +488,118 @@ export default function Navbar() {
                   data-cursor-hover
                   onClick={handleClosePhoto}
                   aria-label="Close"
-                  className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
+                  className="absolute top-3 right-3 z-20 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
                 </button>
 
+                {/* top label */}
+                <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-[#8a0303] opacity-70 [animation:ping_0.03s_cubic-bezier(0,0,0.2,1)_infinite]" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#8a0303]" />
+                  </span>
+                  <span className="font-mono text-[9px] font-medium tracking-wide text-white/80">
+                    INTERACTIVE TOUR
+                  </span>
+                </div>
+
+                {/* dim overlay while a step is active */}
                 <AnimatePresence>
-                  {photoHover && (
+                  {tourActive !== null && (
                     <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 8 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute bottom-4 left-4 right-4 z-10 rounded-xl border border-white/10 bg-black/70 px-4 py-2.5 text-center backdrop-blur-xl"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 bg-black/15"
+                    />
+                  )}
+                </AnimatePresence>
+
+                {/* numbered markers */}
+                <AnimatePresence>
+                  {tourActive !== null && NAV_TOUR_STEPS.map((s, i) => (
+                    <motion.button
+                      key={s.id}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                      data-cursor-hover
+                      onClick={(e) => { e.stopPropagation(); goToTourStep(i); playPhotoSound(); }}
+                      className="absolute -translate-x-1/2 -translate-y-1/2 z-10 focus:outline-none"
+                      style={{ left: s.x, top: s.y }}
                     >
-                      <div className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
-                        Ahmad Abdullah
+                      <span className="relative flex h-6 w-6 items-center justify-center">
+                        <span className={`absolute inline-flex h-full w-full rounded-full opacity-40 [animation:ping_0.7s_linear_infinite] ${i === tourActive ? "bg-[#8a0303]" : "bg-white"}`} />
+                        <span className={`absolute inline-flex h-full w-full rounded-full opacity-30 [animation:ping_0.8s_linear_infinite_1.5s] ${i === tourActive ? "bg-[#8a0303]" : "bg-white"}`} />
+                        <span className={`relative inline-flex h-5 w-5 items-center justify-center rounded-full border-2 font-mono text-[9px] font-bold shadow-lg transition-all ${
+                          i === tourActive
+                            ? "border-[#8a0303] bg-[#8a0303] text-white scale-125"
+                            : "border-white/80 bg-white/20 text-white backdrop-blur-sm"
+                        }`}>
+                          {i + 1}
+                        </span>
+                      </span>
+                    </motion.button>
+                  ))}
+                </AnimatePresence>
+
+                {/* tooltip card */}
+                <AnimatePresence mode="wait">
+                  {tourActive !== null && (
+                    <motion.div
+                      key={NAV_TOUR_STEPS[tourActive].id}
+                      initial={{ opacity: 0, y: 14, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                      transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="absolute bottom-3 left-3 right-3 z-20 rounded-xl border border-white/10 bg-black/75 p-3.5 shadow-2xl backdrop-blur-xl"
+                    >
+                      <div className="mb-2 flex items-center gap-2">
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#8a0303]/90 text-white">
+                          {NAV_TOUR_STEPS[tourActive].icon}
+                        </span>
+                        <span className="font-display text-[12px] font-bold text-white">
+                          {NAV_TOUR_STEPS[tourActive].title}
+                        </span>
+                        <span className="ml-auto font-mono text-[9px] text-white/40">
+                          {tourActive + 1} / {NAV_TOUR_STEPS.length}
+                        </span>
                       </div>
-                      <div className="mt-1 font-mono text-[11px] text-white/70">
-                        Full-Stack Developer &middot; Islamabad, PK
+
+                      <p className="mb-3 text-[11px] leading-relaxed text-white/70">
+                        {NAV_TOUR_STEPS[tourActive].body}
+                      </p>
+
+                      <div className="flex items-center gap-2">
+                        <div className="flex gap-1.5">
+                          {NAV_TOUR_STEPS.map((_, i) => (
+                            <button
+                              key={i}
+                              data-cursor-hover
+                              onClick={(e) => { e.stopPropagation(); goToTourStep(i); }}
+                              className={`h-1.5 rounded-full transition-all duration-300 ${
+                                i === tourActive ? "w-4 bg-[#8a0303]" : "w-1.5 bg-white/25 hover:bg-white/50"
+                              }`}
+                            />
+                          ))}
+                        </div>
+
+                        <button
+                          type="button"
+                          data-cursor-hover
+                          onClick={(e) => { e.stopPropagation(); goToTourStep((tourActive + 1) % NAV_TOUR_STEPS.length); playPhotoSound(); }}
+                          className="ml-auto flex h-7 items-center gap-1.5 rounded-lg bg-[#8a0303] px-3 font-mono text-[10px] font-medium text-white transition-colors hover:bg-[#6e0202]"
+                        >
+                          {tourActive < NAV_TOUR_STEPS.length - 1 ? "Next" : "Again ↺"}
+                          <svg viewBox="0 0 16 16" fill="none" className="h-2.5 w-2.5">
+                            <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </button>
                       </div>
                     </motion.div>
                   )}
