@@ -154,27 +154,41 @@ export default function Navbar() {
         }`}
       >
         {/* Logo */}
-        
-        <a  href="#"
-          data-cursor-hover
-          onClick={(e) => {
-            e.preventDefault();
-            const atTop = window.scrollY < 10;
-            if (atTop) {
-              window.location.href = "/";
-            } else {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }
-          }}
-          className="flex items-center gap-2.5"
-        >
-          <Image
-            src="/images/profile.jpeg"
-            alt="Ahmad Abdullah"
-            width={36}
-            height={36}
-            className="h-9 w-9 rounded-full border border-[#8a0303]/20 object-cover"
-          />
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            data-cursor-hover
+            aria-label="Ahmad Abdullah — hold to view photo"
+            onPointerDown={handleLogoPointerDown}
+            onPointerUp={handleLogoPointerUp}
+            onPointerLeave={handleLogoPointerLeave}
+            onPointerCancel={handleLogoPointerLeave}
+            onContextMenu={(e) => e.preventDefault()}
+            className="shrink-0 rounded-full"
+          >
+            <Image
+              src="/images/profile.jpeg"
+              alt="Ahmad Abdullah"
+              width={36}
+              height={36}
+              draggable={false}
+              className="h-9 w-9 select-none rounded-full border border-[#8a0303]/20 object-cover"
+            />
+          </button>
+
+          
+          <a  href="#"
+            data-cursor-hover
+            onClick={(e) => {
+              e.preventDefault();
+              const atTop = window.scrollY < 10;
+              if (atTop) {
+                window.location.href = "/";
+              } else {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            }}
+          >
           <motion.img
             src="/images/signature.svg"
             alt="Ahmad Abdullah signature"
@@ -215,7 +229,8 @@ export default function Navbar() {
               },
             }}
           />
-        </a>
+          </a>
+        </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-6 sm:flex">
@@ -350,6 +365,56 @@ export default function Navbar() {
             {dark ? "Light mode" : "Dark mode"}
           </button>
         </motion.div>
+      )}
+
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {photoOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 z-[400] flex items-center justify-center bg-black/90"
+              onMouseEnter={() => setPhotoHover(true)}
+              onMouseLeave={() => setPhotoHover(false)}
+            >
+              <motion.img
+                initial={{ scale: 1.08, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 1.08, opacity: 0 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                src="/images/profile.jpeg"
+                alt="Ahmad Abdullah"
+                draggable={false}
+                className="h-full w-full select-none object-cover"
+              />
+
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/70 to-transparent" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/80 to-transparent" />
+
+              <AnimatePresence>
+                {photoHover && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute bottom-8 left-1/2 -translate-x-1/2 rounded-2xl border border-white/10 bg-black/70 px-5 py-3 text-center backdrop-blur-xl"
+                  >
+                    <div className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+                      Ahmad Abdullah
+                    </div>
+                    <div className="mt-1 font-mono text-[11px] text-white/70">
+                      Full-Stack Developer &middot; Islamabad, PK
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
       )}
     </motion.header>
   );
