@@ -1576,7 +1576,6 @@ function CareerNode({
 
   return (
     <motion.div
-      ref={cardRef}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
@@ -1606,6 +1605,7 @@ function CareerNode({
 
       {/* card */}
       <motion.div
+        ref={cardRef}
         key={jumpCycle}
         style={{
           transformPerspective: 800,
@@ -1896,7 +1896,7 @@ function FallingSpiderman({ x, y }: { x: number; y: number }) {
     <div
       ref={ref}
       className="pointer-events-none absolute z-20 hidden -translate-x-1/2 lg:block"
-      style={{ left: x, top: 0, width: 220, height: y }}
+      style={{ left: x, top: 0, width: 420, height: y }}
     >
       <AnimatePresence>
         {triggered && (
@@ -1907,7 +1907,7 @@ function FallingSpiderman({ x, y }: { x: number; y: number }) {
             className="absolute bottom-0 left-1/2 w-full -translate-x-1/2 object-contain select-none dark:invert"
             initial={{ y: -(y + 300), opacity: 0, scaleY: 1 }}
             animate={{
-              y: [-(y + 300), 0, -28, 0, -10, 0],
+              y: [-(y + 300), 0, 28, 0, -30, 0],
               opacity: [0, 1, 1, 1, 1, 1],
               scaleY: [1, 0.88, 1.06, 0.96, 1.02, 1],
             }}
@@ -1944,7 +1944,7 @@ function Career() {
       const cardRect = firstCardRef.current.getBoundingClientRect();
       const trackRect = trackRef.current.getBoundingClientRect();
       setSpiderTarget({
-        x: cardRect.right - trackRect.left - 20, // near the bottom-right corner of the card
+        x: cardRect.right - trackRect.left - 100, // near the bottom-right corner of the card
         y: cardRect.bottom - trackRect.top + 40, // pushed down so the visible character (not the sprite's transparent padding) lands at the card's bottom edge
       });
     };
