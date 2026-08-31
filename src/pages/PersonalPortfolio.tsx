@@ -1905,16 +1905,37 @@ function FallingSpiderman({ x, y }: { x: number; y: number }) {
             src="/images/falling-down-main.png"
             alt=""
             className="absolute bottom-0 left-1/2 w-full -translate-x-1/2 object-contain select-none dark:invert"
-            initial={{ y: -(y + 300), opacity: 0, scaleY: 1 }}
+            style={{ transformOrigin: "top center" }}
+            initial={{ y: -(y + 300), opacity: 0, scaleY: 1, rotate: 0 }}
             animate={{
               y: [-(y + 300), 0, 28, 0, -30, 0],
               opacity: [0, 1, 1, 1, 1, 1],
               scaleY: [1, 0.88, 1.06, 0.96, 1.02, 1],
+              rotate: [-30, 30],
             }}
             transition={{
-              duration: 1.1,
-              times: [0, 0.52, 0.66, 0.78, 0.9, 1],
-              ease: ["easeIn", "easeOut", "easeOut", "easeOut", "easeOut"],
+              y: {
+                duration: 1.1,
+                times: [0, 0.52, 0.66, 0.78, 0.9, 1],
+                ease: ["easeIn", "easeOut", "easeOut", "easeOut", "easeOut"],
+              },
+              opacity: {
+                duration: 1.1,
+                times: [0, 0.52, 0.66, 0.78, 0.9, 1],
+                ease: ["easeIn", "easeOut", "easeOut", "easeOut", "easeOut"],
+              },
+              scaleY: {
+                duration: 1.1,
+                times: [0, 0.52, 0.66, 0.78, 0.9, 1],
+                ease: ["easeIn", "easeOut", "easeOut", "easeOut", "easeOut"],
+              },
+              rotate: {
+                duration: 1.8,
+                delay: 1.1,
+                repeat: Infinity,
+                repeatType: "mirror",
+                ease: "easeInOut",
+              },
             }}
           />
         )}
