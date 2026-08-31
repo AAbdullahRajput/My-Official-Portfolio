@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
   FiGithub,
@@ -35,6 +36,66 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dark, setDark] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // Logo photo: hold to reveal, 1 click = scroll top, 2 clicks = home
+  const [photoOpen, setPhotoOpen] = useState(false);
+  const [photoHover, setPhotoHover] = useState(false);
+  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const holdTriggeredRef = useRef(false);
+  const clickCountRef = useRef(0);
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const HOLD_MS = 350;
+  const CLICK_DELAY_MS = 280;
+
+  function clearHoldTimer() {
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+  }
+
+  function handleLogoPointerDown() {
+    holdTriggeredRef.current = false;
+    clearHoldTimer();
+    holdTimerRef.current = setTimeout(() => {
+      holdTriggeredRef.current = true;
+      setPhotoOpen(true);
+    }, HOLD_MS);
+  }
+
+  function handleLogoPointerUp() {
+    clearHoldTimer();
+
+    if (holdTriggeredRef.current) {
+      setPhotoOpen(false);
+      setPhotoHover(false);
+      holdTriggeredRef.current = false;
+      return;
+    }
+
+    clickCountRef.current += 1;
+
+    if (clickCountRef.current === 1) {
+      clickTimerRef.current = setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        clickCountRef.current = 0;
+      }, CLICK_DELAY_MS);
+    } else {
+      if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+      clickCountRef.current = 0;
+      window.location.href = "/";
+    }
+  }
+
+  function handleLogoPointerLeave() {
+    clearHoldTimer();
+    if (holdTriggeredRef.current) {
+      setPhotoOpen(false);
+      setPhotoHover(false);
+      holdTriggeredRef.current = false;
+    }
+  }
 
   // Detect scroll position
   useEffect(() => {
