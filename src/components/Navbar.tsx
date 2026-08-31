@@ -155,26 +155,44 @@ export default function Navbar() {
       >
         {/* Logo */}
         <div className="flex items-center gap-2.5">
-          <button
-            type="button"
-            data-cursor-hover
-            aria-label="Ahmad Abdullah — hold to view photo"
-            onPointerDown={handleLogoPointerDown}
-            onPointerUp={handleLogoPointerUp}
-            onPointerLeave={handleLogoPointerLeave}
-            onPointerCancel={handleLogoPointerLeave}
-            onContextMenu={(e) => e.preventDefault()}
-            className="shrink-0 rounded-full"
-          >
-            <Image
-              src="/images/profile.jpeg"
-              alt="Ahmad Abdullah"
-              width={36}
-              height={36}
-              draggable={false}
-              className="h-9 w-9 select-none rounded-full border border-[#8a0303]/20 object-cover"
-            />
-          </button>
+          <div className="group relative shrink-0">
+            <button
+              type="button"
+              data-cursor-hover
+              aria-label="Ahmad Abdullah — hold to view photo"
+              onPointerDown={handleLogoPointerDown}
+              onPointerUp={handleLogoPointerUp}
+              onPointerLeave={handleLogoPointerLeave}
+              onPointerCancel={handleLogoPointerLeave}
+              onContextMenu={(e) => e.preventDefault()}
+              className="block rounded-full"
+            >
+              <Image
+                src="/images/profile.jpeg"
+                alt="Ahmad Abdullah"
+                width={36}
+                height={36}
+                draggable={false}
+                className="h-9 w-9 select-none rounded-full border border-[#8a0303]/20 object-cover"
+              />
+            </button>
+
+            {/* hover tooltip */}
+            <div className="pointer-events-none absolute left-1/2 top-full z-50 mt-2.5 w-44 -translate-x-1/2 scale-95 opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100">
+              <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-xl dark:border-line dark:bg-panel">
+                <div className="mb-1.5 font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+                  Ahmad Abdullah
+                </div>
+                <ul className="space-y-1 text-[10px] leading-relaxed text-[#6b7280] dark:text-text-muted">
+                  <li>1 click &mdash; scroll to top</li>
+                  <li>2 clicks &mdash; go to home</li>
+                  <li>Hold &mdash; view photo</li>
+                </ul>
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-200 dark:border-b-line" />
+                <div className="absolute bottom-full left-1/2 mt-[1px] -translate-x-1/2 border-4 border-transparent border-b-white dark:border-b-panel" />
+              </div>
+            </div>
+          </div>
 
           
           <a  href="#"
