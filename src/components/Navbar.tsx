@@ -21,7 +21,7 @@ const NAV_TOUR_STEPS = [
   {
     id: "hills",
     x: "50%",
-    y: "18%",
+    y: "12%",
     title: "Margalla Hills",
     body: "The forested ridge behind me — Margalla Hills, the range that lines Islamabad's northern edge. Shot on one of the hiking trails there.",
     icon: (
@@ -31,22 +31,9 @@ const NAV_TOUR_STEPS = [
     ),
   },
   {
-    id: "trail",
-    x: "78%",
-    y: "58%",
-    title: "The Trail",
-    body: "Dense greenery lining the hiking trail up Margalla Hills — a quiet break from screens and deploys.",
-    icon: (
-      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10 2v6M10 12v6M4 10h2M14 10h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        <circle cx="10" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.6" />
-      </svg>
-    ),
-  },
-  {
     id: "person",
-    x: "38%",
-    y: "62%",
+    x: "82%",
+    y: "42%",
     title: "Ahmad Abdullah",
     body: "That's me — full-stack developer, currently building production apps at Mehdi Technologies in Islamabad. Taken mid-hike above the city.",
     icon: (
@@ -82,6 +69,7 @@ export default function Navbar() {
   const [photoOpen, setPhotoOpen] = useState(false);
   const [photoHover, setPhotoHover] = useState(false);
   const [tourActive, setTourActive] = useState<number | null>(null);
+  const [logoToured, setLogoToured] = useState(false);
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdTriggeredRef = useRef(false);
   const clickCountRef = useRef(0);
@@ -109,6 +97,7 @@ export default function Navbar() {
       photoSoundRef.current.loop = true;
       photoSoundRef.current.play().catch(() => {});
       setTimeout(() => setTourActive(0), 400);
+      setLogoToured(true);
     }, HOLD_MS);
   }
 
@@ -243,6 +232,24 @@ export default function Navbar() {
                 className="h-9 w-9 select-none rounded-full border border-[#8a0303]/20 object-cover"
               />
             </button>
+
+            {/* hold hint badge — mirrors the About photo's "Click to explore" */}
+            <AnimatePresence>
+              {!logoToured && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ delay: 0.6 }}
+                  className="pointer-events-none absolute -bottom-1 -right-1 flex items-center gap-1 rounded-full border border-[#8a0303]/30 bg-white/95 px-1.5 py-0.5 shadow-md backdrop-blur-sm dark:border-accent-green/30 dark:bg-panel/95"
+                >
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#8a0303] opacity-60 dark:bg-accent-green" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#8a0303] dark:bg-accent-green" />
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* hover tooltip */}
             <div className="pointer-events-none absolute left-1/2 top-full z-50 mt-2.5 w-44 -translate-x-1/2 scale-95 opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100">
@@ -532,17 +539,47 @@ export default function Navbar() {
                       className="absolute -translate-x-1/2 -translate-y-1/2 z-10 focus:outline-none"
                       style={{ left: s.x, top: s.y }}
                     >
-                      <span className="relative flex h-6 w-6 items-center justify-center">
-                        <span className={`absolute inline-flex h-full w-full rounded-full opacity-40 [animation:ping_0.7s_linear_infinite] ${i === tourActive ? "bg-[#8a0303]" : "bg-white"}`} />
-                        <span className={`absolute inline-flex h-full w-full rounded-full opacity-30 [animation:ping_0.8s_linear_infinite_1.5s] ${i === tourActive ? "bg-[#8a0303]" : "bg-white"}`} />
-                        <span className={`relative inline-flex h-5 w-5 items-center justify-center rounded-full border-2 font-mono text-[9px] font-bold shadow-lg transition-all ${
-                          i === tourActive
-                            ? "border-[#8a0303] bg-[#8a0303] text-white scale-125"
-                            : "border-white/80 bg-white/20 text-white backdrop-blur-sm"
-                        }`}>
-                          {i + 1}
+                      <div className="flex items-center gap-0">
+                        {/* animated arrow chain pointing left */}
+                        <div className="flex items-center mr-1">
+                          {[0, 1, 2].map((j) => (
+                            <motion.svg
+                              key={j}
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              className="h-3.5 w-3.5 -ml-1.5"
+                              xmlns="http://www.w3.org/2000/svg"
+                              animate={{ opacity: [0, 1, 0], x: [-4, 0, -4] }}
+                              transition={{
+                                duration: 1.1,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: j * 0.18,
+                              }}
+                            >
+                              <path
+                                d="M10 3L5 8l5 5"
+                                stroke={i === tourActive ? "#8a0303" : "rgba(255,255,255,0.85)"}
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </motion.svg>
+                          ))}
+                        </div>
+
+                        <span className="relative flex h-6 w-6 items-center justify-center">
+                          <span className={`absolute inline-flex h-full w-full rounded-full opacity-40 [animation:ping_0.7s_linear_infinite] ${i === tourActive ? "bg-[#8a0303]" : "bg-white"}`} />
+                          <span className={`absolute inline-flex h-full w-full rounded-full opacity-30 [animation:ping_0.8s_linear_infinite_1.5s] ${i === tourActive ? "bg-[#8a0303]" : "bg-white"}`} />
+                          <span className={`relative inline-flex h-5 w-5 items-center justify-center rounded-full border-2 font-mono text-[9px] font-bold shadow-lg transition-all ${
+                            i === tourActive
+                              ? "border-[#8a0303] bg-[#8a0303] text-white scale-125"
+                              : "border-white/80 bg-white/20 text-white backdrop-blur-sm"
+                          }`}>
+                            {i + 1}
+                          </span>
                         </span>
-                      </span>
+                      </div>
                     </motion.button>
                   ))}
                 </AnimatePresence>
