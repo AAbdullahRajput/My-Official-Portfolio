@@ -65,11 +65,13 @@ const CursorWebCapture = ({
   originY,
   targetX,
   targetY,
+  color = "#8a0303",
 }: {
   originX: number;
   originY: number;
   targetX: number;
   targetY: number;
+  color?: string;
 }) => {
   const netRadius = 34;
   const spokes = 8;
@@ -80,7 +82,7 @@ const CursorWebCapture = ({
         y1={originY}
         x2={targetX}
         y2={targetY}
-        stroke="#8a0303"
+        stroke={color}
         strokeWidth="2"
         strokeDasharray="6 4"
         initial={{ pathLength: 0, opacity: 1 }}
@@ -103,7 +105,7 @@ const CursorWebCapture = ({
               y1={targetY}
               x2={ex}
               y2={ey}
-              stroke="#8a0303"
+              stroke={color}
               strokeWidth="1.4"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
@@ -115,7 +117,7 @@ const CursorWebCapture = ({
           cx={targetX}
           cy={targetY}
           r={netRadius}
-          stroke="#8a0303"
+          stroke={color}
           strokeWidth="1.4"
           fill="none"
           initial={{ scale: 0.2, opacity: 0 }}
@@ -127,7 +129,7 @@ const CursorWebCapture = ({
           cx={targetX}
           cy={targetY}
           r={netRadius * 0.55}
-          stroke="#8a0303"
+          stroke={color}
           strokeWidth="1"
           fill="none"
           initial={{ scale: 0.2, opacity: 0 }}
@@ -184,7 +186,7 @@ export default function CustomCursor() {
   const [visible, setVisible] = useState(false);
   const [isHoveringTarget, setIsHoveringTarget] = useState(false);
   const [overDark, setOverDark] = useState(false);
-  type WebCapture = { id: number; originX: number; originY: number; targetX: number; targetY: number };
+  type WebCapture = { id: number; originX: number; originY: number; targetX: number; targetY: number; color: string };
   const [webCaptures, setWebCaptures] = useState<WebCapture[]>([]);
 
   useEffect(() => {
@@ -219,9 +221,11 @@ export default function CustomCursor() {
       const originX = e.clientX + faceOffset * Math.cos(angleRad);
       const originY = e.clientY + faceOffset * Math.sin(angleRad);
       const id = Date.now() + Math.random();
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const color = isOverDarkSurface(el) ? "#ffffff" : "#8a0303";
       setWebCaptures((prev: WebCapture[]) => [
         ...prev,
-        { id, originX, originY, targetX: e.clientX, targetY: e.clientY },
+        { id, originX, originY, targetX: e.clientX, targetY: e.clientY, color },
       ]);
       setTimeout(() => {
         setWebCaptures((prev: WebCapture[]) => prev.filter((c: WebCapture) => c.id !== id));
@@ -250,6 +254,7 @@ export default function CustomCursor() {
           originY={c.originY}
           targetX={c.targetX}
           targetY={c.targetY}
+          color={c.color}
         />
       ))}
       <motion.div

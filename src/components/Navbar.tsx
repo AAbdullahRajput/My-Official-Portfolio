@@ -597,9 +597,17 @@ export default function Navbar() {
                       className="absolute bottom-3 left-3 right-3 z-20 rounded-xl border border-white/10 bg-black/75 p-3.5 shadow-2xl backdrop-blur-xl"
                     >
                       <div className="mb-2 flex items-center gap-2">
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#8a0303]/90 text-white">
-                          {NAV_TOUR_STEPS[tourActive].icon}
-                        </span>
+                        {NAV_TOUR_STEPS[tourActive].id === "person" ? (
+                          <img
+                            src="/images/profile.jpeg"
+                            alt="Ahmad Abdullah"
+                            className="h-6 w-6 shrink-0 rounded-full border border-white/30 object-cover"
+                          />
+                        ) : (
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#8a0303]/90 text-white">
+                            {NAV_TOUR_STEPS[tourActive].icon}
+                          </span>
+                        )}
                         <span className="font-display text-[12px] font-bold text-white">
                           {NAV_TOUR_STEPS[tourActive].title}
                         </span>

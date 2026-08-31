@@ -1025,9 +1025,17 @@ onClick={(e) => { e.stopPropagation(); goTo(i); playSound(); }}
                     >
                       {/* header */}
                       <div className="mb-2.5 flex items-center gap-2.5">
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[#8a0303]/90 text-white">
-                          {step.icon}
-                        </span>
+                        {step.id === "person" ? (
+                          <img
+                            src="/images/profile.jpeg"
+                            alt="Ahmad Abdullah"
+                            className="h-7 w-7 shrink-0 rounded-full border border-white/30 object-cover"
+                          />
+                        ) : (
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[#8a0303]/90 text-white">
+                            {step.icon}
+                          </span>
+                        )}
                         <span className="font-display text-[14px] font-bold text-white">
                           {step.title}
                         </span>
