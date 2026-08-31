@@ -1905,19 +1905,11 @@ function FallingSpiderman({ x, y }: { x: number; y: number }) {
             src="/images/falling-down-main.png"
             alt=""
             className="absolute bottom-0 left-1/2 w-full -translate-x-1/2 object-contain select-none dark:invert"
-            initial={{ y: -(y + 300), opacity: 0, scaleY: 1, x: "-50%" }}
+            initial={{ y: -(y + 300), opacity: 0, scaleY: 1 }}
             animate={{
               y: [-(y + 300), 0, 28, 0, -30, 0],
               opacity: [0, 1, 1, 1, 1, 1],
               scaleY: [1, 0.88, 1.06, 0.96, 1.02, 1],
-              x: [
-                "-50%",
-                "calc(-50% + 35px)",
-                "calc(-50% - 35px)",
-                "calc(-50% + 25px)",
-                "calc(-50% - 20px)",
-                "-50%"
-              ],
             }}
             transition={{
               duration: 1.1,
