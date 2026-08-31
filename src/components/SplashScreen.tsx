@@ -788,12 +788,14 @@ const CursorWebCapture = ({
 
 export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {}) {
   const [visible, setVisible] = useState(true);
+  const alreadySeen = typeof window !== "undefined" && localStorage.getItem("splash_seen") === "1";
   // motion values instead of React state — the cursor position now updates
   // the DOM directly on every mousemove without re-rendering the component
   const [bgLines, setBgLines] = useState<string[]>([]);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
-    useEffect(() => {
+  useEffect(() => {
+    if (alreadySeen) { setVisible(false); return; }
     hideTimer.current = setTimeout(() => setVisible(false), 7200);
     return () => {
       if (hideTimer.current) clearTimeout(hideTimer.current);
@@ -804,7 +806,8 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
   // so the parent page knows exactly when the splash is fully gone
   useEffect(() => {
     if (!visible) {
-      const t = setTimeout(() => onFinish?.(), 800);
+      if (!alreadySeen) localStorage.setItem("splash_seen", "1");
+      const t = setTimeout(() => onFinish?.(), alreadySeen ? 0 : 800);
       return () => clearTimeout(t);
     }
   }, [visible, onFinish]);

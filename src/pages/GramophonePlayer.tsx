@@ -7,8 +7,12 @@ const DOCK_DELAY = 3000;
 const AUDIO_DELAY = 1500;
 
 export default function GramophonePlayer({ active }: { active: boolean }) {
-  const [phase, setPhase] = useState<"hidden" | "paused" | "center" | "docking" | "docked" | "gone">("hidden");
+  const [phase, setPhase] = useState<"hidden" | "paused" | "center" | "docking" | "docked" | "gone">(() => {
+    if (typeof window === "undefined") return "hidden";
+    return localStorage.getItem("gramo_dismissed") === "1" ? "gone" : "hidden";
+  });
   const [muted, setMuted] = useState(false);
+  const [playing, setPlaying] = useState(false);
   const [showGif, setShowGif] = useState(false);
 const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -28,6 +32,7 @@ const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
       audioRef.current?.play().catch((err) => {
         console.warn("Audio play failed:", err);
       });
+      setPlaying(true);
     }, AUDIO_DELAY);
     dockTimerRef.current = setTimeout(() => {
       setPhase("docking");
@@ -48,6 +53,7 @@ const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
 
   function handleDismiss() {
     audioRef.current?.pause();
+    localStorage.setItem("gramo_dismissed", "1");
     setPhase("gone");
   }
 
@@ -195,10 +201,35 @@ const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
                   }}
                 />
                 <img
-                  src="/gifs/gramophone.gif"
+                  src={playing ? "/gifs/gramophone.gif" : "/gifs/gramophone-poster.png"}
                   alt=""
                   className="pointer-events-none w-full drop-shadow-2xl"
                 />
+                <button
+                  onClick={() => {
+                    if (!audioRef.current) return;
+                    if (playing) {
+                      audioRef.current.pause();
+                      setPlaying(false);
+                    } else {
+                      audioRef.current.play().catch(() => {});
+                      setPlaying(true);
+                    }
+                  }}
+                  className="absolute -left-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm"
+                  aria-label={playing ? "Pause music" : "Play music"}
+                >
+                  {playing ? (
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="5" y="4" width="4" height="16" />
+                      <rect x="15" y="4" width="4" height="16" />
+                    </svg>
+                  ) : (
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  )}
+                </button>
                 <button
                   onClick={toggleMute}
                   className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm"
@@ -233,6 +264,25 @@ const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
           </>
         )}
       </AnimatePresence>
+      {phase === "gone" && (
+        <motion.button
+          className="fixed bottom-6 left-6 z-[9991] flex h-9 w-9 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white/90 text-[#8a0303] shadow-md backdrop-blur-sm transition-all hover:scale-110 hover:bg-white"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, delay: 2 }}
+          onClick={() => {
+            localStorage.removeItem("gramo_dismissed");
+            setShowGif(false);
+            setPhase("paused");
+          }}
+          aria-label="Play music again"
+          title="Play music again"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </motion.button>
+      )}
     </>
   );
 }

@@ -84,30 +84,19 @@ function SpiderWeb({ splashDone }: { splashDone: boolean }) {
       className="pointer-events-none absolute right-[2%] top-0 z-30 hidden lg:block"
       style={{ width: 260, height: 500 }}
     >
-      {/* dynamic thread — SVG line, top fixed to the ceiling, bottom follows the spider anywhere */}
-      <svg className="absolute inset-0 h-full w-full overflow-visible">
-        <line
-          x1={anchorX}
-          y1={0}
-          x2={tipX}
-          y2={tipY}
-          stroke="currentColor"
-          strokeWidth={1}
-          className="text-[#0b0e13]/40 dark:text-white/40"
-        />
-      </svg>
+      {/* thread removed — spider hangs freely */}
 
       <motion.div
         role="img"
         aria-label=""
-        className="pointer-events-auto absolute w-32 h-32 cursor-grab select-none active:cursor-grabbing dark:invert"
+        className="pointer-events-auto absolute w-150 h-150 cursor-grab select-none active:cursor-grabbing dark:invert"
         style={{
-          left: anchorX - 64,
+          left: anchorX - 220,
           top: 0,
           x: spiderX,
           y: spiderY,
           transformOrigin: "top center",
-          backgroundImage: "url(/images/black-spider.png)",
+          backgroundImage: "url(/images/falling-boy-girl-spiderman.png)",
           backgroundSize: "contain",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "top center",
@@ -388,7 +377,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             
             <a  href="#projects"
               data-cursor-hover
-              className="rounded-lg bg-[#0b0e13] px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:scale-105 hover:bg-[#8a0303] hover:shadow-lg hover:shadow-[#8a0303]/30 dark:bg-white/15 dark:text-white dark:border dark:border-white/30 dark:hover:bg-white/25 dark:hover:border-white/50"
+              className="rounded-lg bg-[#0b0e13] px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:scale-105 hover:bg-[#8a0303] hover:shadow-lg hover:shadow-[#8a0303]/30 dark:bg-white/15 dark:text-white dark:border dark:border-white/30 dark:hover:border-accent-green/60 dark:hover:bg-accent-green dark:hover:text-[#0b0e13] dark:hover:shadow-lg dark:hover:shadow-accent-green/30"
             >
               View work
             </a>
@@ -396,7 +385,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             
             <a  href="#contact"
               data-cursor-hover
-              className="rounded-lg border border-[#d1d5db] px-6 py-3 text-sm font-medium text-[#0b0e13] transition-all duration-200 hover:scale-105 hover:border-[#8a0303] hover:text-[#8a0303] hover:bg-gray-50 dark:border-white/40 dark:text-white dark:hover:border-white dark:hover:text-white dark:hover:bg-white/10"
+              className="rounded-lg border border-[#d1d5db] px-6 py-3 text-sm font-medium text-[#0b0e13] transition-all duration-200 hover:scale-105 hover:border-[#8a0303] hover:text-[#8a0303] hover:bg-gray-50 dark:border-white/40 dark:text-white dark:hover:border-accent-green dark:hover:text-accent-green dark:hover:bg-accent-green/10"
             >
               Get in touch
             </a>
@@ -1284,8 +1273,18 @@ function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.45, delay: i * 0.08 }}
-                className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 hover:border-[#8a0303]/40 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.04] dark:backdrop-blur-sm dark:hover:border-accent-green/30 dark:hover:bg-white/[0.07]"
+                className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 hover:border-[#8a0303]/60 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.04] dark:backdrop-blur-sm dark:hover:border-accent-green/40 dark:hover:bg-white/[0.07]"
               >
+                {/* fill layer — expands from top-left corner to full card */}
+                <div className="absolute inset-0 origin-top-left scale-0 rounded-2xl bg-gradient-to-br from-[#8a0303]/12 via-[#8a0303]/6 to-transparent transition-transform duration-700 ease-out group-hover:scale-100 dark:from-accent-green/10 dark:via-accent-green/5" />
+                {/* top accent line — draws across first */}
+                <div className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 rounded-t-2xl bg-gradient-to-r from-[#8a0303] via-[#8a0303]/70 to-[#8a0303]/20 transition-transform duration-400 ease-out group-hover:scale-x-100 dark:from-accent-green dark:via-accent-green/70 dark:to-accent-green/20" />
+                {/* left accent line — draws down with slight delay */}
+                <div className="absolute inset-y-0 left-0 w-[2px] origin-top scale-y-0 rounded-l-2xl bg-gradient-to-b from-[#8a0303] via-[#8a0303]/50 to-[#8a0303]/10 transition-transform duration-500 delay-100 ease-out group-hover:scale-y-100 dark:from-accent-green dark:via-accent-green/50 dark:to-accent-green/10" />
+                {/* right accent line — draws down with more delay */}
+                <div className="absolute inset-y-0 right-0 w-[2px] origin-top scale-y-0 rounded-r-2xl bg-gradient-to-b from-[#8a0303]/60 via-[#8a0303]/30 to-transparent transition-transform duration-500 delay-200 ease-out group-hover:scale-y-100 dark:from-accent-green/60 dark:via-accent-green/30" />
+                {/* bottom accent line — draws last, completing the frame */}
+                <div className="absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 rounded-b-2xl bg-gradient-to-r from-[#8a0303]/40 via-[#8a0303]/20 to-transparent transition-transform duration-500 delay-300 ease-out group-hover:scale-x-100 dark:from-accent-green/40 dark:via-accent-green/20" />
                 <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-2xl"
                   style={{ background: "radial-gradient(circle at 0% 0%, rgba(138,3,3,0.06) 0%, transparent 70%)" }} />
                 <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green">
@@ -1511,12 +1510,14 @@ function CareerNode({
   total,
   progress,
   markerRef,
+  cardRef,
 }: {
   item: typeof career[number];
   index: number;
   total: number;
   progress: ReturnType<typeof useMotionValue<number>>;
   markerRef: (el: HTMLDivElement | null) => void;
+  cardRef?: React.RefObject<HTMLDivElement | null>;
 }) {
   const isRight = index % 2 === 1;
   const threshold = index / (total - 1);
@@ -1575,6 +1576,7 @@ function CareerNode({
 
   return (
     <motion.div
+      ref={cardRef}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
@@ -1868,6 +1870,59 @@ function CareerNode({
   );
 }
 
+function FallingSpiderman({ x, y }: { x: number; y: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [triggered, setTriggered] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !triggered) {
+          setTriggered(false);
+          setTimeout(() => setTriggered(true), 50);
+        } else if (!entry.isIntersecting) {
+          setTriggered(false);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [triggered]);
+
+  return (
+    <div
+      ref={ref}
+      className="pointer-events-none absolute z-20 hidden -translate-x-1/2 lg:block"
+      style={{ left: x, top: 0, width: 120, height: y }}
+    >
+      <AnimatePresence>
+        {triggered && (
+          <motion.img
+            key="falling-spiderman"
+            src="/images/falling-down-main.png"
+            alt=""
+            className="absolute bottom-0 left-1/2 w-full -translate-x-1/2 object-contain select-none dark:invert"
+            initial={{ y: -(y + 300), opacity: 0, scaleY: 1 }}
+            animate={{
+              y: [-(y + 300), 0, -28, 0, -10, 0],
+              opacity: [0, 1, 1, 1, 1, 1],
+              scaleY: [1, 0.88, 1.06, 0.96, 1.02, 1],
+            }}
+            transition={{
+              duration: 1.1,
+              times: [0, 0.52, 0.66, 0.78, 0.9, 1],
+              ease: ["easeIn", "easeOut", "easeOut", "easeOut", "easeOut"],
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function Career() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -1880,6 +1935,27 @@ function Career() {
   >([]);
   const [scrollDir, setScrollDir] = useState<1 | -1>(1);
   const lastScrollY = useRef(0);
+  const firstCardRef = useRef<HTMLDivElement>(null);
+  const [spiderTarget, setSpiderTarget] = useState({ x: 100, y: 460 });
+
+  useEffect(() => {
+    const measure = () => {
+      if (!firstCardRef.current || !trackRef.current) return;
+      const cardRect = firstCardRef.current.getBoundingClientRect();
+      const trackRect = trackRef.current.getBoundingClientRect();
+      setSpiderTarget({
+        x: cardRect.right - trackRect.left - 20, // near the bottom-right corner of the card
+        y: cardRect.bottom - trackRect.top + 40, // pushed down so the visible character (not the sprite's transparent padding) lands at the card's bottom edge
+      });
+    };
+    measure();
+    const id = setTimeout(measure, 400); // after images/fonts settle layout
+    window.addEventListener("resize", measure);
+    return () => {
+      clearTimeout(id);
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: trackRef,
@@ -1963,7 +2039,7 @@ function Career() {
       ref={sectionRef}
       className="relative overflow-hidden bg-gray-50 pb-28 pt-8 dark:bg-ink"
     >
-      <div className="pl-6 sm:pl-10 lg:pl-20 xl:pl-32 pr-6 sm:pr-10 lg:pr-20 xl:pr-32">
+      <div className="relative pl-6 sm:pl-10 lg:pl-20 xl:pl-32 pr-6 sm:pr-10 lg:pr-20 xl:pr-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1982,6 +2058,7 @@ function Career() {
         </motion.div>
 
         <div ref={trackRef} className="relative z-10 w-full max-w-9xl">
+          <FallingSpiderman x={spiderTarget.x} y={spiderTarget.y} />
           {/* hidden path — geometry source only, never stroked */}
           {pathD && (
             <svg className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full lg:block" style={{ overflow: "visible" }}>
@@ -2014,6 +2091,7 @@ function Career() {
               total={career.length}
               progress={smoothProgress}
               markerRef={(el) => { markerRefs.current[i] = el; }}
+              cardRef={i === 0 ? firstCardRef : undefined}
             />
           ))}
         </div>
@@ -2101,7 +2179,7 @@ function Contact() {
             type="submit"
             disabled={status === "sending"}
             data-cursor-hover
-            className="rounded-lg bg-[#0b0e13] px-6 py-3 text-sm font-medium text-white transition-transform hover:scale-105 disabled:opacity-50 dark:bg-text dark:text-ink"
+            className="rounded-lg bg-[#0b0e13] px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:scale-105 hover:bg-[#8a0303] disabled:opacity-50 dark:bg-text dark:text-ink dark:hover:bg-accent-green"
           >
             {status === "sending" ? "Sending..." : status === "sent" ? "Sent ✓" : "Send message"}
           </button>
@@ -2260,7 +2338,7 @@ function Footer() {
           
           <a  href="#contact"
             data-cursor-hover
-            className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-[#0b0e13] px-4 py-2 font-mono text-[11px] font-medium text-white transition-all duration-200 hover:scale-105 hover:bg-[#8a0303] dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
+            className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-[#0b0e13] px-4 py-2 font-mono text-[11px] font-medium text-white transition-all duration-200 hover:scale-105 hover:bg-[#8a0303] dark:bg-white/10 dark:text-white dark:hover:bg-accent-green dark:hover:text-[#0b0e13]"
           >
             Start a project
             <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3">

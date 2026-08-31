@@ -533,6 +533,16 @@ export default function ProjectCard({
         <div className="pointer-events-none absolute -inset-px rounded-[22px] bg-gradient-to-b from-red-600/50 via-red-900/10 to-transparent opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
 
         <div className="relative flex h-[400px] flex-col overflow-hidden rounded-[20px] border border-gray-200 bg-white p-6 shadow-lg transition-all duration-300 group-hover:border-[#8a0303]/60 group-hover:shadow-2xl group-hover:shadow-[#8a0303]/20 dark:border-white/10 dark:bg-[#0a0a0d] dark:group-hover:border-amber-500/60">
+          {/* fill layer — expands from top-left on hover */}
+          <div className="pointer-events-none absolute inset-0 origin-top-left scale-0 rounded-[20px] bg-gradient-to-br from-[#8a0303]/10 via-[#8a0303]/5 to-transparent transition-transform duration-700 ease-out group-hover:scale-100 dark:from-amber-500/8 dark:via-amber-500/4" />
+          {/* top line — draws left to right first */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 rounded-t-[20px] bg-gradient-to-r from-[#8a0303] via-[#8a0303]/70 to-[#8a0303]/20 transition-transform duration-400 ease-out group-hover:scale-x-100 dark:from-amber-400 dark:via-amber-400/70 dark:to-amber-400/20" />
+          {/* left line — draws down with slight delay */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-[2px] origin-top scale-y-0 rounded-l-[20px] bg-gradient-to-b from-[#8a0303] via-[#8a0303]/50 to-[#8a0303]/10 transition-transform duration-500 delay-100 ease-out group-hover:scale-y-100 dark:from-amber-400 dark:via-amber-400/50 dark:to-amber-400/10" />
+          {/* right line — draws down slightly later */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-[2px] origin-top scale-y-0 rounded-r-[20px] bg-gradient-to-b from-[#8a0303]/60 via-[#8a0303]/30 to-transparent transition-transform duration-500 delay-200 ease-out group-hover:scale-y-100 dark:from-amber-400/60 dark:via-amber-400/30" />
+          {/* bottom line — completes the frame last */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 rounded-b-[20px] bg-gradient-to-r from-[#8a0303]/40 via-[#8a0303]/20 to-transparent transition-transform duration-500 delay-300 ease-out group-hover:scale-x-100 dark:from-amber-400/40 dark:via-amber-400/20" />
 
           <svg className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 text-[#8a0303]/10 transition-colors duration-300 group-hover:text-[#8a0303]/30" viewBox="0 0 100 100" fill="none">
             <circle cx="50" cy="50" r="8" stroke="currentColor" strokeWidth="0.6" />

@@ -333,7 +333,7 @@ export default function Navbar() {
               href={link.href}
               data-cursor-hover
               onClick={(e) => { e.preventDefault(); smoothScrollTo(link.href); }}
-              className="font-mono text-xs text-[#6b7280] transition-colors hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
+              className="font-mono text-xs text-[#6b7280] transition-colors hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
             >
               {link.label}
             </a>
@@ -347,7 +347,7 @@ export default function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
             data-cursor-hover
-            className="text-[#6b7280] transition-colors hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
+            className="text-[#6b7280] transition-colors hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
           >
             <FiGithub size={15} />
           </a>
@@ -356,7 +356,7 @@ export default function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
             data-cursor-hover
-            className="text-[#6b7280] transition-colors hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
+            className="text-[#6b7280] transition-colors hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
           >
             <FaLinkedin size={15} />
           </a>
@@ -364,7 +364,7 @@ export default function Navbar() {
           
           <a  href="mailto:ahmadabdullah4972@gmail.com"
             data-cursor-hover
-            className="text-[#6b7280] transition-colors hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
+            className="text-[#6b7280] transition-colors hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
           >
             <FiMail size={15} />
           </a>
@@ -374,7 +374,7 @@ export default function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
             data-cursor-hover
-            className="flex items-center gap-1.5 rounded-full border border-[#8a0303]/20 px-3 py-1.5 font-mono text-xs text-[#0b0e13] transition-colors hover:bg-gray-50 dark:border-white/10 dark:text-white dark:hover:bg-white/10"
+            className="flex items-center gap-1.5 rounded-full border border-[#8a0303]/20 px-3 py-1.5 font-mono text-xs text-[#0b0e13] transition-colors hover:border-[#8a0303] hover:bg-[#8a0303]/5 hover:text-[#8a0303] dark:border-white/10 dark:text-white dark:hover:border-accent-green/40 dark:hover:bg-accent-green/10 dark:hover:text-accent-green"
           >
             <FiFileText size={12} />
             Resume
@@ -418,7 +418,7 @@ export default function Navbar() {
             <a  key={link.href}
               href={link.href}
               onClick={(e) => { e.preventDefault(); setMenuOpen(false); smoothScrollTo(link.href); }}
-              className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
+              className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
             >
               {link.label}
             </a>
@@ -428,7 +428,7 @@ export default function Navbar() {
           <a  href="https://github.com/AAbdullahRajput"
             target="_blank"
             rel="noopener noreferrer"
-            className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
+            className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
           >
             GitHub
           </a>
@@ -436,14 +436,14 @@ export default function Navbar() {
           <a  href={LINKEDIN_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
+            className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
           >
             LinkedIn
           </a>
 
           
           <a  href="mailto:ahmadabdullah4972@gmail.com"
-            className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
+            className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
           >
             Email
           </a>
