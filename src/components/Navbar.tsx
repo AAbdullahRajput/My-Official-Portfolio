@@ -222,6 +222,7 @@ export default function Navbar() {
               onPointerCancel={handleLogoPointerLeave}
               onContextMenu={(e) => e.preventDefault()}
               className="block rounded-full"
+              suppressHydrationWarning
             >
               <Image
                 src="/images/profile.jpeg"
@@ -387,6 +388,7 @@ export default function Navbar() {
             data-cursor-hover
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
             className="flex h-8 w-8 items-center justify-center rounded-full border border-[#8a0303]/20 text-[#6b7280] transition-colors hover:text-[#0b0e13] dark:border-white/10 dark:text-text-muted dark:hover:text-white"
+            suppressHydrationWarning
           >
             {dark ? <FiSun size={14} /> : <FiMoon size={14} />}
           </button>

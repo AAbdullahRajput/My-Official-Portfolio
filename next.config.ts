@@ -18,7 +18,14 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  /* config options here */
+  // Add any other config options here
+  images: {
+    domains: [], // Add your image domains if needed
+  },
+  // If you're using experimental features
+  experimental: {
+    // turbopack: true, // Uncomment if using Turbopack
+  },
 };
 
 export default nextConfig;

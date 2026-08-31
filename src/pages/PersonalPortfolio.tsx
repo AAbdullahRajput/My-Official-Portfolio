@@ -1944,26 +1944,42 @@ function Career() {
       const cardRect = firstCardRef.current.getBoundingClientRect();
       const trackRect = trackRef.current.getBoundingClientRect();
       setSpiderTarget({
-        x: cardRect.right - trackRect.left - 200,
-        y: cardRect.bottom - trackRect.top + 700,
+        x: cardRect.right - trackRect.left - 220,
+        y: cardRect.bottom - trackRect.top + 710,
       });
     };
 
     const ro = new ResizeObserver(measure);
-    const tryObserve = () => {
+
+    // Watch for the card to appear anywhere in the DOM
+    const mo = new MutationObserver(() => {
       if (firstCardRef.current) {
+        mo.disconnect();
         ro.observe(firstCardRef.current);
         measure();
-      } else {
-        requestAnimationFrame(tryObserve);
       }
-    };
-    tryObserve();
+    });
+
+    // Try to observe immediately if card exists
+    if (firstCardRef.current) {
+      ro.observe(firstCardRef.current);
+      measure();
+    } else {
+      // If card doesn't exist, observe the document body for any changes
+      mo.observe(document.body, { childList: true, subtree: true });
+    }
+
+    // Also try measuring after a small delay to catch any layout shifts
+    const timeoutId = setTimeout(measure, 500);
+    const timeoutId2 = setTimeout(measure, 1000);
 
     window.addEventListener("resize", measure);
     return () => {
       ro.disconnect();
+      mo.disconnect();
       window.removeEventListener("resize", measure);
+      clearTimeout(timeoutId);
+      clearTimeout(timeoutId2);
     };
   }, []);
 
