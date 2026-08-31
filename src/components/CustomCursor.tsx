@@ -186,6 +186,7 @@ export default function CustomCursor() {
   const [visible, setVisible] = useState(false);
   const [isHoveringTarget, setIsHoveringTarget] = useState(false);
   const [overDark, setOverDark] = useState(false);
+  const overDarkRef = useRef(false);
   type WebCapture = { id: number; originX: number; originY: number; targetX: number; targetY: number; color: string };
   const [webCaptures, setWebCaptures] = useState<WebCapture[]>([]);
 
@@ -209,6 +210,7 @@ export default function CustomCursor() {
       setIsHoveringTarget((prev) => (prev !== isTarget ? isTarget : prev));
 
       const dark = isOverDarkSurface(el);
+      overDarkRef.current = dark;
       setOverDark((prev) => (prev !== dark ? dark : prev));
     };
 
@@ -221,8 +223,7 @@ export default function CustomCursor() {
       const originX = e.clientX + faceOffset * Math.cos(angleRad);
       const originY = e.clientY + faceOffset * Math.sin(angleRad);
       const id = Date.now() + Math.random();
-      const el = document.elementFromPoint(e.clientX, e.clientY);
-      const color = isOverDarkSurface(el) ? "#ffffff" : "#8a0303";
+      const color = overDarkRef.current ? "#ffffff" : "#8a0303";
       setWebCaptures((prev: WebCapture[]) => [
         ...prev,
         { id, originX, originY, targetX: e.clientX, targetY: e.clientY, color },
