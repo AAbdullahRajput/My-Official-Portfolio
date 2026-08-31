@@ -1944,16 +1944,18 @@ function Career() {
       const cardRect = firstCardRef.current.getBoundingClientRect();
       const trackRect = trackRef.current.getBoundingClientRect();
       setSpiderTarget({
-        x: cardRect.right - trackRect.left - 100, // near the bottom-right corner of the card
-        y: cardRect.bottom - trackRect.top + 40, // pushed down so the visible character (not the sprite's transparent padding) lands at the card's bottom edge
+        x: cardRect.right - trackRect.left - 200, // near the bottom-right corner of the card
+        y: cardRect.bottom - trackRect.top + 700, // pushed down so the visible character (not the sprite's transparent padding) lands at the card's bottom edge
       });
     };
     measure();
-    const id = setTimeout(measure, 400); // after images/fonts settle layout
+    const timers = [100, 400, 800, 1500].map((ms) => setTimeout(measure, ms)); // repeated retries to catch late font/image layout shifts
     window.addEventListener("resize", measure);
+    window.addEventListener("load", measure);
     return () => {
-      clearTimeout(id);
+      timers.forEach(clearTimeout);
       window.removeEventListener("resize", measure);
+      window.removeEventListener("load", measure);
     };
   }, []);
 
