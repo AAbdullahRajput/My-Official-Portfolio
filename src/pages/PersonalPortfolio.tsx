@@ -1609,8 +1609,8 @@ function SkillRow({ name, index, onSelect }: { name: string; index: number; onSe
       transition={{ duration: 0.3, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
       className="group/row relative flex w-full items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-left hover:bg-[#8a0303] dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:bg-accent-green"
     >
-      {/* fill sweeps in from left on hover */}
-      <div className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-[#8a0303] transition-transform duration-400 ease-out group-hover/row:scale-x-100 dark:bg-accent-green" />
+      {/* fill sweeps in from left on hover, and eases back out slowly too */}
+      <div className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-[#8a0303] transition-transform duration-700 ease-in-out group-hover/row:scale-x-100 dark:bg-accent-green" />
 
       <div className="relative z-10 flex items-center gap-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-50 transition-colors duration-300 group-hover/row:bg-white/15 dark:bg-white/[0.05]">
