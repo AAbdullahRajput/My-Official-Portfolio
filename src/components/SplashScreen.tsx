@@ -38,7 +38,7 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
   const tabletBottomBLpx = 460; // tablet  bottom-left offset
 
   if (corner === "bl") {
-    console.log("[CornerWeb bl]", { vw, isMobile, isTablet, tabletBottomBLpx });
+    console.log("[CornerWeb bl] vw=" + vw + " isMobile=" + isMobile + " isTablet=" + isTablet + " tabletBottomBLpx=" + tabletBottomBLpx + " bottomPx=" + bottomPx);
   }
   // desktop (vw >= 1024) always uses 0 — original, untouched
 
