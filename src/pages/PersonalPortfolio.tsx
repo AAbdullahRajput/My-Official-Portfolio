@@ -1498,6 +1498,7 @@ function SkillIcon({ name }: { name: string }) {
       alt={name}
       className="h-6 w-6 shrink-0 object-contain"
       loading="lazy"
+      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
     />
   );
 }
@@ -1548,7 +1549,7 @@ function SkillRow({ name, index }: { name: string; index: number }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.3, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
-      className="group/row relative flex items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white px-4 py-3.5 dark:border-white/[0.08] dark:bg-white/[0.03]"
+      className="group/row relative flex items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white px-4 py-3.5 hover:bg-[#8a0303] dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:bg-accent-green"
     >
       {/* fill sweeps in from left on hover */}
       <div className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-[#8a0303] transition-transform duration-400 ease-out group-hover/row:scale-x-100 dark:bg-accent-green" />
