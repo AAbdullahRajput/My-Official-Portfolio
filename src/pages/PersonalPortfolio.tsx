@@ -1402,7 +1402,7 @@ const SKILL_ICON_URL: Record<string, string> = {
   "FCM": "https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg",
   "Vercel": "https://raw.githubusercontent.com/devicons/devicon/master/icons/vercel/vercel-original.svg",
   "Railway": "https://cdn.simpleicons.org/railway/0B0D0E",
-  "AWS": "https://cdn.simpleicons.org/amazonwebservices/FF9900",
+  "AWS": "https://img.icons8.com/color/96/amazon-web-services.png",
   "Aiven": "https://avatars.githubusercontent.com/u/29717922?s=200&v=4",
   "Git": "https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg",
   "GitHub": "https://www.vectorlogo.zone/logos/github/github-icon.svg",
@@ -1498,7 +1498,6 @@ function SkillIcon({ name }: { name: string }) {
       alt={name}
       className="h-6 w-6 shrink-0 object-contain"
       loading="lazy"
-      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
     />
   );
 }
