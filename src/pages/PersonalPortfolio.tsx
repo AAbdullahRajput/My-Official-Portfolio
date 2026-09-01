@@ -1554,9 +1554,22 @@ function CircleStat({ label, percent, index }: { label: string; percent: number;
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-      className="flex flex-col items-center gap-3 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-white/[0.08] dark:bg-white/[0.04]"
+      className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-[#8a0303]/60 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:border-accent-green/40 dark:hover:bg-white/[0.07]"
     >
-      <div className="relative h-28 w-28">
+      {/* fill layer — expands from top-left corner to full card, same as About cards */}
+      <div className="absolute inset-0 origin-top-left scale-0 rounded-2xl bg-gradient-to-br from-[#8a0303]/12 via-[#8a0303]/6 to-transparent transition-transform duration-700 ease-out group-hover:scale-100 dark:from-accent-green/10 dark:via-accent-green/5" />
+      {/* top accent line — draws across first */}
+      <div className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 rounded-t-2xl bg-gradient-to-r from-[#8a0303] via-[#8a0303]/70 to-[#8a0303]/20 transition-transform duration-400 ease-out group-hover:scale-x-100 dark:from-accent-green dark:via-accent-green/70 dark:to-accent-green/20" />
+      {/* left accent line — draws down with slight delay */}
+      <div className="absolute inset-y-0 left-0 w-[2px] origin-top scale-y-0 rounded-l-2xl bg-gradient-to-b from-[#8a0303] via-[#8a0303]/50 to-[#8a0303]/10 transition-transform duration-500 delay-100 ease-out group-hover:scale-y-100 dark:from-accent-green dark:via-accent-green/50 dark:to-accent-green/10" />
+      {/* right accent line — draws down with more delay */}
+      <div className="absolute inset-y-0 right-0 w-[2px] origin-top scale-y-0 rounded-r-2xl bg-gradient-to-b from-[#8a0303]/60 via-[#8a0303]/30 to-transparent transition-transform duration-500 delay-200 ease-out group-hover:scale-y-100 dark:from-accent-green/60 dark:via-accent-green/30" />
+      {/* bottom accent line — draws last, completing the frame */}
+      <div className="absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 rounded-b-2xl bg-gradient-to-r from-[#8a0303]/40 via-[#8a0303]/20 to-transparent transition-transform duration-500 delay-300 ease-out group-hover:scale-x-100 dark:from-accent-green/40 dark:via-accent-green/20" />
+      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-2xl"
+        style={{ background: "radial-gradient(circle at 0% 0%, rgba(138,3,3,0.06) 0%, transparent 70%)" }} />
+
+      <div className="relative z-10 h-28 w-28">
         <svg viewBox="0 0 110 110" className="h-full w-full -rotate-90">
           <circle
             cx="55" cy="55" r={radius} fill="none" strokeWidth="8"
@@ -1576,7 +1589,7 @@ function CircleStat({ label, percent, index }: { label: string; percent: number;
           {percent}%
         </div>
       </div>
-      <span className="text-center font-mono text-[11px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+      <span className="relative z-10 text-center font-mono text-[11px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
         {label}
       </span>
     </motion.div>
