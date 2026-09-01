@@ -319,7 +319,7 @@ const ThoughtBubbleBottomLeft = ({
   const isTablet = vw >= 640 && vw < 1024;
   // kept in sync with CornerWeb's tabletBottomBLpx / mobileBottomPx knobs
   const bottomPx = isMobile ? 24 : isTablet ? 460 : undefined;
-  console.log("[ThoughtBubbleBottomLeft]", { vw, isMobile, isTablet, bottomPx });
+  console.log("[ThoughtBubbleBottomLeft] vw=" + vw + " isMobile=" + isMobile + " isTablet=" + isTablet + " bottomPx=" + bottomPx);
 
   return (
     <div
