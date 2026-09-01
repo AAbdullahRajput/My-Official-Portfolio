@@ -1487,9 +1487,21 @@ function SkillCategoryCard({
         </h3>
       </div>
 
-      <div className="relative grid grid-cols-3 gap-3 sm:grid-cols-4">
+      <div className="relative flex flex-wrap gap-2.5">
         {cat.skills.map((skill, i) => (
-          <SkillTile key={skill} name={skill} index={i} />
+          <motion.span
+            key={skill}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.35, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
+            animate={{ y: [0, -5, 0] }}
+            className="flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-[12px] text-[#374151] transition-all duration-200 hover:scale-105 hover:border-[#8a0303]/40 hover:bg-[#8a0303]/5 hover:text-[#8a0303] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/75 dark:hover:border-accent-green/40 dark:hover:bg-accent-green/5 dark:hover:text-accent-green"
+            style={{ animationDelay: `${i * 0.12}s` }}
+          >
+            <SkillIcon name={skill} />
+            {skill}
+          </motion.span>
         ))}
       </div>
     </motion.div>
