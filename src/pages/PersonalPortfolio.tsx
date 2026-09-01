@@ -81,7 +81,7 @@ function SpiderWeb({ splashDone }: { splashDone: boolean }) {
 
   return (
     <div
-      className="pointer-events-none absolute right-[2%] top-0 z-30 hidden lg:block"
+      className="pointer-events-none absolute right-[2%] top-0 z-30 origin-top-right scale-[0.55] sm:scale-75 lg:scale-100"
       style={{ width: 260, height: 500 }}
     >
       {/* thread removed — spider hangs freely */}
@@ -296,6 +296,25 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
       )}
 
       <div className="pointer-events-none relative z-30 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-4 lg:pr-6">
+        {/* Mobile-only Spiderman image — desktop keeps the absolute-positioned version above */}
+        <motion.div
+          initial={{ y: -80, opacity: 0 }}
+          animate={splashDone ? { y: 0, opacity: 1 } : { y: -80, opacity: 0 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+          className="pointer-events-auto relative mt-8 mb-2 h-[38vh] w-full max-w-sm overflow-hidden rounded-2xl lg:hidden"
+        >
+          <img
+            src="/images/Spiderman-Main.png"
+            alt="Spiderman"
+            className="h-full w-full object-cover object-top select-none dark:hidden"
+          />
+          <img
+            src="/images/Spiderman-Main-night.png"
+            alt="Spiderman"
+            className="hidden h-full w-full object-cover object-top select-none dark:block"
+          />
+        </motion.div>
+
         <div className="pointer-events-auto max-w-lg lg:w-[48%] lg:-ml-60 lg:mt-20">
 
           <motion.div
@@ -729,21 +748,21 @@ function OrbitBadge({
     >
       <div
         className={[
-          "flex items-center gap-2.5 rounded-2xl border px-3.5 py-2.5 shadow-lg backdrop-blur-sm",
+          "flex items-center gap-1.5 sm:gap-2.5 rounded-xl sm:rounded-2xl border px-2 py-1.5 sm:px-3.5 sm:py-2.5 shadow-lg backdrop-blur-sm",
           "border-[#8a0303]/25 bg-white shadow-[#8a0303]/10",
           "dark:border-accent-green/20 dark:bg-panel/90 dark:shadow-accent-green/10",
         ].join(" ")}
       >
         <span
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green"
+          className="flex h-5 w-5 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-md sm:rounded-lg bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green [&_svg]:h-3 [&_svg]:w-3 sm:[&_svg]:h-4 sm:[&_svg]:w-4"
         >
           {BADGE_ICONS[iconKey]}
         </span>
         <div>
-          <div className="font-display text-[13px] font-bold leading-tight text-[#8a0303] dark:text-accent-green">
+          <div className="font-display text-[10px] sm:text-[13px] font-bold leading-tight text-[#8a0303] dark:text-accent-green">
             {label}
           </div>
-          <div className="text-[10px] font-medium tracking-wide text-[#6b7280] dark:text-text-dim">
+          <div className="text-[8px] sm:text-[10px] font-medium tracking-wide text-[#6b7280] dark:text-text-dim">
             {sub}
           </div>
         </div>
@@ -1096,9 +1115,14 @@ onClick={(e) => { e.stopPropagation(); goTo(i); playSound(); }}
 function OrbitPhoto() {
   const orbitAngle = useMotionValue(0);
   const [mounted, setMounted] = useState(false);
+  const [orbitRadius, setOrbitRadius] = useState(75);
 
   useEffect(() => {
     setMounted(true);
+    const updateRadius = () => setOrbitRadius(window.innerWidth < 640 ? 58 : 75);
+    updateRadius();
+    window.addEventListener("resize", updateRadius);
+    return () => window.removeEventListener("resize", updateRadius);
   }, []);
 
   useAnimationFrame((t) => {
@@ -1130,11 +1154,11 @@ function OrbitPhoto() {
 
       {mounted && (
         <>
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={0}   radius={75} iconKey="experience" label="1+ Years"    sub="Production Experience" />
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={72}  radius={75} iconKey="projects"   label="20+ Apps"    sub="Shipped to Production" />
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={144} radius={75} iconKey="playstore"  label="Google Play" sub="Live with Real Users"  />
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={216} radius={75} iconKey="realtime"   label="Real-Time"   sub="Video · Sockets · RTC" />
-          <OrbitBadge orbitAngle={orbitAngle} baseAngle={288} radius={75} iconKey="stack"      label="Full-Stack"  sub="Mobile · Web · API"    />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={0}   radius={orbitRadius} iconKey="experience" label="1+ Years"    sub="Production Experience" />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={72}  radius={orbitRadius} iconKey="projects"   label="20+ Apps"    sub="Shipped to Production" />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={144} radius={orbitRadius} iconKey="playstore"  label="Google Play" sub="Live with Real Users"  />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={216} radius={orbitRadius} iconKey="realtime"   label="Real-Time"   sub="Video · Sockets · RTC" />
+          <OrbitBadge orbitAngle={orbitAngle} baseAngle={288} radius={orbitRadius} iconKey="stack"      label="Full-Stack"  sub="Mobile · Web · API"    />
         </>
       )}
 

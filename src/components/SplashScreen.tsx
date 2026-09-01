@@ -31,7 +31,7 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
       : "bottom-0 left-0";
 
   return (
-    <div className={`absolute ${pos} h-40 w-40 sm:h-56 sm:w-56`} style={{ transform: `rotate(${rotate}deg)` }}>
+    <div className={`absolute ${pos} h-40 w-40 sm:h-56 sm:w-56`} style={{ transform: `rotate(${rotate}deg)` }} suppressHydrationWarning>
       <svg className="absolute inset-0 h-full w-full opacity-50" viewBox="0 0 100 100" fill="none">
         {[0, 20, 40, 60, 90].map((angle, i) => (
           <motion.line
@@ -787,15 +787,20 @@ const CursorWebCapture = ({
 };
 
 export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {}) {
-  const [visible, setVisible] = useState(true);
+  // Lazy initializer runs once, synchronously, before the first paint —
+  // so a repeat visitor never sees a "visible" frame that then has to
+  // slide away. SSR still renders visible=true (no window), and the
+  // client's first render immediately corrects it before paint.
+  const [visible, setVisible] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("splash_seen") !== "1";
+  });
   const alreadySeen = typeof window !== "undefined" && localStorage.getItem("splash_seen") === "1";
-  // motion values instead of React state — the cursor position now updates
-  // the DOM directly on every mousemove without re-rendering the component
   const [bgLines, setBgLines] = useState<string[]>([]);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (alreadySeen) { setVisible(false); return; }
+    if (alreadySeen) return; // already resolved by lazy init above
     hideTimer.current = setTimeout(() => setVisible(false), 7200);
     return () => {
       if (hideTimer.current) clearTimeout(hideTimer.current);

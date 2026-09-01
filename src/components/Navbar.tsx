@@ -394,16 +394,67 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          type="button"
-          data-cursor-hover
-          onClick={() => setMenuOpen((prev) => !prev)}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="text-[#0b0e13] dark:text-white sm:hidden"
-        >
-          {menuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
-        </button>
+        {/* Mobile-only quick actions: theme toggle + socials, always visible in the compact bar */}
+        <div className="flex items-center gap-3 sm:hidden">
+          
+          <a href="https://github.com/AAbdullahRajput"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor-hover
+            aria-label="GitHub"
+            className="text-[#6b7280] transition-colors hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
+          >
+            <FiGithub size={15} />
+          </a>
+          
+          <a  href={LINKEDIN_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor-hover
+            aria-label="LinkedIn"
+            className="text-[#6b7280] transition-colors hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
+          >
+            <FaLinkedin size={15} />
+          </a>
+          
+          <a  href="mailto:ahmadabdullah4972@gmail.com"
+            data-cursor-hover
+            aria-label="Email"
+            className="text-[#6b7280] transition-colors hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
+          >
+            <FiMail size={15} />
+          </a>
+          <button
+            type="button"
+            onClick={() => setDark((prev) => !prev)}
+            data-cursor-hover
+            aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+            className="flex h-7 w-7 items-center justify-center rounded-full border border-[#8a0303]/20 text-[#6b7280] transition-colors hover:text-[#0b0e13] dark:border-white/10 dark:text-text-muted dark:hover:text-white"
+            suppressHydrationWarning
+          >
+            {dark ? <FiSun size={13} /> : <FiMoon size={13} />}
+          </button>
+
+          {/* Mobile Menu Button */}
+          <button
+            type="button"
+            data-cursor-hover
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            className="text-[#0b0e13] dark:text-white"
+          >
+            {menuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Small falling Spiderman/girl decoration — mobile only, perched above the navbar pill */}
+      <div className="pointer-events-none absolute -top-5 right-3 h-9 w-9 sm:hidden">
+        <img
+          src="/images/falling-boy-girl-spiderman.png"
+          alt=""
+          className="h-full w-full select-none object-contain object-top dark:invert"
+        />
       </div>
 
       {/* Mobile Menu */}
@@ -426,38 +477,6 @@ export default function Navbar() {
             </a>
           ))}
 
-          
-          <a  href="https://github.com/AAbdullahRajput"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
-          >
-            GitHub
-          </a>
-
-          <a  href={LINKEDIN_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
-          >
-            LinkedIn
-          </a>
-
-          
-          <a  href="mailto:ahmadabdullah4972@gmail.com"
-            className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
-          >
-            Email
-          </a>
-
-          <button
-            type="button"
-            onClick={() => setDark((prev) => !prev)}
-            className="flex items-center gap-2 py-3 font-mono text-sm text-[#6b7280] hover:text-[#0b0e13] dark:text-text-muted dark:hover:text-white"
-          >
-            {dark ? <FiSun size={14} /> : <FiMoon size={14} />}
-            {dark ? "Light mode" : "Dark mode"}
-          </button>
         </motion.div>
       )}
 
