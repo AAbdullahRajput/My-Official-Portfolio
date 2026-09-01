@@ -1545,72 +1545,72 @@ function SkillRow({ name, index }: { name: string; index: number }) {
   const level = SKILL_LEVEL[name] ?? "Proficient";
   return (
     <motion.div
-      initial={{ opacity: 0, x: -10 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.35, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
-      className="group/row relative flex items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-white/[0.08] dark:bg-white/[0.03]"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.3, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
+      className="group/row relative flex items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white px-4 py-3.5 dark:border-white/[0.08] dark:bg-white/[0.03]"
     >
       {/* fill sweeps in from left on hover */}
       <div className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-[#8a0303] transition-transform duration-400 ease-out group-hover/row:scale-x-100 dark:bg-accent-green" />
 
       <div className="relative z-10 flex items-center gap-3">
-        <SkillIcon name={name} />
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-50 transition-colors duration-300 group-hover/row:bg-white/15 dark:bg-white/[0.05]">
+          <SkillIcon name={name} />
+        </span>
         <span className="font-mono text-[13px] font-semibold text-[#0b0e13] transition-colors duration-300 group-hover/row:text-white dark:text-white dark:group-hover/row:text-[#0b0e13]">
           {name}
         </span>
       </div>
 
-      <span className="relative z-10 shrink-0 rounded-full border border-gray-200 bg-white px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-wider text-[#374151] transition-colors duration-300 group-hover/row:border-white/40 group-hover/row:bg-white/15 group-hover/row:text-white dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:group-hover/row:border-[#0b0e13]/20 dark:group-hover/row:bg-[#0b0e13]/10 dark:group-hover/row:text-[#0b0e13]">
+      <span className="relative z-10 shrink-0 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-wider text-[#374151] transition-colors duration-300 group-hover/row:border-white/40 group-hover/row:bg-white/15 group-hover/row:text-white dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:group-hover/row:border-[#0b0e13]/20 dark:group-hover/row:bg-[#0b0e13]/10 dark:group-hover/row:text-[#0b0e13]">
         {level}
       </span>
     </motion.div>
   );
 }
 
-function SkillCategoryCard({
-  cat,
-  index,
+function SkillTabBar({
+  activeIndex,
+  onSelect,
 }: {
-  cat: (typeof SKILL_CATEGORIES)[number];
-  index: number;
+  activeIndex: number;
+  onSelect: (i: number) => void;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.55, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg sm:p-7 dark:border-white/[0.08] dark:bg-white/[0.02] dark:hover:bg-white/[0.04]"
-    >
-      {/* fill layer — expands from top-left corner, matches About highlight cards */}
-      <div className="pointer-events-none absolute inset-0 origin-top-left scale-0 rounded-2xl bg-gradient-to-br from-[#8a0303]/8 via-[#8a0303]/3 to-transparent transition-transform duration-700 ease-out group-hover:scale-100 dark:from-accent-green/8 dark:via-accent-green/3" />
-      {/* top accent line — draws left to right */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 rounded-t-2xl bg-gradient-to-r from-[#8a0303] via-[#8a0303]/70 to-[#8a0303]/20 transition-transform duration-400 ease-out group-hover:scale-x-100 dark:from-accent-green dark:via-accent-green/70 dark:to-accent-green/20" />
-      {/* left accent line */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-[2px] origin-top scale-y-0 rounded-l-2xl bg-gradient-to-b from-[#8a0303] via-[#8a0303]/50 to-[#8a0303]/10 transition-transform duration-500 delay-100 ease-out group-hover:scale-y-100 dark:from-accent-green dark:via-accent-green/50 dark:to-accent-green/10" />
-      {/* right accent line */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-[2px] origin-top scale-y-0 rounded-r-2xl bg-gradient-to-b from-[#8a0303]/60 via-[#8a0303]/30 to-transparent transition-transform duration-500 delay-200 ease-out group-hover:scale-y-100 dark:from-accent-green/60 dark:via-accent-green/30" />
-      {/* bottom accent line */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 rounded-b-2xl bg-gradient-to-r from-[#8a0303]/40 via-[#8a0303]/20 to-transparent transition-transform duration-500 delay-300 ease-out group-hover:scale-x-100 dark:from-accent-green/40 dark:via-accent-green/20" />
-
-      <div className="relative mb-5 flex items-center gap-2.5">
-        <span className="h-[2px] w-6 rounded-full bg-[#8a0303] dark:bg-accent-green" />
-        <h3 className="font-mono text-[12px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
-          {cat.title}
-        </h3>
-      </div>
-
-      <div className="relative flex flex-col gap-2.5">
-        {cat.skills.map((skill, i) => (
-          <SkillRow key={skill} name={skill} index={i} />
-        ))}
-      </div>
-    </motion.div>
+    <div className="relative mb-8 flex flex-wrap gap-2">
+      {SKILL_CATEGORIES.map((cat, i) => {
+        const isActive = i === activeIndex;
+        return (
+          <button
+            key={cat.title}
+            data-cursor-hover
+            onClick={() => onSelect(i)}
+            className={`relative rounded-full px-4 py-2 font-mono text-[12px] font-semibold uppercase tracking-wide transition-colors duration-300 ${
+              isActive
+                ? "text-white dark:text-[#0b0e13]"
+                : "text-[#6b7280] hover:text-[#8a0303] dark:text-white/60 dark:hover:text-accent-green"
+            }`}
+          >
+            {isActive && (
+              <motion.span
+                layoutId="skillTabPill"
+                className="absolute inset-0 rounded-full bg-[#8a0303] dark:bg-accent-green"
+                transition={{ type: "spring", stiffness: 380, damping: 32 }}
+              />
+            )}
+            <span className="relative z-10">{cat.title}</span>
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
 function Skills() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeCat = SKILL_CATEGORIES[activeIndex];
+
   return (
     <section
       id="skills"
@@ -1630,20 +1630,35 @@ function Skills() {
           What I work with.
         </h2>
         <p className="mt-3 max-w-lg text-sm leading-relaxed text-[#6b7280] dark:text-text-muted">
-          The languages, frameworks, and tools I reach for when taking a product from idea to production.
+          The languages, frameworks, and tools I reach for when taking a product from idea to production. Pick a category to see the stack.
         </p>
       </motion.div>
 
-      <div className="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="mb-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {CORE_SKILLS.map((s, i) => (
           <CircleStat key={s.label} label={s.label} percent={s.percent} index={i} />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {SKILL_CATEGORIES.map((cat, i) => (
-          <SkillCategoryCard key={cat.title} cat={cat} index={i} />
-        ))}
+      <div className="mx-auto max-w-3xl">
+        <SkillTabBar activeIndex={activeIndex} onSelect={setActiveIndex} />
+
+        <div className="relative rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 dark:border-white/[0.08] dark:bg-white/[0.02]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCat.title}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="flex flex-col gap-2.5"
+            >
+              {activeCat.skills.map((skill, i) => (
+                <SkillRow key={skill} name={skill} index={i} />
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </section>
   );
