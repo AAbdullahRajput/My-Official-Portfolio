@@ -1369,6 +1369,168 @@ function About() {
   );
 }
 
+
+// ─── SKILLS ─────────────────────────────────────────────
+const SKILL_ICON_URL: Record<string, string> = {
+  "Flutter": "https://www.vectorlogo.zone/logos/flutterio/flutterio-icon.svg",
+  "Dart": "https://www.vectorlogo.zone/logos/dartlang/dartlang-icon.svg",
+  "React Native": "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg",
+  "Expo": "https://www.vectorlogo.zone/logos/expoio/expoio-icon.svg",
+  "React.js": "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg",
+  "Next.js": "https://raw.githubusercontent.com/devicons/devicon/master/icons/nextjs/nextjs-original.svg",
+  "TypeScript": "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg",
+  "JavaScript (ES6+)": "https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg",
+  "Tailwind CSS": "https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-original.svg",
+  "HTML5": "https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original.svg",
+  "CSS3": "https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg",
+  "Node.js": "https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg",
+  "Express.js": "https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original.svg",
+  "Python": "https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg",
+  "FastAPI": "https://raw.githubusercontent.com/devicons/devicon/master/icons/fastapi/fastapi-original.svg",
+  "REST APIs": "https://img.icons8.com/color/48/api-settings.png",
+  "Socket.io": "https://raw.githubusercontent.com/devicons/devicon/master/icons/socketio/socketio-original.svg",
+  "JWT Auth": "https://img.icons8.com/color/48/json-web-token.png",
+  "Supabase (PostgreSQL)": "https://seeklogo.com/images/S/supabase-logo-DCC676FFE2-seeklogo.com.png",
+  "MongoDB": "https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original.svg",
+  "MySQL": "https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original.svg",
+  "Firebase Realtime DB": "https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg",
+  "Firestore": "https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg",
+  "SQLite": "https://www.vectorlogo.zone/logos/sqlite/sqlite-icon.svg",
+  "Firebase Auth": "https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg",
+  "Supabase RLS": "https://seeklogo.com/images/S/supabase-logo-DCC676FFE2-seeklogo.com.png",
+  "Cloud Functions": "https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg",
+  "FCM": "https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg",
+  "Vercel": "https://raw.githubusercontent.com/devicons/devicon/master/icons/vercel/vercel-original.svg",
+  "Railway": "https://railway.app/brand/logo-light.svg",
+  "AWS": "https://raw.githubusercontent.com/devicons/devicon/master/icons/amazonwebservices/amazonwebservices-original.svg",
+  "Aiven": "https://avatars.githubusercontent.com/u/29717922?s=200&v=4",
+  "Git": "https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg",
+  "GitHub": "https://www.vectorlogo.zone/logos/github/github-icon.svg",
+  "VS Code": "https://www.vectorlogo.zone/logos/visualstudio_code/visualstudio_code-icon.svg",
+  "Postman": "https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg",
+  "Figma": "https://www.vectorlogo.zone/logos/figma/figma-icon.svg",
+  "Framer": "https://img.icons8.com/color/48/framer.png",
+  "Android Studio": "https://raw.githubusercontent.com/devicons/devicon/master/icons/androidstudio/androidstudio-original.svg",
+};
+
+const SKILL_CATEGORIES = [
+  {
+    title: "Mobile",
+    skills: ["Flutter", "Dart", "React Native", "Expo"],
+  },
+  {
+    title: "Frontend / Web",
+    skills: ["React.js", "Next.js", "TypeScript", "JavaScript (ES6+)", "Tailwind CSS", "HTML5", "CSS3"],
+  },
+  {
+    title: "Backend & APIs",
+    skills: ["Node.js", "Express.js", "Python", "FastAPI", "REST APIs", "Socket.io", "JWT Auth"],
+  },
+  {
+    title: "Databases",
+    skills: ["Supabase (PostgreSQL)", "MongoDB", "MySQL", "Firebase Realtime DB", "Firestore", "SQLite"],
+  },
+  {
+    title: "Cloud & DevOps",
+    skills: ["Firebase Auth", "Supabase RLS", "Cloud Functions", "FCM", "Vercel", "Railway", "AWS", "Aiven"],
+  },
+  {
+    title: "Tools",
+    skills: ["Git", "GitHub", "VS Code", "Postman", "Figma", "Framer", "Android Studio"],
+  },
+];
+
+function SkillIcon({ name }: { name: string }) {
+  const url = SKILL_ICON_URL[name];
+  if (!url) return null;
+  return (
+    <img
+      src={url}
+      alt=""
+      className="h-4 w-4 shrink-0 object-contain"
+      loading="lazy"
+      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+    />
+  );
+}
+
+function SkillCategoryCard({
+  cat,
+  index,
+}: {
+  cat: (typeof SKILL_CATEGORIES)[number];
+  index: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.55, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+      className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#8a0303]/40 hover:shadow-lg dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:border-accent-green/30 dark:hover:bg-white/[0.07]"
+    >
+      {/* fill layer — expands from top-left corner, matches About highlight cards */}
+      <div className="pointer-events-none absolute inset-0 origin-top-left scale-0 rounded-2xl bg-gradient-to-br from-[#8a0303]/12 via-[#8a0303]/6 to-transparent transition-transform duration-700 ease-out group-hover:scale-100 dark:from-accent-green/10 dark:via-accent-green/5" />
+      {/* top accent line — draws left to right */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 rounded-t-2xl bg-gradient-to-r from-[#8a0303] via-[#8a0303]/70 to-[#8a0303]/20 transition-transform duration-400 ease-out group-hover:scale-x-100 dark:from-accent-green dark:via-accent-green/70 dark:to-accent-green/20" />
+      {/* left accent line */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-[2px] origin-top scale-y-0 rounded-l-2xl bg-gradient-to-b from-[#8a0303] via-[#8a0303]/50 to-[#8a0303]/10 transition-transform duration-500 delay-100 ease-out group-hover:scale-y-100 dark:from-accent-green dark:via-accent-green/50 dark:to-accent-green/10" />
+      {/* right accent line */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-[2px] origin-top scale-y-0 rounded-r-2xl bg-gradient-to-b from-[#8a0303]/60 via-[#8a0303]/30 to-transparent transition-transform duration-500 delay-200 ease-out group-hover:scale-y-100 dark:from-accent-green/60 dark:via-accent-green/30" />
+      {/* bottom accent line */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 rounded-b-2xl bg-gradient-to-r from-[#8a0303]/40 via-[#8a0303]/20 to-transparent transition-transform duration-500 delay-300 ease-out group-hover:scale-x-100 dark:from-accent-green/40 dark:via-accent-green/20" />
+
+      <h3 className="relative mb-4 font-mono text-[11px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+        {cat.title}
+      </h3>
+
+      <div className="relative flex flex-wrap gap-2">
+        {cat.skills.map((skill, i) => (
+          <motion.span
+            key={skill}
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: [0.45, 0, 0.55, 1], delay: i * 0.12 }}
+            className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1.5 font-mono text-[11px] text-[#374151] transition-all duration-200 hover:scale-105 hover:border-[#8a0303]/40 hover:bg-[#8a0303]/5 hover:text-[#8a0303] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/70 dark:hover:border-accent-green/40 dark:hover:bg-accent-green/5 dark:hover:text-accent-green"
+          >
+            <SkillIcon name={skill} />
+            {skill}
+          </motion.span>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+function Skills() {
+  return (
+    <section
+      id="skills"
+      className="relative bg-[#F5F7F6] px-6 py-28 sm:px-10 lg:px-20 xl:px-32 dark:bg-ink"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.6 }}
+        className="mb-14"
+      >
+        <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
+          SKILLS
+        </div>
+        <h2 className="font-display text-3xl font-bold text-[#0b0e13] dark:text-text sm:text-4xl">
+          What I work with.
+        </h2>
+      </motion.div>
+
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {SKILL_CATEGORIES.map((cat, i) => (
+          <SkillCategoryCard key={cat.title} cat={cat} index={i} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 // ─── CAREER ─────────────────────────────────────────────
 interface CareerProject {
   name: string;
@@ -2417,6 +2579,7 @@ export default function PersonalPortfolio({ splashDone = false }: { splashDone?:
       <Hero splashDone={splashDone} />
       <Projects />
       <About />
+      <Skills />
       <Career />
       <Contact />
       <Footer />
