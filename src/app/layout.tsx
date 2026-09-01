@@ -46,7 +46,7 @@ export default function RootLayout({
       >
                 <CustomCursor />
         <IntroSequence />
-        <SpiderWebBackground />
+        {/* <SpiderWebBackground /> */}
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

@@ -174,6 +174,7 @@ const AnimatedSpider = ({
             {legs.map(([x1, y1, x2, y2], i) => (
         <motion.path
           key={i}
+          d={legPath(x1, y1, x2, y2, 0)}
           stroke={color}
           strokeWidth={legWidth}
           fill="none"
@@ -594,31 +595,49 @@ const SwingingSpider = ({
 
 /* ---------- realistic spider web: spider on left, shoots real web geometry left then wraps around ---------- */
 const WebCastingSpider = () => {
-  // realistic web: radial strands + concentric circles
   const radialCount = 22;
-  const circleCount = 5;
-  
+  const [vw, setVw] = useState(0);
+
+  useEffect(() => {
+    setVw(window.innerWidth);
+  }, []);
+
+  // ── per-breakpoint config ──────────────────────────────────────────
+  // mobile  : < 640px
+  // tablet  : 640px – 1023px
+  // desktop : ≥ 1024px  ← these are your ORIGINAL values, never touch
+  const isMobile  = vw > 0 && vw < 640;
+  const isTablet  = vw >= 640 && vw < 1024;
+
+  const wrapperMarginTop  = isMobile ? -22 : isTablet ? -38 : -38;
+  const wrapperMarginLeft = isMobile ? -100 : isTablet ? -110 : -190;  // desktop = -190 (original)
+
+  const svgHeight         = isMobile ? 42  : isTablet ? 55  : 70;     // desktop = 70 (original)
+
+  const spiderMarginLeft  = isMobile ? 70  : isTablet ? 80  : 140;    // desktop = 140 (original)
+  const spiderMarginTop   = isMobile ? 13 : 18;                           // same everywhere
+  const spiderSize        = isMobile ? 18  : isTablet ? 24 : 34;      // desktop = 34 (original)
+  // ──────────────────────────────────────────────────────────────────
+
   return (
     <motion.div
       className="pointer-events-none absolute left-0 top-1/2 w-full"
-      style={{ marginTop: -38, marginLeft: -190 }}
+      style={{ marginTop: wrapperMarginTop, marginLeft: wrapperMarginLeft }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 1.5 }}
     >
       <svg
-        className="absolute h-[70px] w-full"
+        className="absolute w-full"
         viewBox="0 0 100 70"
         preserveAspectRatio="none"
-        style={{ pointerEvents: "none" }}
+        style={{ height: svgHeight, pointerEvents: "none" }}
       >
         <g style={{ transformOrigin: "100px 35px" }}>
-          {/* radial strands shooting from spider's back TO the name (left-down) */}
           {Array.from({ length: radialCount }).map((_, i) => {
             const angle = (i / radialCount) * Math.PI - Math.PI / 2;
             const x2 = 40 + 90 * Math.cos(angle);
             const y2 = 50 + 40 * Math.sin(angle);
-            
             return (
               <motion.line
                 key={`radial-${i}`}
@@ -631,18 +650,12 @@ const WebCastingSpider = () => {
                 opacity="0.95"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{
-                  duration: 2,
-                  delay: 3 + (i % 4) * 0.15,
-                  ease: "easeOut",
-                }}
+                transition={{ duration: 2, delay: 3 + (i % 4) * 0.15, ease: "easeOut" }}
               />
             );
           })}
-
-          {/* organic droop threads (vertical strands with curves) */}
           {Array.from({ length: 8 }).map((_, i) => {
-            const xOffset = 20 + (i * 12);
+            const xOffset = 20 + i * 12;
             const droopAmount = 8 + Math.sin(i) * 3;
             return (
               <motion.path
@@ -654,27 +667,22 @@ const WebCastingSpider = () => {
                 opacity="0.7"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{
-                  duration: 2.4,
-                  delay: 2.5 + i * 0.12,
-                  ease: "easeOut",
-                }}
+                transition={{ duration: 2.4, delay: 2.5 + i * 0.12, ease: "easeOut" }}
               />
             );
           })}
         </g>
       </svg>
 
-      {/* spider at Ahmad side, back/hips facing name, face to left */}
       <motion.div
         className="absolute left-0 top-1/2"
-        style={{ marginTop: 18, marginLeft: 140 }}
+        style={{ marginTop: spiderMarginTop, marginLeft: spiderMarginLeft }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 1.2 }}
       >
         <div style={{ transform: "rotate(-90deg)" }}>
-          <AnimatedSpider size={34} color="#8a0303" legWidth={4} sharp variant="logo" />
+          <AnimatedSpider size={spiderSize} color="#8a0303" legWidth={4} sharp variant="logo" />
         </div>
       </motion.div>
     </motion.div>
@@ -787,25 +795,41 @@ const CursorWebCapture = ({
 };
 
 export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {}) {
+  const instanceId = useRef(Math.random().toString(36).slice(2, 8)).current;
+  useEffect(() => {
+    console.log(`[splash:${instanceId}] MOUNTED`);
+    return () => console.log(`[splash:${instanceId}] UNMOUNTED`);
+  }, [instanceId]);
+
   // Lazy initializer runs once, synchronously, before the first paint —
   // so a repeat visitor never sees a "visible" frame that then has to
   // slide away. SSR still renders visible=true (no window), and the
   // client's first render immediately corrects it before paint.
-  const [visible, setVisible] = useState(() => {
-    if (typeof window === "undefined") return true;
-    return localStorage.getItem("splash_seen") !== "1";
-  });
-  const alreadySeen = typeof window !== "undefined" && localStorage.getItem("splash_seen") === "1";
+  const [visible, setVisible] = useState(true);
+  const [alreadySeen, setAlreadySeen] = useState(false);
+
+  useEffect(() => {
+    return; // TEMP: ignore splash_seen while iterating
+    if (localStorage.getItem("splash_seen") === "1") {
+      setAlreadySeen(true);
+      setVisible(false);
+    }
+  }, []);
   const [bgLines, setBgLines] = useState<string[]>([]);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (alreadySeen) return; // already resolved by lazy init above
-    hideTimer.current = setTimeout(() => setVisible(false), 7200);
+    return; // TEMP: splash never auto-hides while iterating on the animation
+    if (alreadySeen) return;
+    hideTimer.current = setTimeout(() => {
+      setVisible(false);
+    }, 7200);
     return () => {
       if (hideTimer.current) clearTimeout(hideTimer.current);
     };
   }, []);
+
+  console.log(`[splash:${instanceId}] RENDER, visible=${visible}`);
 
   // fire once the exit slide-out finishes (7200ms hide delay + 800ms slide animation),
   // so the parent page knows exactly when the splash is fully gone
@@ -831,11 +855,12 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
   }, []);
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={() => console.log(`[splash:${instanceId}] EXIT ANIMATION COMPLETE`)}>
       {visible && (
         <motion.div
           exit={{ x: "-100%" }}
           transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+          onAnimationStart={() => console.log(`[splash:${instanceId}] motion.div animation started, visible=${visible}`)}
           className="fixed inset-0 z-[9999] overflow-hidden bg-white cursor-none"
         >
           <style>{glowPulseStyle}</style>
@@ -908,8 +933,12 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
           <WebHit fromX={98} toX={60} toY={78} delay={2.1} />
 
           {/* spiders swinging on a thread down the sides, pendulum motion */}
-          <SwingingSpider side="left" topPercent={0} length={220} inset={18} />
-          <SwingingSpider side="right" topPercent={0} length={280} inset={18} />
+          {typeof window !== "undefined" && window.innerWidth >= 640 && (
+            <>
+              <SwingingSpider side="left" topPercent={0} length={220} inset={18} />
+              <SwingingSpider side="right" topPercent={0} length={280} inset={18} />
+            </>
+          )}
 
           <div className="relative flex h-full w-full flex-col items-center justify-center">
             {/* split face / Spiderman frame */}
@@ -917,7 +946,7 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="relative h-[52vh] w-[52vh] max-h-[380px] max-w-[380px] overflow-hidden rounded-full border-2 border-[#8a0303]"
+              className="relative h-[38vh] w-[38vh] max-h-[220px] max-w-[220px] overflow-hidden rounded-full border-2 border-[#8a0303] -mt-16 sm:-mt-0 sm:h-[45vh] sm:w-[45vh] sm:max-h-[300px] sm:max-w-[300px] lg:h-[52vh] lg:w-[52vh] lg:max-h-[380px] lg:max-w-[380px]"
               style={{ animation: "glowPulse 2.4s ease-in-out infinite" }}
             >
               <div className="absolute inset-0 flex">
@@ -928,7 +957,7 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
                     animate={{ x: 0 }}
                     transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   >
-                                        <Image
+                      <Image
                       src="/images/spiderman-right.jpeg"
                       alt="Spider-Man"
                       fill
@@ -963,14 +992,14 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
               transition={{ duration: 0.5, delay: 0.8 }}
               className="relative mt-6 text-center"
             >
-              <h1 className={`${displayFont.className} relative z-10 text-2xl uppercase tracking-widest text-[#8a0303] sm:text-4xl`}>
+              <h1 className={`${displayFont.className} relative z-10 text-lg uppercase tracking-widest text-[#8a0303] sm:text-2xl lg:text-4xl`}>
                 Ahmad Abdullah
               </h1>
               <WebCastingSpider />
             </motion.div>
 
             {/* progress bar loader with a spider marker riding the leading edge, facing its direction of travel */}
-            <div className="relative mt-8 w-56">
+            <div className="relative mt-6 w-44 sm:mt-8 sm:w-56">
               <motion.div
                 className="absolute -top-6"
                 initial={{ left: "0%" }}
