@@ -1578,7 +1578,7 @@ function SkillTabBar({
   onSelect: (i: number) => void;
 }) {
   return (
-    <div className="relative mb-8 flex flex-wrap gap-2">
+    <div className="relative mb-8 flex flex-wrap items-center justify-center gap-2">
       {SKILL_CATEGORIES.map((cat, i) => {
         const isActive = i === activeIndex;
         return (
@@ -1586,7 +1586,7 @@ function SkillTabBar({
             key={cat.title}
             data-cursor-hover
             onClick={() => onSelect(i)}
-            className={`relative rounded-full px-4 py-2 font-mono text-[12px] font-semibold uppercase tracking-wide transition-colors duration-300 ${
+            className={`relative flex items-center justify-center rounded-full px-5 py-2.5 font-mono text-[12px] font-semibold uppercase tracking-wide transition-colors duration-300 ${
               isActive
                 ? "text-white dark:text-[#0b0e13]"
                 : "text-[#6b7280] hover:text-[#8a0303] dark:text-white/60 dark:hover:text-accent-green"
@@ -1640,10 +1640,10 @@ function Skills() {
         ))}
       </div>
 
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto flex w-full flex-col items-center">
         <SkillTabBar activeIndex={activeIndex} onSelect={setActiveIndex} />
 
-        <div className="relative rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 dark:border-white/[0.08] dark:bg-white/[0.02]">
+        <div className="relative w-full rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 dark:border-white/[0.08] dark:bg-white/[0.02]">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeCat.title}
@@ -1651,7 +1651,7 @@ function Skills() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="flex flex-col gap-2.5"
+              className="grid grid-cols-1 gap-2.5 sm:grid-cols-2"
             >
               {activeCat.skills.map((skill, i) => (
                 <SkillRow key={skill} name={skill} index={i} />
