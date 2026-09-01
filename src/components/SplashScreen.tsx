@@ -21,17 +21,39 @@ const glowPulseStyle = `
 const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
   const rotate =
     corner === "tl" ? 0 : corner === "tr" ? 90 : corner === "br" ? 180 : 270;
-  const pos =
-    corner === "tl"
-      ? "top-0 left-0"
-      : corner === "tr"
-      ? "top-0 right-0"
-      : corner === "br"
-      ? "bottom-0 right-0"
-      : "bottom-0 left-0";
+
+  // KNOBS — real pixel offsets, independent per breakpoint, read from
+  // actual window width instead of relying on Tailwind's sm:/lg: classes
+  // (which weren't reliably applying in the device-preview tool).
+  // Bigger number = higher up from the bottom edge.
+  const [vw, setVw] = useState(0);
+  useEffect(() => {
+    setVw(window.innerWidth);
+  }, []);
+  const isMobile = vw > 0 && vw < 640;
+  const isTablet = vw >= 640 && vw < 1024;
+
+  const mobileBottomPx  = 24;   // mobile  bottom offset (both bl/br)
+  const tabletBottomBRpx = 96;  // tablet  bottom-right offset
+  const tabletBottomBLpx = 460; // tablet  bottom-left offset
+
+  if (corner === "bl") {
+    console.log("[CornerWeb bl]", { vw, isMobile, isTablet, tabletBottomBLpx });
+  }
+  // desktop (vw >= 1024) always uses 0 — original, untouched
+
+  const bottomPx =
+    corner === "br"
+      ? isMobile ? mobileBottomPx : isTablet ? tabletBottomBRpx : 0
+      : isMobile ? mobileBottomPx : isTablet ? tabletBottomBLpx : 0;
+
+  const isTopCorner = corner === "tl" || corner === "tr";
+  const sideStyle: React.CSSProperties = isTopCorner
+    ? { top: 0, ...(corner === "tl" ? { left: 0 } : { right: 0 }) }
+    : { bottom: bottomPx, ...(corner === "br" ? { right: 0 } : { left: 0 }) };
 
   return (
-    <div className={`absolute ${pos} h-40 w-40 sm:h-56 sm:w-56`} style={{ transform: `rotate(${rotate}deg)` }} suppressHydrationWarning>
+    <div className="absolute h-40 w-40 sm:h-56 sm:w-56" style={{ ...sideStyle, transform: `rotate(${rotate}deg)` }} suppressHydrationWarning>
       <svg className="absolute inset-0 h-full w-full opacity-50" viewBox="0 0 100 100" fill="none">
         {[0, 20, 40, 60, 90].map((angle, i) => (
           <motion.line
@@ -289,13 +311,22 @@ const ThoughtBubbleBottomLeft = ({
   delay: number;
 }) => {
   const cycle = 6;
+  const [vw, setVw] = useState(0);
+  useEffect(() => {
+    setVw(window.innerWidth);
+  }, []);
+  const isMobile = vw > 0 && vw < 640;
+  const isTablet = vw >= 640 && vw < 1024;
+  // kept in sync with CornerWeb's tabletBottomBLpx / mobileBottomPx knobs
+  const bottomPx = isMobile ? 24 : isTablet ? 460 : undefined;
+  console.log("[ThoughtBubbleBottomLeft]", { vw, isMobile, isTablet, bottomPx });
 
   return (
     <div
       className="pointer-events-none fixed z-30"
       style={{
         left: "5%",
-        bottom: "13%",
+        ...(bottomPx !== undefined ? { bottom: bottomPx } : { bottom: "13%" }),
       }}
     >
       <div className="absolute" style={{ right: "50%", bottom: "32%", marginLeft: -14, marginTop: -14 }}>
@@ -816,7 +847,12 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
     }
   }, []);
   const [bgLines, setBgLines] = useState<string[]>([]);
+  const [showSwingingSpiders, setShowSwingingSpiders] = useState(false);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setShowSwingingSpiders(window.innerWidth >= 640);
+  }, []);
 
   useEffect(() => {
     return; // TEMP: splash never auto-hides while iterating on the animation
@@ -933,7 +969,7 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
           <WebHit fromX={98} toX={60} toY={78} delay={2.1} />
 
           {/* spiders swinging on a thread down the sides, pendulum motion */}
-          {typeof window !== "undefined" && window.innerWidth >= 640 && (
+          {showSwingingSpiders && (
             <>
               <SwingingSpider side="left" topPercent={0} length={220} inset={18} />
               <SwingingSpider side="right" topPercent={0} length={280} inset={18} />
