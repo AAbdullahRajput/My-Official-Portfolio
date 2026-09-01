@@ -1413,6 +1413,55 @@ const SKILL_ICON_URL: Record<string, string> = {
   "Android Studio": "https://raw.githubusercontent.com/devicons/devicon/master/icons/androidstudio/androidstudio-original.svg",
 };
 
+const SKILL_LEVEL: Record<string, "Advanced" | "Proficient" | "Familiar"> = {
+  "Flutter": "Advanced",
+  "Dart": "Advanced",
+  "React Native": "Advanced",
+  "Expo": "Proficient",
+  "React.js": "Advanced",
+  "Next.js": "Advanced",
+  "TypeScript": "Proficient",
+  "JavaScript (ES6+)": "Advanced",
+  "Tailwind CSS": "Advanced",
+  "HTML5": "Advanced",
+  "CSS3": "Advanced",
+  "Node.js": "Advanced",
+  "Express.js": "Advanced",
+  "Python": "Proficient",
+  "FastAPI": "Proficient",
+  "REST APIs": "Advanced",
+  "Socket.io": "Proficient",
+  "JWT Auth": "Proficient",
+  "Supabase (PostgreSQL)": "Advanced",
+  "MongoDB": "Proficient",
+  "MySQL": "Proficient",
+  "Firebase Realtime DB": "Proficient",
+  "Firestore": "Proficient",
+  "SQLite": "Familiar",
+  "Firebase Auth": "Proficient",
+  "Supabase RLS": "Proficient",
+  "Cloud Functions": "Familiar",
+  "FCM": "Proficient",
+  "Vercel": "Proficient",
+  "Railway": "Proficient",
+  "AWS": "Familiar",
+  "Aiven": "Familiar",
+  "Git": "Advanced",
+  "GitHub": "Advanced",
+  "VS Code": "Advanced",
+  "Postman": "Proficient",
+  "Figma": "Proficient",
+  "Framer": "Proficient",
+  "Android Studio": "Proficient",
+};
+
+const CORE_SKILLS = [
+  { label: "Flutter & Mobile", percent: 95 },
+  { label: "React / Next.js", percent: 90 },
+  { label: "Node.js & APIs", percent: 88 },
+  { label: "Databases & Cloud", percent: 85 },
+];
+
 const SKILL_CATEGORIES = [
   {
     title: "Mobile",
@@ -1447,10 +1496,75 @@ function SkillIcon({ name }: { name: string }) {
     <img
       src={url}
       alt={name}
-      className="h-5 w-5 shrink-0 object-contain"
+      className="h-6 w-6 shrink-0 object-contain"
       loading="lazy"
       onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
     />
+  );
+}
+
+function CircleStat({ label, percent, index }: { label: string; percent: number; index: number }) {
+  const radius = 46;
+  const circumference = 2 * Math.PI * radius;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      className="flex flex-col items-center gap-3 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-white/[0.08] dark:bg-white/[0.04]"
+    >
+      <div className="relative h-28 w-28">
+        <svg viewBox="0 0 110 110" className="h-full w-full -rotate-90">
+          <circle
+            cx="55" cy="55" r={radius} fill="none" strokeWidth="8"
+            className="stroke-gray-100 dark:stroke-white/[0.07]"
+          />
+          <motion.circle
+            cx="55" cy="55" r={radius} fill="none" strokeWidth="8" strokeLinecap="round"
+            className="stroke-[#8a0303] dark:stroke-accent-green"
+            strokeDasharray={circumference}
+            initial={{ strokeDashoffset: circumference }}
+            whileInView={{ strokeDashoffset: circumference - (percent / 100) * circumference }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 1.3, delay: index * 0.1 + 0.15, ease: [0.16, 1, 0.3, 1] }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center font-display text-xl font-bold text-[#0b0e13] dark:text-text">
+          {percent}%
+        </div>
+      </div>
+      <span className="text-center font-mono text-[11px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+        {label}
+      </span>
+    </motion.div>
+  );
+}
+
+function SkillRow({ name, index }: { name: string; index: number }) {
+  const level = SKILL_LEVEL[name] ?? "Proficient";
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.35, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
+      className="group/row relative flex items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-white/[0.08] dark:bg-white/[0.03]"
+    >
+      {/* fill sweeps in from left on hover */}
+      <div className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-[#8a0303] transition-transform duration-400 ease-out group-hover/row:scale-x-100 dark:bg-accent-green" />
+
+      <div className="relative z-10 flex items-center gap-3">
+        <SkillIcon name={name} />
+        <span className="font-mono text-[13px] font-semibold text-[#0b0e13] transition-colors duration-300 group-hover/row:text-white dark:text-white dark:group-hover/row:text-[#0b0e13]">
+          {name}
+        </span>
+      </div>
+
+      <span className="relative z-10 shrink-0 rounded-full border border-gray-200 bg-white px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-wider text-[#374151] transition-colors duration-300 group-hover/row:border-white/40 group-hover/row:bg-white/15 group-hover/row:text-white dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:group-hover/row:border-[#0b0e13]/20 dark:group-hover/row:bg-[#0b0e13]/10 dark:group-hover/row:text-[#0b0e13]">
+        {level}
+      </span>
+    </motion.div>
   );
 }
 
@@ -1487,21 +1601,9 @@ function SkillCategoryCard({
         </h3>
       </div>
 
-      <div className="relative flex flex-wrap gap-2.5">
+      <div className="relative flex flex-col gap-2.5">
         {cat.skills.map((skill, i) => (
-          <motion.span
-            key={skill}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.35, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
-            animate={{ y: [0, -5, 0] }}
-            className="flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-[12px] text-[#374151] transition-all duration-200 hover:scale-105 hover:border-[#8a0303]/40 hover:bg-[#8a0303]/5 hover:text-[#8a0303] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/75 dark:hover:border-accent-green/40 dark:hover:bg-accent-green/5 dark:hover:text-accent-green"
-            style={{ animationDelay: `${i * 0.12}s` }}
-          >
-            <SkillIcon name={skill} />
-            {skill}
-          </motion.span>
+          <SkillRow key={skill} name={skill} index={i} />
         ))}
       </div>
     </motion.div>
@@ -1531,6 +1633,12 @@ function Skills() {
           The languages, frameworks, and tools I reach for when taking a product from idea to production.
         </p>
       </motion.div>
+
+      <div className="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {CORE_SKILLS.map((s, i) => (
+          <CircleStat key={s.label} label={s.label} percent={s.percent} index={i} />
+        ))}
+      </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {SKILL_CATEGORIES.map((cat, i) => (
