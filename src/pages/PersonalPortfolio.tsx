@@ -1583,15 +1583,18 @@ function CircleStat({ label, percent, index }: { label: string; percent: number;
   );
 }
 
-function SkillRow({ name, index }: { name: string; index: number }) {
+function SkillRow({ name, index, onSelect }: { name: string; index: number; onSelect: (name: string) => void }) {
   const level = SKILL_LEVEL[name] ?? "Proficient";
   return (
-    <motion.div
+    <motion.button
+      type="button"
+      data-cursor-hover
+      onClick={() => onSelect(name)}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.3, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
-      className="group/row relative flex items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white px-4 py-3.5 hover:bg-[#8a0303] dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:bg-accent-green"
+      className="group/row relative flex w-full items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-left hover:bg-[#8a0303] dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:bg-accent-green"
     >
       {/* fill sweeps in from left on hover */}
       <div className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-[#8a0303] transition-transform duration-400 ease-out group-hover/row:scale-x-100 dark:bg-accent-green" />
@@ -1608,7 +1611,7 @@ function SkillRow({ name, index }: { name: string; index: number }) {
       <span className="relative z-10 shrink-0 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-wider text-[#374151] transition-colors duration-300 group-hover/row:border-white/40 group-hover/row:bg-white/15 group-hover/row:text-white dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:group-hover/row:border-[#0b0e13]/20 dark:group-hover/row:bg-[#0b0e13]/10 dark:group-hover/row:text-[#0b0e13]">
         {level}
       </span>
-    </motion.div>
+    </motion.button>
   );
 }
 
@@ -1651,6 +1654,7 @@ function SkillTabBar({
 
 function Skills() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [activeSkillName, setActiveSkillName] = useState<string | null>(null);
   const activeCat = SKILL_CATEGORIES[activeIndex];
 
   return (
@@ -1696,12 +1700,56 @@ function Skills() {
               className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3"
             >
               {activeCat.skills.map((skill, i) => (
-                <SkillRow key={skill} name={skill} index={i} />
+                <SkillRow key={skill} name={skill} index={i} onSelect={setActiveSkillName} />
               ))}
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
+
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {activeSkillName && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+              onClick={() => setActiveSkillName(null)}
+            >
+              <motion.div
+                initial={{ y: 60, opacity: 0, scale: 0.96 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: 60, opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-white/[0.08] dark:bg-[#0f1117]/90 dark:backdrop-blur-xl"
+              >
+                <div className="mb-3 flex items-center gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white p-1.5 shadow-sm">
+                    <SkillIcon name={activeSkillName} />
+                  </span>
+                  <div className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+                    {activeSkillName}
+                  </div>
+                </div>
+                <p className="text-sm leading-relaxed text-[#6b7280] dark:text-text-muted">
+                  {SKILL_INFO[activeSkillName] ?? "No description available yet."}
+                </p>
+                <button
+                  data-cursor-hover
+                  onClick={() => setActiveSkillName(null)}
+                  className="mt-5 w-full rounded-xl bg-[#0b0e13] py-2.5 font-mono text-[11px] font-medium text-white transition-colors hover:bg-[#8a0303] dark:bg-white/[0.06] dark:border dark:border-white/[0.08] dark:text-text dark:hover:border-accent-green/30 dark:hover:bg-white/[0.10]"
+                >
+                  Close
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </section>
   );
 }
