@@ -1498,10 +1498,10 @@ const SKILL_INFO: Record<string, string> = {
 };
 
 const CORE_SKILLS = [
-  { label: "Flutter & Mobile", percent: 95 },
-  { label: "React / Next.js", percent: 90 },
-  { label: "Node.js & APIs", percent: 88 },
-  { label: "Databases & Cloud", percent: 85 },
+  { label: "Flutter & Mobile", percent: 93 },
+  { label: "React / Next.js", percent: 96 },
+  { label: "Node.js & APIs", percent: 89 },
+  { label: "Databases & Cloud", percent: 98 },
 ];
 
 const SKILL_CATEGORIES = [
@@ -2546,6 +2546,39 @@ function Career() {
 }
 
 // ─── CONTACT ────────────────────────────────────────────
+const CONTACT_ICONS = {
+  email: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5Z" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M2 6l8 5 8-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  location: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 2a6 6 0 0 1 6 6c0 4-6 10-6 10S4 12 4 8a6 6 0 0 1 6-6Z" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="10" cy="8" r="2" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  ),
+  availability: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M10 6v4l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  response: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H8l-4 3v-3H5a2 2 0 0 1-2-2V5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  ),
+} as const;
+
+const CONTACT_INFO = [
+  { icon: "email" as const, label: "Email", value: "ahmadabdullah4972@gmail.com", href: "mailto:ahmadabdullah4972@gmail.com" },
+  { icon: "location" as const, label: "Location", value: "Islamabad, Pakistan" },
+  { icon: "availability" as const, label: "Availability", value: "Open for freelance & full-time" },
+  { icon: "response" as const, label: "Response time", value: "Usually within 24 hours" },
+];
+
 function Contact() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -2568,72 +2601,157 @@ function Contact() {
   }
 
   return (
-        <section
+    <section
       id="contact"
-      className="relative bg-[#F5F7F6] px-6 py-28 sm:px-10 lg:px-16 dark:bg-ink"
+      className="relative overflow-hidden bg-[#F5F7F6] px-6 py-28 sm:px-10 lg:px-20 xl:px-32 dark:bg-ink"
     >
-      <div className="mx-auto max-w-2xl">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.6 }}
+        className="mb-14 max-w-2xl"
+      >
+        <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
+          GET IN TOUCH
+        </div>
+        <h2 className="font-display text-3xl font-bold text-[#0b0e13] dark:text-text sm:text-4xl">
+          Let&rsquo;s build something.
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed text-[#6b7280] dark:text-text-muted">
+          Have a project, an idea, or just want to talk stack? I&rsquo;m usually building something &mdash; happy to add one more thing to the list.
+        </p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
+        {/* ── Left: info cards + socials ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6 }}
-          className="mb-12"
+          transition={{ duration: 0.6, delay: 0.05 }}
+          className="flex flex-col gap-3"
         >
-          <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
-            GET IN TOUCH
-          </div>
-          <h2 className="font-display text-3xl font-bold text-[#0b0e13] dark:text-text sm:text-4xl">
-            Let&rsquo;s build something.
-          </h2>
+          {CONTACT_INFO.map((item, i) => {
+            const Wrapper = item.href ? "a" : "div";
+            return (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.45, delay: i * 0.08 }}
+                className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 hover:border-[#8a0303]/60 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:border-accent-green/40 dark:hover:bg-white/[0.07]"
+              >
+                <div className="absolute inset-0 origin-top-left scale-0 rounded-2xl bg-gradient-to-br from-[#8a0303]/12 via-[#8a0303]/6 to-transparent transition-transform duration-700 ease-out group-hover:scale-100 dark:from-accent-green/10 dark:via-accent-green/5" />
+                <div className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 rounded-t-2xl bg-gradient-to-r from-[#8a0303] via-[#8a0303]/70 to-[#8a0303]/20 transition-transform duration-400 ease-out group-hover:scale-x-100 dark:from-accent-green dark:via-accent-green/70 dark:to-accent-green/20" />
+                <div className="absolute inset-y-0 left-0 w-[2px] origin-top scale-y-0 rounded-l-2xl bg-gradient-to-b from-[#8a0303] via-[#8a0303]/50 to-[#8a0303]/10 transition-transform duration-500 delay-100 ease-out group-hover:scale-y-100 dark:from-accent-green dark:via-accent-green/50 dark:to-accent-green/10" />
+
+                <Wrapper
+                  {...(item.href ? { href: item.href, "data-cursor-hover": true } : {})}
+                  className="relative z-10 flex items-center gap-3"
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green">
+                    {CONTACT_ICONS[item.icon]}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+                      {item.label}
+                    </div>
+                    <div className="truncate text-[13px] font-medium text-[#0b0e13] dark:text-text">
+                      {item.value}
+                    </div>
+                  </div>
+                </Wrapper>
+              </motion.div>
+            );
+          })}
+
+          {/* socials row */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.45, delay: CONTACT_INFO.length * 0.08 }}
+            className="mt-2 flex items-center gap-3"
+          >
+            
+            <a  href="https://github.com/AAbdullahRajput"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor-hover
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-[#6b7280] transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:text-text-dim dark:hover:border-accent-green/30 dark:hover:text-accent-green"
+            >
+              <FiGithub size={16} />
+            </a>
+            
+            <a  href={LINKEDIN_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor-hover
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-[#6b7280] transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:text-text-dim dark:hover:border-accent-green/30 dark:hover:text-accent-green"
+            >
+              <FaLinkedin size={16} />
+            </a>
+            
+            <a  href="mailto:ahmadabdullah4972@gmail.com"
+              data-cursor-hover
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-[#6b7280] transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:text-text-dim dark:hover:border-accent-green/30 dark:hover:text-accent-green"
+            >
+              <FiMail size={16} />
+            </a>
+          </motion.div>
         </motion.div>
 
-        <motion.form
+        {/* ── Right: form card ── */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          onSubmit={handleSubmit}
-          suppressHydrationWarning
-          className="flex flex-col gap-4"
+          className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
         >
-          <input
-            required
-            placeholder="Your name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-[#0b0e13] outline-none focus:border-[#8a0303] dark:border-line dark:bg-ink-soft dark:text-text dark:focus:border-accent-blue"
-          />
-          <input
-            required
-            type="email"
-            placeholder="Your email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-[#0b0e13] outline-none focus:border-[#8a0303] dark:border-line dark:bg-ink-soft dark:text-text dark:focus:border-accent-blue"
-          />
-          <textarea
-            required
-            rows={5}
-            placeholder="What are you building?"
-            value={form.message}
-            onChange={(e) => setForm({ ...form, message: e.target.value })}
-            className="rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-[#0b0e13] outline-none focus:border-[#8a0303] dark:border-line dark:bg-ink-soft dark:text-text dark:focus:border-accent-blue"
-          />
-          <button
-            type="submit"
-            disabled={status === "sending"}
-            data-cursor-hover
-            className="rounded-lg bg-[#0b0e13] px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:scale-105 hover:bg-[#8a0303] disabled:opacity-50 dark:bg-text dark:text-ink dark:hover:bg-accent-green"
-          >
-            {status === "sending" ? "Sending..." : status === "sent" ? "Sent ✓" : "Send message"}
-          </button>
-          {status === "error" && (
-            <p className="text-sm text-red-500 dark:text-red-400">
-              Something went wrong — try again.
-            </p>
-          )}
-        </motion.form>
+          <form onSubmit={handleSubmit} suppressHydrationWarning className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <input
+                required
+                placeholder="Your name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-[#0b0e13] outline-none transition-colors focus:border-[#8a0303] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-text dark:focus:border-accent-green"
+              />
+              <input
+                required
+                type="email"
+                placeholder="Your email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-[#0b0e13] outline-none transition-colors focus:border-[#8a0303] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-text dark:focus:border-accent-green"
+              />
+            </div>
+            <textarea
+              required
+              rows={6}
+              placeholder="What are you building?"
+              value={form.message}
+              onChange={(e) => setForm({ ...form, message: e.target.value })}
+              className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-[#0b0e13] outline-none transition-colors focus:border-[#8a0303] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-text dark:focus:border-accent-green"
+            />
+            <button
+              type="submit"
+              disabled={status === "sending"}
+              data-cursor-hover
+              className="rounded-lg bg-[#0b0e13] px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:scale-[1.02] hover:bg-[#8a0303] disabled:opacity-50 dark:bg-white/15 dark:text-white dark:border dark:border-white/30 dark:hover:border-accent-green/60 dark:hover:bg-accent-green dark:hover:text-[#0b0e13]"
+            >
+              {status === "sending" ? "Sending..." : status === "sent" ? "Sent ✓" : "Send message"}
+            </button>
+            {status === "error" && (
+              <p className="text-sm text-red-500 dark:text-red-400">
+                Something went wrong — try again.
+              </p>
+            )}
+          </form>
+        </motion.div>
       </div>
     </section>
   );
