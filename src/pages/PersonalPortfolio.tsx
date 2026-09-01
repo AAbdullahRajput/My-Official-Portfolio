@@ -1446,8 +1446,8 @@ function SkillIcon({ name }: { name: string }) {
   return (
     <img
       src={url}
-      alt=""
-      className="h-4 w-4 shrink-0 object-contain"
+      alt={name}
+      className="h-5 w-5 shrink-0 object-contain"
       loading="lazy"
       onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
     />
@@ -1466,11 +1466,11 @@ function SkillCategoryCard({
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.55, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#8a0303]/40 hover:shadow-lg dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:border-accent-green/30 dark:hover:bg-white/[0.07]"
+      transition={{ duration: 0.55, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+      className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg sm:p-7 dark:border-white/[0.08] dark:bg-white/[0.02] dark:hover:bg-white/[0.04]"
     >
       {/* fill layer — expands from top-left corner, matches About highlight cards */}
-      <div className="pointer-events-none absolute inset-0 origin-top-left scale-0 rounded-2xl bg-gradient-to-br from-[#8a0303]/12 via-[#8a0303]/6 to-transparent transition-transform duration-700 ease-out group-hover:scale-100 dark:from-accent-green/10 dark:via-accent-green/5" />
+      <div className="pointer-events-none absolute inset-0 origin-top-left scale-0 rounded-2xl bg-gradient-to-br from-[#8a0303]/8 via-[#8a0303]/3 to-transparent transition-transform duration-700 ease-out group-hover:scale-100 dark:from-accent-green/8 dark:via-accent-green/3" />
       {/* top accent line — draws left to right */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 rounded-t-2xl bg-gradient-to-r from-[#8a0303] via-[#8a0303]/70 to-[#8a0303]/20 transition-transform duration-400 ease-out group-hover:scale-x-100 dark:from-accent-green dark:via-accent-green/70 dark:to-accent-green/20" />
       {/* left accent line */}
@@ -1480,21 +1480,16 @@ function SkillCategoryCard({
       {/* bottom accent line */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 rounded-b-2xl bg-gradient-to-r from-[#8a0303]/40 via-[#8a0303]/20 to-transparent transition-transform duration-500 delay-300 ease-out group-hover:scale-x-100 dark:from-accent-green/40 dark:via-accent-green/20" />
 
-      <h3 className="relative mb-4 font-mono text-[11px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
-        {cat.title}
-      </h3>
+      <div className="relative mb-5 flex items-center gap-2.5">
+        <span className="h-[2px] w-6 rounded-full bg-[#8a0303] dark:bg-accent-green" />
+        <h3 className="font-mono text-[12px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+          {cat.title}
+        </h3>
+      </div>
 
-      <div className="relative flex flex-wrap gap-2">
+      <div className="relative grid grid-cols-3 gap-3 sm:grid-cols-4">
         {cat.skills.map((skill, i) => (
-          <motion.span
-            key={skill}
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 2.6, repeat: Infinity, ease: [0.45, 0, 0.55, 1], delay: i * 0.12 }}
-            className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1.5 font-mono text-[11px] text-[#374151] transition-all duration-200 hover:scale-105 hover:border-[#8a0303]/40 hover:bg-[#8a0303]/5 hover:text-[#8a0303] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/70 dark:hover:border-accent-green/40 dark:hover:bg-accent-green/5 dark:hover:text-accent-green"
-          >
-            <SkillIcon name={skill} />
-            {skill}
-          </motion.span>
+          <SkillTile key={skill} name={skill} index={i} />
         ))}
       </div>
     </motion.div>
@@ -1520,9 +1515,12 @@ function Skills() {
         <h2 className="font-display text-3xl font-bold text-[#0b0e13] dark:text-text sm:text-4xl">
           What I work with.
         </h2>
+        <p className="mt-3 max-w-lg text-sm leading-relaxed text-[#6b7280] dark:text-text-muted">
+          The languages, frameworks, and tools I reach for when taking a product from idea to production.
+        </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {SKILL_CATEGORIES.map((cat, i) => (
           <SkillCategoryCard key={cat.title} cat={cat} index={i} />
         ))}
