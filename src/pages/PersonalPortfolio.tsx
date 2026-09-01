@@ -1651,7 +1651,7 @@ function Skills() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="grid grid-cols-1 gap-2.5 sm:grid-cols-2"
+              className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3"
             >
               {activeCat.skills.map((skill, i) => (
                 <SkillRow key={skill} name={skill} index={i} />
