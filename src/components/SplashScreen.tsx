@@ -8,6 +8,110 @@ import { Unbounded, JetBrains_Mono } from "next/font/google";
 const displayFont = Unbounded({ subsets: ["latin"], weight: ["700", "800"] });
 const monoFont = JetBrains_Mono({ subsets: ["latin"], weight: ["500"] });
 
+// TEMP-SPLASH-DEV: keep splash on screen forever while tuning layouts
+const HOLD_SPLASH = true;
+
+// TEMP-SPLASH-DEV: MOBILE-ONLY (< 640px) bottom-right corner controls.
+// Change numbers here only. Tablet and desktop ignore this block.
+const MOBILE_BR = {
+  // the web nest (the red web in the corner)
+  web: {
+    bottom: 0,    // 0 = web touches the bottom edge
+    right: 0,     // bigger = web moves left, away from the edge
+    size: 160,    // web width and height in px
+  },
+  // the spider sitting inside the web (the web is rotated 180deg, so directions are flipped)
+  spider: {
+    top: 50,      // % inside web. Bigger = spider moves UP on screen
+    left: 16,     // % inside web. Bigger = spider moves LEFT on screen
+    size: 28,     // spider size in px
+  },
+  // the whole bubble group: dots plus message box
+  group: {
+    bottom: 110,  // bigger = group moves up
+    right: 16,    // bigger = group moves left
+  },
+  // the 3 dots, positioned relative to the group
+  dots: {
+    right: 45,    // bigger = dots move left
+    bottom: 90,  // bigger = dots move up
+    stepX: 20,    // gap between dots sideways: + trail goes left, - trail goes right, 0 = straight
+    stepY: -10,    // gap between dots vertically: + trail goes up, - trail goes down, 0 = straight
+  },
+  // the message box, positioned relative to the group
+  bubble: {
+    right: 98,   // bigger = box moves left
+    bottom: 19,   // bigger = box moves up
+  },
+  // message text
+  text: { size: 12, width: 220, padX: 10 },   // size = font px, width = MAX bubble width px, padX = side padding px
+};
+
+// TEMP-SPLASH-DEV: MOBILE-ONLY knobs for the other 3 corners. Same idea as MOBILE_BR.
+// web: px from screen edge + size. spider: % inside web. dots/bubble: px. group: position of bubble group.
+const TABLET_TL = {
+  web: { top: 0, left: 0, size: 224 },
+  spider: { top: 26, left: 26, size: 28 },
+  group: { top: 26, left: 35 },
+  dots: { left: 18, top: 34, stepX: 20, stepY: -9 },
+  bubble: { left: 70, top: 50 },
+  text: { size: 12, width: 220, padX: 10 },
+};
+
+// TABLET-ONLY (640-1023px). Edit these only. Mobile and desktop ignore them.
+const TABLET_TR = {
+  web: { top: 0, right: 0, size: 224 },
+  spider: { top: 26, left: 26, size: 28 },
+  group: { top: 10, right: 4 },     // % of screen
+  dots: { right: 8, top: 14, stepX: 12, stepY: 12 },   // stepX: + goes left. stepY: + goes down
+  bubble: { right: 40, top: 45 },
+  text: { size: 12, width: 400, padX: 24 },   // width = MAX bubble width px
+};
+const TABLET_BL = {
+  web: { bottom: 0, left: 0, size: 224 },
+  spider: { top: 26, left: 26, size: 28 },
+  group: { bottom: 130, left: 5 },   // bottom = px, left = % of screen
+  dots: { left: 8, top: 14, stepX: 12, stepY: 12 },   // stepX: + goes right. stepY: + goes up
+  bubble: { left: 60, top: -30 },
+  text: { size: 12, width: 400, padX: 24 },
+};
+const TABLET_BR = {
+  web: { bottom: 0, right: 0, size: 224 },
+  spider: { top: 26, left: 26, size: 28 },
+  group: { bottom: 96, right: "4%" },   // number = px, or a "%" string
+  dots: { right: 8, bottom: 14, stepX: 12, stepY: 12 },   // stepX: + goes left. stepY: + goes up
+  bubble: { right: 40, bottom: 45 },
+  text: { size: 12, width: 400, padX: 24 },
+};
+
+const MOBILE_TL = {
+  web: { top: 0, left: 0, size: 160 },
+  spider: { top: 26, left: 26, size: 28 },
+  group: { top: 26, left: 35 },     // % of the web box
+  dots: { left: 18, top: 34, stepX: 20, stepY: -9 },   // stepX: + goes right, - goes left. stepY: + goes up, - goes down
+  bubble: { left: 70, top: 50 },
+  text: { size: 12, width: 220, padX: 10 },   // size = font px, width = hyhyhhyhyhMAX bubble width px, padX = side padding px
+};
+const MOBILE_TR = {
+  web: { top: 0, right: 0, size: 160 },
+  spider: { top: 39, left: 46, size: 28 },
+  group: { top: 10, right: 4 },     // % of screen
+  dots: { right: 60, top: 14 },
+  bubble: { right: 90, top: 45 },
+  text: { size: 12, width: 220, padX: 10 },
+};
+const MOBILE_BL = {
+  web: { bottom: 0, left: 0, size: 160 },
+  spider: { top: 20, left: 40, size: 28 },
+  group: { bottom: 24, left: 5 },   // bottom = px, left = % of screen
+  dots: { left: 38, top: -188 },
+  bubble: { left: 58, top: -275 },
+  text: { size: 12, width: 220, padX: 10 },   // size = font px, width = MAX bubble width px, padX = side padding px
+};
+// original tablet/desktop values, don't touch
+const DEFAULT_BUBBLE = { dots: { left: 8, top: 14 }, bubble: { left: 60, top: -30 }, text: { size: 12, width: 0, padX: 24 } };
+const DEFAULT_TR = { group: { top: 10, right: 4 }, dots: { right: 8, top: 14 }, bubble: { right: 40, top: 45 }, text: { size: 12, width: 0, padX: 24 } };
+
 // pulsing glow for the frame border — a plain CSS animation is cheaper here
 // than a framer-motion loop since it never needs to read component state
 const glowPulseStyle = `
@@ -16,6 +120,125 @@ const glowPulseStyle = `
   50% { box-shadow: 0 0 22px rgba(138, 3, 3, 0.45); }
 }
 `;
+
+// ATTACHED BUBBLES. All numbers are px in SCREEN directions (+x = right, +y = down),
+// measured from the spider's mouth. They hang off the spider, so they never drift.
+// dots.x/y = first dot from the mouth. stepX/stepY = gap between dots (trail direction).
+// bubble.x/y = message box from the LAST dot. tl/bl boxes grow right, tr/br boxes grow left.
+type BubbleKnob = {
+  dots: { x: number; y: number; stepX: number; stepY: number };
+  bubble: { x: number; y: number };
+};
+const BUBBLE_KNOBS: Record<"mobile" | "tablet" | "desktop", Record<"tl" | "tr" | "bl" | "br", BubbleKnob>> = {
+  mobile: {
+    tl: { dots: { x: 6, y: 0, stepX: 14, stepY: 5 }, bubble: { x: 10, y: 5 } },
+    tr: { dots: { x: 0, y: 6, stepX: -14, stepY: 5 }, bubble: { x: -10, y: 5 } },
+    bl: { dots: { x: 0, y: -6, stepX: 14, stepY: -5 }, bubble: { x: 10, y: -5 } },
+    br: { dots: { x: -6, y: 0, stepX: -14, stepY: -5 }, bubble: { x: -10, y: -5 } },
+  },
+  tablet: {
+    tl: { dots: { x: 6, y: 0, stepX: 14, stepY: 5 }, bubble: { x: 10, y: 5 } },
+    tr: { dots: { x: 0, y: 6, stepX: -14, stepY: 5 }, bubble: { x: -10, y: 5 } },
+    bl: { dots: { x: 0, y: -6, stepX: 14, stepY: -5 }, bubble: { x: 10, y: -5 } },
+    br: { dots: { x: -6, y: 0, stepX: -14, stepY: -5 }, bubble: { x: -10, y: -5 } },
+  },
+  desktop: {
+    tl: { dots: { x: 6, y: 0, stepX: 18, stepY: 6 }, bubble: { x: 12, y: 6 } },
+    tr: { dots: { x: 0, y: 6, stepX: -18, stepY: 6 }, bubble: { x: -12, y: 6 } },
+    bl: { dots: { x: 0, y: -6, stepX: 18, stepY: -6 }, bubble: { x: 12, y: -6 } },
+    br: { dots: { x: -6, y: 0, stepX: -18, stepY: -6 }, bubble: { x: -12, y: -6 } },
+  },
+};
+
+const MOUTH = 0.28; // mouth distance from spider centre, as a fraction of spider size
+
+const SpiderBubble = ({
+  corner, message, delay, spider, text, knob, rotate,
+}: {
+  corner: "tl" | "tr" | "bl" | "br";
+  message: string;
+  delay: number;
+  spider: { top: number; left: number; size: number };
+  text: { size: number; width: number; padX: number };
+  knob: BubbleKnob;
+  rotate: number;
+}) => {
+  const cycle = 6;
+  const growsLeft = corner === "tr" || corner === "br";
+  const lastX = knob.dots.x + 2 * knob.dots.stepX;
+  const lastY = knob.dots.y + 2 * knob.dots.stepY;
+  const compact = text.width > 0;
+
+  return (
+    // zero-size anchor at the spider's mouth, counter-rotated so the web's rotation is cancelled
+    <div
+      className="pointer-events-none absolute z-30"
+      style={{
+        left: `calc(${spider.left}% + ${spider.size * (0.5 + MOUTH)}px)`,
+        top: `calc(${spider.top}% + ${spider.size * 0.5}px)`,
+        width: 0,
+        height: 0,
+        transform: `rotate(${-rotate}deg)`,
+        transformOrigin: "0 0",
+      }}
+    >
+      {[3, 5, 8].map((size, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-[#8a0303]"
+          style={{
+            width: size,
+            height: size,
+            left: knob.dots.x + i * knob.dots.stepX - size / 2,
+            top: knob.dots.y + i * knob.dots.stepY - size / 2,
+          }}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
+          transition={{
+            duration: cycle,
+            delay: delay + i * 0.18,
+            repeat: Infinity,
+            times: [0, 0.05, 0.35, 0.42],
+            ease: "easeOut",
+          }}
+        />
+      ))}
+
+      <motion.div
+        className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-6 py-1 shadow-md whitespace-nowrap"
+        style={{
+          left: lastX + knob.bubble.x,
+          top: lastY + knob.bubble.y,
+          x: growsLeft ? "-100%" : "0%",
+          y: "-50%",
+          transformOrigin: growsLeft ? "100% 50%" : "0% 50%",
+          ...(compact
+            ? {
+                width: "max-content",
+                maxWidth: `min(${text.width}px, 60vw)`,
+                whiteSpace: "normal" as const,
+                paddingLeft: text.padX,
+                paddingRight: text.padX,
+              }
+            : {}),
+        }}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
+        transition={{
+          duration: cycle,
+          delay: delay + 0.55,
+          repeat: Infinity,
+          times: [0, 0.08, 0.85, 1],
+          ease: [0.34, 1.56, 0.64, 1],
+        }}
+      >
+        <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`} style={{ fontSize: text.size }}>
+          {message}
+        </span>
+      </motion.div>
+    </div>
+  );
+};
 
 /* ---------- corner spiderweb with a resting spider in it ---------- */
 const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
@@ -28,7 +251,11 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
   // Bigger number = higher up from the bottom edge.
   const [vw, setVw] = useState(0);
   useEffect(() => {
-    setVw(window.innerWidth);
+    // TEMP-SPLASH-DEV: live resize listener
+    const update = () => setVw(window.innerWidth);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
   }, []);
   const isMobile = vw > 0 && vw < 640;
   const isTablet = vw >= 640 && vw < 1024;
@@ -37,9 +264,6 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
   const tabletBottomBRpx = 96;  // tablet  bottom-right offset
   const tabletBottomBLpx = 460; // tablet  bottom-left offset
 
-  if (corner === "bl") {
-    console.log("[CornerWeb bl] vw=" + vw + " isMobile=" + isMobile + " isTablet=" + isTablet + " tabletBottomBLpx=" + tabletBottomBLpx + " bottomPx=" + bottomPx);
-  }
   // desktop (vw >= 1024) always uses 0 — original, untouched
 
   const bottomPx =
@@ -52,8 +276,16 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
     ? { top: 0, ...(corner === "tl" ? { left: 0 } : { right: 0 }) }
     : { bottom: bottomPx, ...(corner === "br" ? { right: 0 } : { left: 0 }) };
 
+  const mobileCfg = { tl: MOBILE_TL, tr: MOBILE_TR, bl: MOBILE_BL, br: MOBILE_BR }[corner];
+  const tabletCfg = { tl: TABLET_TL, tr: TABLET_TR, bl: TABLET_BL, br: TABLET_BR }[corner];
+  const mcfg = isTablet ? tabletCfg : mobileCfg;
+  const { size: webSize, ...webPos } = mcfg.web as Record<string, number>;
+  const webStyle: React.CSSProperties = isMobile || isTablet
+    ? { ...webPos, width: webSize, height: webSize }
+    : {};
+
   return (
-    <div className="absolute h-40 w-40 sm:h-56 sm:w-56" style={{ ...sideStyle, transform: `rotate(${rotate}deg)` }} suppressHydrationWarning>
+    <div className="absolute h-40 w-40 sm:h-56 sm:w-56" style={{ ...sideStyle, ...webStyle, zIndex: 30, transform: `rotate(${rotate}deg)` }} suppressHydrationWarning>
       <svg className="absolute inset-0 h-full w-full opacity-50" viewBox="0 0 100 100" fill="none">
         {[0, 20, 40, 60, 90].map((angle, i) => (
           <motion.line
@@ -85,25 +317,42 @@ const CornerWeb = ({ corner }: { corner: "tl" | "tr" | "bl" | "br" }) => {
       {/* spider thrown into the nest — drops from above with a bounce, then walks/wanders with animated legs */}
       <motion.div
         className="absolute"
-        style={{ top: "26%", left: "26%" }}
+        style={{
+          top: `${isMobile || isTablet ? mcfg.spider.top : 26}%`,
+          left: `${isMobile || isTablet ? mcfg.spider.left : 26}%`,
+        }}
         initial={{ y: -180, x: 30, rotate: -30, opacity: 0 }}
         animate={{ y: 0, x: 0, rotate: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 9, delay: 0.4 }}
       >
         <div style={{ transform: corner === "tl" || corner === "bl" ? "rotate(90deg)" : corner === "tr" ? "rotate(90deg)" : corner === "br" ? "rotate(90deg)" : "none" }}>
-          <NestSpider size={28} opacity={0.9} color="#8a0303" />
+          <NestSpider size={isMobile || isTablet ? mcfg.spider.size : 28} opacity={0.9} color="#8a0303" />
         </div>
       </motion.div>
-      {corner !== "bl" && corner !== "tr" && corner !== "br" && <ThoughtBubble message={CORNER_MESSAGES[corner]} corner={corner} delay={CORNER_DELAYS[corner]} />}
+      {vw > 0 && (() => {
+        const bp = isMobile ? "mobile" : isTablet ? "tablet" : "desktop";
+        const compact = isMobile || isTablet;
+        return (
+          <SpiderBubble
+            corner={corner}
+            message={CORNER_MESSAGES[corner]}
+            delay={CORNER_DELAYS[corner]}
+            spider={compact ? mcfg.spider : { top: 26, left: 26, size: 28 }}
+            text={compact ? mcfg.text : { size: 12, width: 0, padX: 24 }}
+            knob={BUBBLE_KNOBS[bp][corner]}
+            rotate={rotate}
+          />
+        );
+      })()}
     </div>
   );
 };
 
 const CORNER_MESSAGES: Record<"tl" | "tr" | "bl" | "br", string> = {
-  tl: "Hey!",
-  tr: "Hello!",
-  bl: "With great power comes great responsibility.",
-  br: "Hey, you found the right person.",
+  tl: "Hey! 👋🏻",
+  tr: "I Hope You're Doing Well.👌🏻",
+  bl: "I'm Here To Help You With Anything.🙏🏻",
+  br: "Congrats🥳, You Found The Right Person",
 };
 
 // starts after the spider's drop-in spring animation has settled (~1.3s), not during the fall
@@ -248,13 +497,23 @@ const ThoughtBubbleTopLeft = ({
   delay: number;
 }) => {
   const cycle = 6;
+  const [vw, setVw] = useState(0);
+  useEffect(() => {
+    setVw(window.innerWidth);
+  }, []);
+  const isPhone = vw > 0 && vw < 640;
+  const isTablet = vw >= 640 && vw < 1024;
+  const isMobile = isPhone || isTablet; // "compact" layout flag, keeps the bubble/text styling below working for tablet too
+  const cfg = isPhone ? MOBILE_TL : isTablet ? TABLET_TL : DEFAULT_BUBBLE;
+  const stepX = isPhone ? MOBILE_TL.dots.stepX : isTablet ? TABLET_TL.dots.stepX : 12;
+  const stepY = isPhone ? MOBILE_TL.dots.stepY : isTablet ? TABLET_TL.dots.stepY : 12;
 
   return (
     <div
       className="pointer-events-none absolute z-30"
       style={{
-        left: "35%",
-        top: "26%",
+        left: isPhone ? `${MOBILE_TL.group.left}%` : isTablet ? `${TABLET_TL.group.left}%` : "35%",
+        top: isPhone ? `${MOBILE_TL.group.top}%` : isTablet ? `${TABLET_TL.group.top}%` : "26%",
       }}
     >
       <div className="absolute" style={{ right: "50%", top: "32%", marginLeft: -14, marginTop: -14 }}>
@@ -265,8 +524,8 @@ const ThoughtBubbleTopLeft = ({
             style={{
               width: size,
               height: size,
-              left: i * 12 + 8,
-              top: -i * 12 + 14,
+              left: i * stepX + cfg.dots.left,
+              top: -i * stepY + cfg.dots.top,
             }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
@@ -283,8 +542,9 @@ const ThoughtBubbleTopLeft = ({
         <motion.div
           className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-6 py-1 shadow-md origin-bottom-left whitespace-nowrap"
           style={{
-            left: 60,
-            top: -30,
+            left: cfg.bubble.left,
+            top: cfg.bubble.top,
+            ...(isMobile ? { width: "max-content", maxWidth: cfg.text.width, whiteSpace: "normal" as const, paddingLeft: cfg.text.padX, paddingRight: cfg.text.padX } : {}),
           }}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
@@ -296,7 +556,7 @@ const ThoughtBubbleTopLeft = ({
             ease: [0.34, 1.56, 0.64, 1],
           }}
         >
-          <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`}>{message}</span>
+          <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`} style={isMobile ? { fontSize: cfg.text.size } : undefined}>{message}</span>
         </motion.div>
       </div>
     </div>
@@ -315,17 +575,18 @@ const ThoughtBubbleBottomLeft = ({
   useEffect(() => {
     setVw(window.innerWidth);
   }, []);
-  const isMobile = vw > 0 && vw < 640;
+  const isPhone = vw > 0 && vw < 640;
   const isTablet = vw >= 640 && vw < 1024;
-  // kept in sync with CornerWeb's tabletBottomBLpx / mobileBottomPx knobs
-  const bottomPx = isMobile ? 24 : isTablet ? 460 : undefined;
+  const isMobile = isPhone || isTablet;
+  const bottomPx = isPhone ? MOBILE_BL.group.bottom : isTablet ? TABLET_BL.group.bottom : undefined;
+  const cfg = isPhone ? MOBILE_BL : isTablet ? TABLET_BL : DEFAULT_BUBBLE;
   console.log("[ThoughtBubbleBottomLeft] vw=" + vw + " isMobile=" + isMobile + " isTablet=" + isTablet + " bottomPx=" + bottomPx);
 
   return (
     <div
       className="pointer-events-none fixed z-30"
       style={{
-        left: "5%",
+        left: isPhone ? `${MOBILE_BL.group.left}%` : isTablet ? `${TABLET_BL.group.left}%` : "5%",
         ...(bottomPx !== undefined ? { bottom: bottomPx } : { bottom: "13%" }),
       }}
     >
@@ -337,8 +598,8 @@ const ThoughtBubbleBottomLeft = ({
             style={{
               width: size,
               height: size,
-              left: i * 12 + 8,
-              top: -i * 12 + 14,
+              left: i * (isTablet ? TABLET_BL.dots.stepX : 12) + cfg.dots.left,
+              top: -i * (isTablet ? TABLET_BL.dots.stepY : 12) + cfg.dots.top,
             }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
@@ -355,8 +616,9 @@ const ThoughtBubbleBottomLeft = ({
         <motion.div
           className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-6 py-1 shadow-md origin-bottom-left whitespace-nowrap"
           style={{
-            left: 60,
-            top: -30,
+            left: cfg.bubble.left,
+            top: cfg.bubble.top,
+            ...(isMobile ? { width: "max-content", maxWidth: cfg.text.width, whiteSpace: "normal" as const, paddingLeft: cfg.text.padX, paddingRight: cfg.text.padX } : {}),
           }}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
@@ -368,7 +630,7 @@ const ThoughtBubbleBottomLeft = ({
             ease: [0.34, 1.56, 0.64, 1],
           }}
         >
-          <span className={`${monoFont.className} text-xs leading-none text-[#0b0e13]`}>{message}</span>
+<span className={`${monoFont.className} text-xs ${isMobile ? "leading-snug" : "leading-none"} text-[#0b0e13]`} style={isMobile ? { fontSize: cfg.text.size } : undefined}>{message}</span>
         </motion.div>
       </div>
     </div>
@@ -384,12 +646,66 @@ const ThoughtBubbleBottomRight = ({
 }) => {
   const cycle = 6;
 
+  const [vw, setVw] = useState(0);
+  useEffect(() => {
+    const update = () => setVw(window.innerWidth);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+  const isMobile = vw > 0 && vw < 640;
+  const isTablet = vw >= 640 && vw < 1024;
+
+  // ───────── MOBILE-ONLY KNOBS (< 640px) ─────────
+  const MOBILE = {
+    bottom: MOBILE_BR.group.bottom,
+    right: MOBILE_BR.group.right,
+    bubbleRight: MOBILE_BR.bubble.right,
+    bubbleBottom: MOBILE_BR.bubble.bottom,
+    dotsRight: MOBILE_BR.dots.right,
+    dotsBottom: MOBILE_BR.dots.bottom,
+    dotsStepX: MOBILE_BR.dots.stepX,
+    dotsStepY: MOBILE_BR.dots.stepY,
+    textSize: MOBILE_BR.text.size,
+    textWidth: MOBILE_BR.text.width,
+    textPadX: MOBILE_BR.text.padX,
+  };
+  // ───────── TABLET / DESKTOP (do not touch) ─────────
+  const OTHER = {
+    bottom: isTablet ? 96 : "8%",
+    right: "4%",
+    bubbleRight: 40,
+    bubbleBottom: 45,
+    dotsRight: 8,
+    dotsBottom: 14,
+    dotsStepX: 12,
+    dotsStepY: 12,
+    textSize: 12,
+    textWidth: 0,
+    textPadX: 24,
+  };
+
+  const TABLET = {
+    bottom: TABLET_BR.group.bottom,
+    right: TABLET_BR.group.right,
+    bubbleRight: TABLET_BR.bubble.right,
+    bubbleBottom: TABLET_BR.bubble.bottom,
+    dotsRight: TABLET_BR.dots.right,
+    dotsBottom: TABLET_BR.dots.bottom,
+    dotsStepX: TABLET_BR.dots.stepX,
+    dotsStepY: TABLET_BR.dots.stepY,
+    textSize: TABLET_BR.text.size,
+    textWidth: TABLET_BR.text.width,
+    textPadX: TABLET_BR.text.padX,
+  };
+  const cfg = isMobile ? MOBILE : isTablet ? TABLET : OTHER;
+
   return (
     <div
       className="pointer-events-none fixed z-30"
       style={{
-        right: "4%",
-        bottom: "8%",
+        right: cfg.right,
+        bottom: cfg.bottom,
       }}
     >
       <div className="absolute" style={{ right: 0, bottom: 0 }}>
@@ -400,8 +716,8 @@ const ThoughtBubbleBottomRight = ({
             style={{
               width: size,
               height: size,
-              right: i * 12 + 8,
-              bottom: i * 12 + 14,
+              right: i * cfg.dotsStepX + cfg.dotsRight,
+              bottom: i * cfg.dotsStepY + cfg.dotsBottom,
             }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
@@ -418,8 +734,9 @@ const ThoughtBubbleBottomRight = ({
         <motion.div
           className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-6 py-1 shadow-md origin-bottom-right whitespace-nowrap"
           style={{
-            right: 40,
-            bottom: 45,
+            right: cfg.bubbleRight,
+            bottom: cfg.bubbleBottom,
+            ...((isMobile || isTablet) ? { width: "max-content", maxWidth: cfg.textWidth, whiteSpace: "normal" as const, paddingLeft: cfg.textPadX, paddingRight: cfg.textPadX } : {}),
           }}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
@@ -431,7 +748,7 @@ const ThoughtBubbleBottomRight = ({
             ease: [0.34, 1.56, 0.64, 1],
           }}
         >
-          <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`}>{message}</span>
+          <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`} style={(isMobile || isTablet) ? { fontSize: cfg.textSize } : undefined}>{message}</span>
         </motion.div>
       </div>
     </div>
@@ -446,13 +763,21 @@ const ThoughtBubbleTopRight = ({
   delay: number;
 }) => {
   const cycle = 6;
+  const [vw, setVw] = useState(0);
+  useEffect(() => {
+    setVw(window.innerWidth);
+  }, []);
+  const isPhone = vw > 0 && vw < 640;
+  const isTablet = vw >= 640 && vw < 1024;
+  const isMobile = isPhone || isTablet;
+  const cfg = isPhone ? MOBILE_TR : isTablet ? TABLET_TR : DEFAULT_TR;
 
   return (
     <div
       className="pointer-events-none fixed z-30"
       style={{
-        right: "4%",
-        top: "10%",
+        right: `${cfg.group.right}%`,
+        top: `${cfg.group.top}%`,
       }}
     >
       <div className="absolute" style={{ right: 0, top: 0 }}>
@@ -463,8 +788,8 @@ const ThoughtBubbleTopRight = ({
             style={{
               width: size,
               height: size,
-              right: i * 12 + 8,
-              top: i * 12 + 14,
+              right: i * (isTablet ? TABLET_TR.dots.stepX : 12) + cfg.dots.right,
+              top: i * (isTablet ? TABLET_TR.dots.stepY : 12) + cfg.dots.top,
             }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
@@ -481,8 +806,9 @@ const ThoughtBubbleTopRight = ({
         <motion.div
           className="absolute rounded-2xl border border-[#8a0303]/40 bg-white px-6 py-1 shadow-md origin-bottom-right whitespace-nowrap"
           style={{
-            right: 40,
-            top: 45,
+            right: cfg.bubble.right,
+            top: cfg.bubble.top,
+            ...(isMobile ? { width: "max-content", maxWidth: cfg.text.width, whiteSpace: "normal" as const, paddingLeft: cfg.text.padX, paddingRight: cfg.text.padX } : {}),
           }}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0.8] }}
@@ -494,7 +820,7 @@ const ThoughtBubbleTopRight = ({
             ease: [0.34, 1.56, 0.64, 1],
           }}
         >
-          <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`}>{message}</span>
+          <span className={`${monoFont.className} text-xs leading-snug text-[#0b0e13]`} style={isMobile ? { fontSize: cfg.text.size } : undefined}>{message}</span>
         </motion.div>
       </div>
     </div>
@@ -840,7 +1166,7 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
   const [alreadySeen, setAlreadySeen] = useState(false);
 
   useEffect(() => {
-    return; // TEMP: ignore splash_seen while iterating
+    if (HOLD_SPLASH) return; // TEMP-SPLASH-DEV
     if (localStorage.getItem("splash_seen") === "1") {
       setAlreadySeen(true);
       setVisible(false);
@@ -855,15 +1181,14 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
   }, []);
 
   useEffect(() => {
-    return; // TEMP: splash never auto-hides while iterating on the animation
-    if (alreadySeen) return;
+    if (alreadySeen || HOLD_SPLASH) return; // TEMP-SPLASH-DEV
     hideTimer.current = setTimeout(() => {
       setVisible(false);
-    }, 7200);
+    }, 7000);
     return () => {
       if (hideTimer.current) clearTimeout(hideTimer.current);
     };
-  }, []);
+  }, [alreadySeen]);
 
   console.log(`[splash:${instanceId}] RENDER, visible=${visible}`);
 
@@ -919,11 +1244,8 @@ export default function SplashScreen({ onFinish }: { onFinish?: () => void } = {
           {/* corner webs, each with a resting spider */}
           <CornerWeb corner="tl" />
           <CornerWeb corner="tr" />
-          <ThoughtBubbleTopRight message={CORNER_MESSAGES.tr} delay={CORNER_DELAYS.tr} />
           <CornerWeb corner="bl" />
-          <ThoughtBubbleBottomLeft message={CORNER_MESSAGES.bl} delay={CORNER_DELAYS.bl} />
           <CornerWeb corner="br" />
-          <ThoughtBubbleBottomRight message={CORNER_MESSAGES.br} delay={CORNER_DELAYS.br} />
 
           {/* roaming spiders — fall in at the screen edge, land, THEN crawl across */}
           {crawlers.map((c, i) => {

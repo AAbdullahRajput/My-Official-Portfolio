@@ -44,9 +44,9 @@ export default function RootLayout({
         className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${inter.variable} ${cormorantGaramond.variable} font-body antialiased`}
         suppressHydrationWarning
       >
-                <CustomCursor />
+        <CustomCursor />
         <IntroSequence />
-        {/* <SpiderWebBackground /> */}
+        <SpiderWebBackground />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
