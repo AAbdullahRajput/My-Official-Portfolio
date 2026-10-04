@@ -9,7 +9,7 @@ const displayFont = Unbounded({ subsets: ["latin"], weight: ["700", "800"] });
 const monoFont = JetBrains_Mono({ subsets: ["latin"], weight: ["500"] });
 
 // TEMP-SPLASH-DEV: keep splash on screen forever while tuning layouts
-const HOLD_SPLASH = true;
+const HOLD_SPLASH = false;
 
 // TEMP-SPLASH-DEV: MOBILE-ONLY (< 640px) bottom-right corner controls.
 // Change numbers here only. Tablet and desktop ignore this block.

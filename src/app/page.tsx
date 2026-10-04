@@ -1,20 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import SplashScreen from "@/components/SplashScreen";
+import GramophonePlayer from "@/pages/GramophonePlayer";
 import PersonalPortfolio from "@/pages/PersonalPortfolio";
 
 export default function Home() {
   const [splashDone, setSplashDone] = useState(false);
 
-  useEffect(() => {
-    localStorage.removeItem("splash_seen"); // TEMP-SPLASH-DEV: delete this whole effect when done
-  }, []);
-
   return (
     <>
       {!splashDone && <SplashScreen onFinish={() => setSplashDone(true)} />}
-      {/* <PersonalPortfolio splashDone={splashDone} /> */}
+      {splashDone && <GramophonePlayer active={true} />}
+      <PersonalPortfolio splashDone={splashDone} />
     </>
   );
 }

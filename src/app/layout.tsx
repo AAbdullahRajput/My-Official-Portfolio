@@ -3,7 +3,6 @@ import { Cormorant_Garamond, JetBrains_Mono, Inter, Space_Grotesk } from "next/f
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
-import IntroSequence from "@/components/IntroSequence";
 import SpiderWebBackground from "@/components/SpiderWebBackground";
 
 const spaceGrotesk = Space_Grotesk({
@@ -50,7 +49,6 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <CustomCursor />
-        <IntroSequence />
         <SpiderWebBackground />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
