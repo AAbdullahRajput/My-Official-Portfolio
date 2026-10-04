@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, JetBrains_Mono, Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -31,6 +31,11 @@ export const metadata: Metadata = {
   title: "Ahmad Abdullah — Full-Stack Developer",
   description:
     "Full-stack mobile & web engineer building connected systems with Flutter, Next.js, and Supabase.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

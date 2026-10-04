@@ -133,8 +133,8 @@ const BUBBLE_KNOBS: Record<"mobile" | "tablet" | "desktop", Record<"tl" | "tr" |
   mobile: {
     tl: { dots: { x: 6, y: 0, stepX: 14, stepY: 5 }, bubble: { x: 10, y: 5 } },
     tr: { dots: { x: 0, y: 6, stepX: -14, stepY: 5 }, bubble: { x: -10, y: 5 } },
-    bl: { dots: { x: 0, y: -6, stepX: 14, stepY: -5 }, bubble: { x: 10, y: -5 } },
-    br: { dots: { x: -6, y: 0, stepX: -14, stepY: -5 }, bubble: { x: -10, y: -5 } },
+    bl: { dots: { x: 0, y: -6, stepX: 14, stepY: -5 }, bubble: { x: 10, y: -50 } },
+    br: { dots: { x: -6, y: 0, stepX: -14, stepY: -5 }, bubble: { x: -10, y: 5 } },
   },
   tablet: {
     tl: { dots: { x: 6, y: 0, stepX: 14, stepY: 5 }, bubble: { x: 10, y: 5 } },
@@ -215,7 +215,7 @@ const SpiderBubble = ({
           ...(compact
             ? {
                 width: "max-content",
-                maxWidth: `min(${text.width}px, 60vw)`,
+                maxWidth: `min(${text.width}px, 46vw)`,
                 whiteSpace: "normal" as const,
                 paddingLeft: text.padX,
                 paddingRight: text.padX,
