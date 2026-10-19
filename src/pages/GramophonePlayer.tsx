@@ -14,9 +14,17 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
   const [muted, setMuted] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [showGif, setShowGif] = useState(false);
-const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
+  const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
+  const [isMobile, setIsMobile] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const dockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const update = () => setIsMobile(window.innerWidth < 640);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   useEffect(() => {
     if (!active || phase !== "hidden") return;
@@ -184,7 +192,7 @@ const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
               <motion.div
                 key="gramo-docked"
                 className="fixed z-[9991]"
-                style={{ bottom: 24, left: 24, width: 90 }}
+                style={{ bottom: isMobile ? 18 : 24, left: isMobile ? 18 : 24, width: isMobile ? 74 : 90 }}
                 initial={{ opacity: 0, scale: 0.5, y: 40 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0 }}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
@@ -195,6 +195,50 @@ export default function Navbar() {
     document.cookie = `theme=${dark ? "dark" : "light"}; path=/; max-age=31536000`;
   }, [dark, mounted]);
 
+  const toggleTheme = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const target = e.currentTarget;
+    const rect = target.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+
+    const nextDark = !dark;
+
+    if (typeof document !== "undefined" && "startViewTransition" in document) {
+      const transition = (document as any).startViewTransition(() => {
+        flushSync(() => {
+          setDark(nextDark);
+          if (nextDark) {
+            document.documentElement.classList.add("dark");
+          } else {
+            document.documentElement.classList.remove("dark");
+          }
+        });
+      });
+
+      transition.ready.then(() => {
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${endRadius}px at ${x}px ${y}px)`,
+            ],
+          },
+          {
+            duration: 1000,
+            easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+            pseudoElement: "::view-transition-new(root)",
+          }
+        );
+      });
+    } else {
+      setDark(nextDark);
+    }
+  };
+
   return (
     <motion.header
       initial={{ y: -40, opacity: 0 }}
@@ -384,7 +428,7 @@ export default function Navbar() {
           {/* Theme Toggle */}
           <button
             type="button"
-            onClick={() => setDark((prev) => !prev)}
+            onClick={toggleTheme}
             data-cursor-hover
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
             className="flex h-8 w-8 items-center justify-center rounded-full border border-[#8a0303]/20 text-[#6b7280] transition-colors hover:text-[#0b0e13] dark:border-white/10 dark:text-text-muted dark:hover:text-white"
@@ -426,7 +470,7 @@ export default function Navbar() {
           </a>
           <button
             type="button"
-            onClick={() => setDark((prev) => !prev)}
+            onClick={toggleTheme}
             data-cursor-hover
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
             className="flex h-7 w-7 items-center justify-center rounded-full border border-[#8a0303]/20 text-[#6b7280] transition-colors hover:text-[#0b0e13] dark:border-white/10 dark:text-text-muted dark:hover:text-white"
@@ -466,17 +510,25 @@ export default function Navbar() {
           className="mt-2 flex flex-col gap-1 rounded-2xl border border-[#8a0303]/15 bg-white px-6 py-4 shadow-lg dark:border-white/[0.08] dark:bg-ink/95 dark:backdrop-blur-md"
         >
           {links.map((link) => (
-            
-            
-            <a  key={link.href}
+            <a
+              key={link.href}
               href={link.href}
               onClick={(e) => { e.preventDefault(); setMenuOpen(false); smoothScrollTo(link.href); }}
-              className="py-3 font-mono text-sm text-[#6b7280] hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
+              className="py-2.5 font-mono text-sm text-[#6b7280] hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
             >
               {link.label}
             </a>
           ))}
-
+          <a
+            href="https://drive.google.com/file/d/170hCljehQe0QhSGE07ki7hglMUz1rYT3/view?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setMenuOpen(false)}
+            className="mt-2 flex items-center justify-center gap-2 rounded-xl border border-[#8a0303]/30 bg-[#8a0303]/5 py-2.5 font-mono text-xs font-semibold text-[#8a0303] dark:border-accent-green/30 dark:bg-accent-green/10 dark:text-accent-green"
+          >
+            <FiFileText size={13} />
+            Resume
+          </a>
         </motion.div>
       )}
 

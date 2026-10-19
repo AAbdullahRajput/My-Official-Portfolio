@@ -81,7 +81,7 @@ function SpiderWeb({ splashDone }: { splashDone: boolean }) {
 
   return (
     <div
-      className="pointer-events-none absolute right-[2%] top-0 z-30 origin-top-right scale-[0.55] sm:scale-75 lg:scale-100"
+      className="pointer-events-none absolute right-0 sm:right-[2%] top-0 z-30 origin-top-right scale-[0.45] sm:scale-75 lg:scale-[0.75] xl:scale-100"
       style={{ width: 260, height: 500 }}
     >
       {/* thread removed — spider hangs freely */}
@@ -121,6 +121,23 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
   const heroImgRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const [revealing, setRevealing] = useState(false);
+  const [mobileRevealing, setMobileRevealing] = useState(false);
+  const mobileHeroRef = useRef<HTMLDivElement>(null);
+  const mobileSpotX = useMotionValue(50);
+  const mobileSpotY = useMotionValue(35);
+  const smoothMobileSpotX = useSpring(mobileSpotX, { stiffness: 150, damping: 22, mass: 0.3 });
+  const smoothMobileSpotY = useSpring(mobileSpotY, { stiffness: 150, damping: 22, mass: 0.3 });
+  const mobileRevealMask = useMotionTemplate`radial-gradient(circle 130px at ${smoothMobileSpotX}% ${smoothMobileSpotY}%, black 50%, transparent 100%)`;
+
+  const handleMobileTouch = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 0) return;
+    const rect = mobileHeroRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const touch = e.touches[0];
+    mobileSpotX.set(((touch.clientX - rect.left) / rect.width) * 100);
+    mobileSpotY.set(((touch.clientY - rect.top) / rect.height) * 100);
+    setMobileRevealing(true);
+  };
   const [activeHeroTag, setActiveHeroTag] = useState<{ label: string; desc: string } | null>(null);
   const [hoveredHeroTag, setHoveredHeroTag] = useState<{ tag: { label: string; desc: string }; rect: DOMRect } | null>(null);
 
@@ -171,14 +188,14 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
         initial={{ y: -500, opacity: 0, rotate: -10 }}
         animate={splashDone ? { y: [-500, 30, -15, 5, 0], opacity: 1, rotate: [-10, 4, -2, 1, 0] } : { y: -500, opacity: 0, rotate: -10 }}
         transition={{ duration: 1.4, times: [0, 0.55, 0.75, 0.9, 1], ease: "easeIn", delay: 0.1 }}
-        className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block"
+        className="absolute inset-y-0 lg:top-3 xl:top-0 lg:left-[58%] xl:left-[54%] 2xl:left-1/2 hidden w-full lg:w-[94%] xl:w-[85%] 2xl:w-[85%] -translate-x-1/2 lg:block"
         data-cursor-surface="dark"
         style={{ zIndex: 5, rotateX, rotateY, transformStyle: "preserve-3d" }}
       >
         <img
           src="/images/Spiderman-Main.png"
           alt="Spiderman"
-          className="h-full w-full object-cover object-top select-none pointer-events-none dark:hidden"
+          className="h-full w-full object-contain xl:object-cover object-top select-none pointer-events-none dark:hidden"
           style={{
             maskImage: "radial-gradient(ellipse 90% 95% at 50% 40%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
             WebkitMaskImage: "radial-gradient(ellipse 90% 95% at 50% 40%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
@@ -187,7 +204,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
         <img
           src="/images/Spiderman-Main-night.png"
           alt="Spiderman"
-          className="hidden h-full w-full object-cover object-top select-none pointer-events-none dark:block"
+          className="hidden h-full w-full object-contain xl:object-cover object-top select-none pointer-events-none dark:block"
           style={{
             maskImage: "radial-gradient(ellipse 90% 95% at 50% 40%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
             WebkitMaskImage: "radial-gradient(ellipse 90% 95% at 50% 40%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
@@ -197,7 +214,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
 
       {/* My photo — revealed over Spiderman face on eye hover */}
            <motion.div
-        className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block pointer-events-none select-none"
+        className="absolute inset-y-0 lg:top-3 xl:top-0 lg:left-[58%] xl:left-[54%] 2xl:left-1/2 hidden w-full lg:w-[94%] xl:w-[85%] 2xl:w-[85%] -translate-x-1/2 lg:block pointer-events-none select-none"
         style={{
           zIndex: 6,
           opacity: revealing ? 1 : 0,
@@ -212,12 +229,12 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
         <img
           src="/images/Spiderman-Main-me.png"
           alt="Ahmad"
-          className="h-full w-full object-cover object-top select-none pointer-events-none"
+          className="h-full w-full object-contain xl:object-cover object-top select-none pointer-events-none"
         />
       </motion.div>
       {/* Full-image hover zone — tracks cursor for the reveal spotlight */}
       <div
-        className="absolute inset-y-0 left-1/2 hidden w-[85%] -translate-x-1/2 lg:block pointer-events-auto"
+        className="absolute inset-y-0 lg:top-3 xl:top-0 lg:left-[58%] xl:left-[54%] 2xl:left-1/2 hidden w-full lg:w-[94%] xl:w-[85%] 2xl:w-[85%] -translate-x-1/2 lg:block pointer-events-auto"
         style={{ zIndex: 20 }}
         data-cursor-surface="dark"
         onMouseEnter={() => setRevealing(true)}
@@ -295,27 +312,65 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
         document.body
       )}
 
-      <div className="pointer-events-none relative z-30 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-4 lg:pr-6">
+      <div className="pointer-events-none relative z-30 mx-auto flex min-h-[auto] lg:min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-8 lg:pr-8 xl:pl-4 xl:pr-6 pt-24 sm:pt-20 lg:pt-0 pb-10 lg:pb-0">
         {/* Mobile-only Spiderman image — desktop keeps the absolute-positioned version above */}
         <motion.div
+          ref={mobileHeroRef}
           initial={{ y: -80, opacity: 0 }}
           animate={splashDone ? { y: 0, opacity: 1 } : { y: -80, opacity: 0 }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-          className="pointer-events-auto relative mt-8 mb-2 h-[38vh] w-full max-w-sm overflow-hidden rounded-2xl lg:hidden"
+          onTouchStart={(e) => {
+            handleMobileTouch(e);
+            setMobileRevealing(true);
+          }}
+          onTouchMove={handleMobileTouch}
+          onTouchEnd={() => setMobileRevealing(false)}
+          onTouchCancel={() => setMobileRevealing(false)}
+          onClick={() => setMobileRevealing((prev) => !prev)}
+          className="pointer-events-auto relative -mx-6 sm:-mx-10 w-[calc(100%+3rem)] sm:w-[calc(100%+5rem)] max-w-lg mt-0 sm:mt-2 mb-2 sm:mb-4 overflow-hidden lg:hidden cursor-pointer select-none"
         >
           <img
-            src="/images/Spiderman-Main.png"
+            src="/images/Spiderman-Mobile.png"
             alt="Spiderman"
-            className="h-full w-full object-cover object-top select-none dark:hidden"
+            className="w-full h-auto object-contain select-none dark:hidden"
+            style={{
+              maskImage: "linear-gradient(to bottom, black 88%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(to bottom, black 88%, transparent 100%)",
+            }}
           />
           <img
-            src="/images/Spiderman-Main-night.png"
+            src="/images/Spiderman-Mobile-night.png"
             alt="Spiderman"
-            className="hidden h-full w-full object-cover object-top select-none dark:block"
+            className="hidden w-full h-auto object-contain select-none dark:block"
+            style={{
+              maskImage: "linear-gradient(to bottom, black 88%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(to bottom, black 88%, transparent 100%)",
+            }}
           />
+
+          {/* Ahmad photo reveal on mobile — hold, touch move, or tap */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none select-none"
+            style={{
+              opacity: mobileRevealing ? 1 : 0,
+              transition: "opacity 0.25s ease-out",
+              maskImage: mobileRevealMask,
+              WebkitMaskImage: mobileRevealMask,
+            }}
+          >
+            <img
+              src="/images/Spiderman-Mobile-me.png"
+              alt="Ahmad"
+              className="w-full h-auto object-contain select-none pointer-events-none"
+              style={{
+                maskImage: "linear-gradient(to bottom, black 88%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to bottom, black 88%, transparent 100%)",
+              }}
+            />
+          </motion.div>
         </motion.div>
 
-        <div className="pointer-events-auto max-w-lg lg:w-[48%] lg:-ml-60 lg:mt-20">
+        <div className="pointer-events-auto max-w-lg lg:w-[46%] xl:w-[48%] lg:ml-0 xl:-ml-28 2xl:-ml-60 lg:mt-6 xl:mt-14 2xl:mt-20">
 
           <motion.div
             variants={fadeUp}
@@ -326,7 +381,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
             <motion.img
               src="/images/signature.svg"
               alt="Ahmad Abdullah"
-              className="h-20 w-auto max-w-sm object-contain dark:invert select-none sm:h-24 lg:h-28"
+              className="h-20 w-auto max-w-sm object-contain dark:invert select-none sm:h-24 lg:h-22 xl:h-28"
               initial={{ clipPath: "inset(0 100% 0 0)" }}
               animate={{
                 clipPath: [
@@ -557,12 +612,38 @@ function Projects() {
       document.body.style.userSelect = "";
     };
 
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 0) return;
+      const clientX = e.touches[0].clientX;
+      if (rowOneIsDragging.current) {
+        const delta = clientX - rowOneStartX.current;
+        rowOneDragX.set(rowOneStartDrag.current + delta);
+      }
+      if (rowTwoIsDragging.current) {
+        const delta = clientX - rowTwoStartX.current;
+        rowTwoDragX.set(rowTwoStartDrag.current + delta);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (rowOneIsDragging.current) {
+        rowOneIsDragging.current = false;
+        rowOneAnim.current?.play();
+      }
+      if (rowTwoIsDragging.current) {
+        rowTwoIsDragging.current = false;
+        rowTwoAnim.current?.play();
+      }
+    };
+
     const pause = () => { rowOneAnim.current?.pause(); rowTwoAnim.current?.pause(); };
     const resume = () => { rowOneAnim.current?.play(); rowTwoAnim.current?.play(); };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("touchmove", handleTouchMove, { passive: true });
+    document.addEventListener("touchend", handleTouchEnd);
     document.addEventListener("portal-open", pause);
     document.addEventListener("portal-close", resume);
 
@@ -572,6 +653,8 @@ function Projects() {
       window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
       document.removeEventListener("portal-open", pause);
       document.removeEventListener("portal-close", resume);
     };
@@ -590,10 +673,10 @@ function Projects() {
     <section
       id="projects"
       ref={sectionRef}
-      className="relative bg-[#F5F7F6] py-28 dark:bg-ink overflow-hidden"
+      className="relative bg-[#F5F7F6] py-12 sm:py-20 lg:py-28 dark:bg-ink overflow-hidden"
     >
       {/* Header — padded normally */}
-      <div className="px-6 sm:px-10 lg:px-25 mb-14">
+      <div className="px-6 sm:px-10 lg:px-25 mb-6 sm:mb-10 lg:mb-14">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -621,6 +704,13 @@ function Projects() {
             rowOneAnim.current?.pause();
             document.body.style.userSelect = "none";
           }}
+          onTouchStart={(e) => {
+            if (e.touches.length === 0) return;
+            rowOneIsDragging.current = true;
+            rowOneStartX.current = e.touches[0].clientX;
+            rowOneStartDrag.current = rowOneDragX.get();
+            rowOneAnim.current?.pause();
+          }}
         >
           {rowOneLoop.map((project, i) => (
             <ProjectCard
@@ -645,6 +735,13 @@ function Projects() {
             rowTwoStartDrag.current = rowTwoDragX.get();
             rowTwoAnim.current?.pause();
             document.body.style.userSelect = "none";
+          }}
+          onTouchStart={(e) => {
+            if (e.touches.length === 0) return;
+            rowTwoIsDragging.current = true;
+            rowTwoStartX.current = e.touches[0].clientX;
+            rowTwoStartDrag.current = rowTwoDragX.get();
+            rowTwoAnim.current?.pause();
           }}
         >
           {rowTwoLoop.map((project, i) => (
@@ -748,21 +845,21 @@ function OrbitBadge({
     >
       <div
         className={[
-          "flex items-center gap-1.5 sm:gap-2.5 rounded-xl sm:rounded-2xl border px-2 py-1.5 sm:px-3.5 sm:py-2.5 shadow-lg backdrop-blur-sm",
+          "flex items-center gap-1.5 sm:gap-2.5 rounded-lg sm:rounded-2xl border px-1.5 py-1 sm:px-3.5 sm:py-2.5 shadow-md sm:shadow-lg backdrop-blur-sm",
           "border-[#8a0303]/25 bg-white shadow-[#8a0303]/10",
           "dark:border-accent-green/20 dark:bg-panel/90 dark:shadow-accent-green/10",
         ].join(" ")}
       >
         <span
-          className="flex h-5 w-5 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-md sm:rounded-lg bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green [&_svg]:h-3 [&_svg]:w-3 sm:[&_svg]:h-4 sm:[&_svg]:w-4"
+          className="flex h-4.5 w-4.5 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-md sm:rounded-lg bg-[#8a0303]/10 text-[#8a0303] dark:bg-accent-green/10 dark:text-accent-green [&_svg]:h-2.5 [&_svg]:w-2.5 sm:[&_svg]:h-4 sm:[&_svg]:w-4"
         >
           {BADGE_ICONS[iconKey]}
         </span>
         <div>
-          <div className="font-display text-[10px] sm:text-[13px] font-bold leading-tight text-[#8a0303] dark:text-accent-green">
+          <div className="font-display text-[9px] sm:text-[13px] font-bold leading-tight text-[#8a0303] dark:text-accent-green">
             {label}
           </div>
-          <div className="text-[8px] sm:text-[10px] font-medium tracking-wide text-[#6b7280] dark:text-text-dim">
+          <div className="text-[7.5px] sm:text-[10px] font-medium tracking-wide text-[#6b7280] dark:text-text-dim">
             {sub}
           </div>
         </div>
@@ -848,7 +945,7 @@ function PhotoTour() {
     <>
       {/* ── thumbnail card ── */}
       <motion.div
-        className="relative aspect-[4/5] w-[90%] overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line cursor-pointer"
+        className="relative aspect-[4/5] w-[50%] sm:w-[58%] md:w-[62%] lg:w-[60%] xl:w-[62%] overflow-hidden rounded-2xl border border-gray-200 shadow-xl dark:border-line cursor-pointer z-10"
         style={{ transformPerspective: 900, transformStyle: "preserve-3d" }}
         whileHover={{
           rotateY: 360,
@@ -1119,7 +1216,10 @@ function OrbitPhoto() {
 
   useEffect(() => {
     setMounted(true);
-    const updateRadius = () => setOrbitRadius(window.innerWidth < 640 ? 58 : 75);
+    const updateRadius = () => {
+      const w = window.innerWidth;
+      setOrbitRadius(w < 400 ? 46 : w < 640 ? 50 : w < 1024 ? 64 : 75);
+    };
     updateRadius();
     window.addEventListener("resize", updateRadius);
     return () => window.removeEventListener("resize", updateRadius);
@@ -1263,7 +1363,7 @@ function About() {
   return (
     <section
       id="about"
-      className="relative overflow-hidden bg-gray-50 py-28 dark:bg-ink"
+      className="relative overflow-hidden bg-gray-50 py-12 sm:py-20 lg:py-28 dark:bg-ink"
     >
       <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
         {/* ── Left: bio cards ── */}
@@ -1272,7 +1372,7 @@ function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6 }}
-          className="pl-6 sm:pl-10 lg:pl-20 xl:pl-32 lg:pr-10"
+          className="px-6 sm:px-10 lg:pl-20 xl:pl-32 lg:pr-10"
         >
           <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">ABOUT</div>
           <h2 className="font-display mb-8 text-3xl font-bold leading-tight text-[#0b0e13] dark:text-text sm:text-4xl">
@@ -1353,7 +1453,7 @@ function About() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="relative mx-auto w-full max-w-md pr-6 sm:pr-10 lg:pr-16 xl:pr-20"
+          className="relative mx-auto w-full max-w-md px-6 sm:px-10 lg:pl-0 lg:pr-16 xl:pr-20"
         >
           <OrbitPhoto />
         </motion.div>
@@ -1578,7 +1678,7 @@ function CircleStat({ label, percent, index }: { label: string; percent: number;
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-[#8a0303]/60 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:border-accent-green/40 dark:hover:bg-white/[0.07]"
+      className="group relative flex flex-col items-center gap-2 sm:gap-3 overflow-hidden rounded-2xl border border-gray-200 bg-white p-3.5 sm:p-6 shadow-sm transition-all duration-300 hover:border-[#8a0303]/60 hover:shadow-md dark:border-white/[0.08] dark:bg-white/[0.04] dark:hover:border-accent-green/40 dark:hover:bg-white/[0.07]"
     >
       {/* fill layer — expands from top-left corner to full card, same as About cards */}
       <div className="absolute inset-0 origin-top-left scale-0 rounded-2xl bg-gradient-to-br from-[#8a0303]/12 via-[#8a0303]/6 to-transparent transition-transform duration-700 ease-out group-hover:scale-100 dark:from-accent-green/10 dark:via-accent-green/5" />
@@ -1593,7 +1693,7 @@ function CircleStat({ label, percent, index }: { label: string; percent: number;
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-2xl"
         style={{ background: "radial-gradient(circle at 0% 0%, rgba(138,3,3,0.06) 0%, transparent 70%)" }} />
 
-      <div className="relative z-10 h-28 w-28">
+      <div className="relative z-10 h-20 w-20 sm:h-28 sm:w-28">
         <svg viewBox="0 0 110 110" className="h-full w-full -rotate-90">
           <circle
             cx="55" cy="55" r={radius} fill="none" strokeWidth="8"
@@ -1609,11 +1709,11 @@ function CircleStat({ label, percent, index }: { label: string; percent: number;
             transition={{ duration: 1.3, delay: index * 0.1 + 0.15, ease: [0.16, 1, 0.3, 1] }}
           />
         </svg>
-        <div className="absolute inset-0 flex items-center justify-center font-display text-xl font-bold text-[#0b0e13] dark:text-text">
+        <div className="absolute inset-0 flex items-center justify-center font-display text-base sm:text-xl font-bold text-[#0b0e13] dark:text-text">
           {percent}%
         </div>
       </div>
-      <span className="relative z-10 text-center font-mono text-[11px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
+      <span className="relative z-10 text-center font-mono text-[9px] sm:text-[11px] font-bold uppercase tracking-widest text-[#8a0303] dark:text-accent-green">
         {label}
       </span>
     </motion.div>
@@ -1697,7 +1797,7 @@ function Skills() {
   return (
     <section
       id="skills"
-      className="relative bg-[#F5F7F6] px-6 py-28 sm:px-10 lg:px-20 xl:px-32 dark:bg-ink"
+      className="relative bg-[#F5F7F6] px-6 py-12 sm:py-20 lg:py-28 sm:px-10 lg:px-20 xl:px-32 dark:bg-ink"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -1914,6 +2014,69 @@ function FootMark({
   );
 }
 
+function MobileStep({
+  topPercent,
+  side,
+  threshold,
+  progress,
+}: {
+  topPercent: number;
+  side: number;
+  threshold: number;
+  progress: ReturnType<typeof useMotionValue<number>>;
+}) {
+  const opacity = useTransform(progress, [threshold - 0.05, threshold], [0.3, 1]);
+  const scale = useTransform(progress, [threshold - 0.05, threshold], [0.85, 1.15]);
+  const color = useTransform(progress, [threshold - 0.05, threshold], ["#9ca3af", "#8a0303"]);
+
+  return (
+    <motion.div
+      style={{
+        position: "absolute",
+        top: `${topPercent}%`,
+        left: side === 1 ? "28%" : "72%",
+        translateX: "-50%",
+        translateY: "-50%",
+        opacity,
+        scale,
+        color,
+        rotate: 180,
+      }}
+      className="dark:text-accent-green"
+    >
+      <FootIcon className={`h-4 w-4 ${side === 1 ? "" : "-scale-x-100"}`} />
+    </motion.div>
+  );
+}
+
+function MobileFootsteps({ progress }: { progress: ReturnType<typeof useMotionValue<number>> }) {
+  const steps = [
+    { topPercent: 12, side: 1, threshold: 0.1 },
+    { topPercent: 18, side: -1, threshold: 0.18 },
+    { topPercent: 24, side: 1, threshold: 0.26 },
+    { topPercent: 30, side: -1, threshold: 0.34 },
+    { topPercent: 36, side: 1, threshold: 0.42 },
+    { topPercent: 62, side: 1, threshold: 0.58 },
+    { topPercent: 68, side: -1, threshold: 0.66 },
+    { topPercent: 74, side: 1, threshold: 0.74 },
+    { topPercent: 80, side: -1, threshold: 0.82 },
+    { topPercent: 86, side: 1, threshold: 0.9 },
+  ];
+
+  return (
+    <div className="pointer-events-none absolute left-5 top-5 bottom-5 w-8 -translate-x-1/2 z-0 md:hidden">
+      <div className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 bg-gray-200 dark:bg-white/10" />
+      <motion.div
+        style={{ scaleY: progress }}
+        className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 origin-top bg-[#8a0303]/40 dark:bg-accent-green/40"
+      />
+      {steps.map((s, idx) => (
+        <MobileStep key={idx} {...s} progress={progress} />
+      ))}
+    </div>
+  );
+}
+
 const waveContainer = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.07 } },
@@ -2003,10 +2166,12 @@ function CareerNode({
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className={`relative z-10 mb-16 flex last:mb-0 ${
-        isRight ? "lg:justify-end" : "lg:justify-start"
+        isRight ? "md:justify-end" : "md:justify-start"
       }`}
     >
-      <div className="flex flex-row items-start gap-5">
+      <div className={`flex items-start gap-3 sm:gap-5 w-full md:w-[47%] ${
+        isRight ? "flex-row" : "flex-row md:flex-row-reverse"
+      }`}>
       {/* marker */}
       <div ref={markerRef} className="relative flex shrink-0 items-center justify-center">
         <motion.span
@@ -2036,7 +2201,7 @@ function CareerNode({
         initial={{ rotateY: 0 }}
         animate={{ rotateY: activated ? 360 : 0 }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className={`group relative w-full max-w-md overflow-hidden rounded-2xl border p-5 shadow-sm hover:-translate-y-1 hover:shadow-lg sm:p-6 ${cardBgClass} ${
+        className={`group relative w-full max-w-md overflow-hidden rounded-2xl border p-4 sm:p-6 shadow-sm hover:-translate-y-1 hover:shadow-lg ${cardBgClass} ${
           activated ? "" : "hover:border-[#8a0303]/40 dark:hover:border-accent-green/30 dark:hover:bg-white/[0.07]"
         }`}
       >
@@ -2317,7 +2482,7 @@ function FallingSpiderman({ x, y }: { x: number; y: number }) {
   return (
     <div
       ref={ref}
-      className="pointer-events-none absolute z-20 hidden -translate-x-1/2 lg:block"
+      className="pointer-events-none absolute z-20 hidden -translate-x-1/2 md:block"
       style={{ left: x, top: 0, width: 420, height: y }}
     >
       <AnimatePresence>
@@ -2386,9 +2551,10 @@ function Career() {
       if (!firstCardRef.current || !trackRef.current) return;
       const cardRect = firstCardRef.current.getBoundingClientRect();
       const trackRect = trackRef.current.getBoundingClientRect();
+      const isTablet = window.innerWidth >= 768 && window.innerWidth < 1280;
       setSpiderTarget({
-        x: cardRect.right - trackRect.left - 220,
-        y: cardRect.bottom - trackRect.top + 710,
+        x: isTablet ? trackRect.width * 0.72 : cardRect.right - trackRect.left - 220,
+        y: isTablet ? cardRect.bottom - trackRect.top + 340 : cardRect.bottom - trackRect.top + 710,
       });
     };
 
@@ -2470,7 +2636,27 @@ function Career() {
     }
   };
 
-  useAnimationFrame(computePath);
+  useEffect(() => {
+    computePath();
+    const handleResize = () => computePath();
+    window.addEventListener("resize", handleResize);
+
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && trackRef.current) {
+      ro = new ResizeObserver(() => computePath());
+      ro.observe(trackRef.current);
+    }
+
+    const t1 = setTimeout(computePath, 300);
+    const t2 = setTimeout(computePath, 800);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (ro) ro.disconnect();
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, []);
 
   useEffect(() => {
     if (!pathRef.current) return;
@@ -2530,27 +2716,20 @@ function Career() {
           <FallingSpiderman x={spiderTarget.x} y={spiderTarget.y} />
           {/* hidden path — geometry source only, never stroked */}
           {pathD && (
-            <svg className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full lg:block" style={{ overflow: "visible" }}>
+            <svg className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full md:block" style={{ overflow: "visible" }}>
               <path ref={pathRef} d={pathD} fill="none" stroke="none" />
             </svg>
           )}
 
-          {/* footstep trail (desktop) */}
-          <div className="pointer-events-none absolute inset-0 z-0 hidden lg:block">
+          {/* footstep trail (tablet + desktop) */}
+          <div className="pointer-events-none absolute inset-0 z-0 hidden md:block">
             {footprints.map((f, i) => (
               <FootMark key={i} x={f.x} y={f.y} angle={f.angle} side={f.side} ratio={f.ratio} progress={smoothProgress} scrollDir={scrollDir} />
             ))}
           </div>
 
-          {/* dotted fallback (mobile) */}
-          <div
-            className="absolute left-5 top-1 bottom-1 w-0.5 text-gray-300 dark:text-line lg:hidden"
-            style={{ backgroundImage: "repeating-linear-gradient(to bottom, currentColor 0 4px, transparent 4px 11px)" }}
-          />
-          <motion.div
-            style={{ scaleY: smoothProgress, backgroundImage: "repeating-linear-gradient(to bottom, currentColor 0 4px, transparent 4px 11px)" }}
-            className="absolute left-5 top-1 bottom-1 w-0.5 origin-top text-[#8a0303] dark:text-accent-green lg:hidden"
-          />
+          {/* visible footstep trail on mobile */}
+          <MobileFootsteps progress={smoothProgress} />
 
           {career.map((item, i) => (
             <CareerNode
@@ -2842,7 +3021,7 @@ function Footer() {
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className="block"
             >
-              <div className="h-16 w-72 overflow-hidden">
+              <div className="h-16 w-60 sm:w-72 max-w-full overflow-hidden">
                 <img
                   src="/images/signature.svg"
                   alt="Ahmad Abdullah signature"

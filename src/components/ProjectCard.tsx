@@ -199,7 +199,7 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-6"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-3 sm:p-6"
       onClick={onMouseLeave}
       onWheel={(e) => e.preventDefault()}
       onTouchMove={(e) => e.preventDefault()}
@@ -212,14 +212,14 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
         onClick={(e) => e.stopPropagation()}
         onWheel={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
-        className="relative w-[60vw] h-[85vh] max-w-5xl overflow-y-auto overscroll-contain rounded-[24px] border border-gray-200 bg-white px-8 py-12 shadow-2xl dark:border-white/10 dark:bg-[#0a0a0d]"
+        className="relative w-[94vw] sm:w-[85vw] lg:w-[60vw] h-[90vh] sm:h-[85vh] max-w-5xl overflow-y-auto overscroll-contain rounded-[20px] sm:rounded-[24px] border border-gray-200 bg-white px-5 py-8 sm:px-8 sm:py-12 shadow-2xl dark:border-white/10 dark:bg-[#0a0a0d]"
         style={{ overscrollBehavior: "contain", transformPerspective: 1600, transformStyle: "preserve-3d" }}
       >
         {/* close button */}
         <button
           onClick={onMouseLeave}
           data-cursor-hover
-          className="absolute top-6 right-6 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:bg-white/5 dark:text-white/60"
+          className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:border-[#8a0303]/40 hover:text-[#8a0303] dark:border-white/10 dark:bg-white/5 dark:text-white/60"
           aria-label="Close"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -230,10 +230,10 @@ function ProjectOverlay({ project, onMouseLeave }: { project: Project; onMouseLe
 
         {/* red top accent line */}
         <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[24px] bg-gradient-to-r from-transparent via-[#8a0303] to-transparent" />
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
 
           {/* LEFT — images */}
-          <div className="flex flex-col gap-6 sticky top-16 lg:col-span-3">
+          <div className="flex flex-col gap-6 lg:sticky lg:top-16 lg:col-span-3">
             {/* main image */}
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[20px] border border-gray-100 dark:border-white/10 bg-gray-100 dark:bg-white/5 shadow-xl">
               <AnimatePresence mode="wait">

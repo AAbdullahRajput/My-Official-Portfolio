@@ -189,8 +189,17 @@ export default function CustomCursor() {
   const overDarkRef = useRef(false);
   type WebCapture = { id: number; originX: number; originY: number; targetX: number; targetY: number; color: string };
   const [webCaptures, setWebCaptures] = useState<WebCapture[]>([]);
+  const [isTouchOnly, setIsTouchOnly] = useState(false);
 
   useEffect(() => {
+    setIsTouchOnly(
+      window.matchMedia("(pointer: coarse)").matches &&
+      !window.matchMedia("(pointer: fine)").matches
+    );
+  }, []);
+
+  useEffect(() => {
+    if (isTouchOnly) return;
     const handleMouseMove = (e: MouseEvent) => {
       const nx = e.clientX;
       const ny = e.clientY;
@@ -244,7 +253,9 @@ export default function CustomCursor() {
       document.documentElement.removeEventListener("mouseleave", handleMouseLeave);
       document.documentElement.removeEventListener("mouseenter", handleMouseEnter);
     };
-  }, [visible, cursorX, cursorY, cursorAngle]);
+  }, [visible, cursorX, cursorY, cursorAngle, isTouchOnly]);
+
+  if (isTouchOnly) return null;
 
   return (
     <>
