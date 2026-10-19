@@ -179,7 +179,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
       ref={sectionRef}
       onMouseMove={handleSectionMouseMove}
       onMouseLeave={handleSectionMouseLeave}
-      className="relative min-h-screen w-full overflow-hidden bg-[#F5F7F6] dark:bg-ink"
+      className="relative min-h-[auto] xl:min-h-screen w-full overflow-hidden bg-[#F5F7F6] dark:bg-ink"
       style={{ perspective: 1400 }}
     >
             {/* Spiderman image layer */}
@@ -312,7 +312,7 @@ function Hero({ splashDone = false }: { splashDone?: boolean }) {
         document.body
       )}
 
-      <div className="pointer-events-none relative z-30 mx-auto flex min-h-[auto] lg:min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-8 lg:pr-8 xl:pl-4 xl:pr-6 pt-24 sm:pt-20 lg:pt-0 pb-10 lg:pb-0">
+      <div className="pointer-events-none relative z-30 mx-auto flex min-h-[auto] lg:min-h-[520px] xl:min-h-screen max-w-7xl flex-col lg:flex-row items-center px-6 sm:px-10 lg:pl-8 lg:pr-8 xl:pl-4 xl:pr-6 pt-20 sm:pt-20 lg:pt-12 xl:pt-0 pb-4 sm:pb-6 lg:pb-6 xl:pb-0">
         {/* Mobile-only Spiderman image — desktop keeps the absolute-positioned version above */}
         <motion.div
           ref={mobileHeroRef}
@@ -673,10 +673,10 @@ function Projects() {
     <section
       id="projects"
       ref={sectionRef}
-      className="relative bg-[#F5F7F6] py-12 sm:py-20 lg:py-28 dark:bg-ink overflow-hidden"
+      className="relative bg-[#F5F7F6] pt-4 sm:pt-6 lg:pt-8 pb-8 sm:pb-12 lg:pb-14 dark:bg-ink overflow-hidden"
     >
       {/* Header — padded normally */}
-      <div className="px-6 sm:px-10 lg:px-25 mb-6 sm:mb-10 lg:mb-14">
+      <div className="px-6 sm:px-10 lg:px-25 mb-4 sm:mb-6 lg:mb-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1281,7 +1281,7 @@ function SkillChips() {
 
   return (
     <>
-      <div className="mt-10 flex flex-wrap justify-center gap-2 px-6">
+      <div className="mt-4 sm:mt-6 flex flex-wrap justify-center gap-2 px-6">
         {skills.map((skill, i) => (
           <motion.div
             key={skill.label}
@@ -1363,9 +1363,9 @@ function About() {
   return (
     <section
       id="about"
-      className="relative overflow-hidden bg-gray-50 py-12 sm:py-20 lg:py-28 dark:bg-ink"
+      className="relative overflow-hidden bg-gray-50 pt-8 sm:pt-10 lg:pt-12 pb-4 sm:pb-6 lg:pb-8 dark:bg-ink"
     >
-      <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
+      <div className="grid grid-cols-1 items-center gap-10 lg:gap-14 lg:grid-cols-2">
         {/* ── Left: bio cards ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1797,14 +1797,14 @@ function Skills() {
   return (
     <section
       id="skills"
-      className="relative bg-[#F5F7F6] px-6 py-12 sm:py-20 lg:py-28 sm:px-10 lg:px-20 xl:px-32 dark:bg-ink"
+      className="relative bg-[#F5F7F6] px-6 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-14 sm:px-10 lg:px-20 xl:px-32 dark:bg-ink"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6 }}
-        className="mb-14"
+        className="mb-6 sm:mb-8"
       >
         <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
           SKILLS
@@ -1817,7 +1817,7 @@ function Skills() {
         </p>
       </motion.div>
 
-      <div className="mb-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="mb-6 sm:mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {CORE_SKILLS.map((s, i) => (
           <CircleStat key={s.label} label={s.label} percent={s.percent} index={i} />
         ))}
@@ -1968,8 +1968,15 @@ const CAREER_OFFSET_CLASS: Record<number, string> = {
 function FootIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <ellipse cx="12" cy="9" rx="3.3" ry="4.2" />
-      <ellipse cx="12" cy="14" rx="4.4" ry="5" />
+      {/* Sole & Heel */}
+      <ellipse cx="12" cy="10" rx="3.5" ry="4.5" />
+      <ellipse cx="12" cy="16" rx="4.2" ry="5" />
+      {/* Distinct Toes */}
+      <circle cx="8.5" cy="3.6" r="1.3" />
+      <circle cx="11.2" cy="3.3" r="1.1" />
+      <circle cx="13.5" cy="3.7" r="0.95" />
+      <circle cx="15.4" cy="4.5" r="0.8" />
+      <circle cx="16.8" cy="5.7" r="0.65" />
     </svg>
   );
 }
@@ -1996,83 +2003,29 @@ function FootMark({
   const rotation = angle + 90 + (scrollDir === 1 ? 180 : 0);
 
   return (
-    <motion.div
+    <div
       style={{
         position: "absolute",
         left: x,
         top: y,
-        opacity,
-        scale,
-        rotate: rotation,
-        translateX: "-50%",
-        translateY: "-50%",
+        rotate: `${rotation}deg`,
+        transform: "translate(-50%, -50%)",
       }}
-      className="text-[#8a0303] dark:text-accent-green"
+      className="relative text-gray-300/80 dark:text-white/20"
     >
-      <FootIcon className={`h-6 w-6 ${side === 1 ? "" : "-scale-x-100"}`} />
-    </motion.div>
-  );
-}
+      {/* Ghost footstep trail — clearly shows footprints on sidebar instead of dots */}
+      <FootIcon className={`h-5 w-5 sm:h-6 sm:w-6 ${side === 1 ? "" : "-scale-x-100"}`} />
 
-function MobileStep({
-  topPercent,
-  side,
-  threshold,
-  progress,
-}: {
-  topPercent: number;
-  side: number;
-  threshold: number;
-  progress: ReturnType<typeof useMotionValue<number>>;
-}) {
-  const opacity = useTransform(progress, [threshold - 0.05, threshold], [0.3, 1]);
-  const scale = useTransform(progress, [threshold - 0.05, threshold], [0.85, 1.15]);
-  const color = useTransform(progress, [threshold - 0.05, threshold], ["#9ca3af", "#8a0303"]);
-
-  return (
-    <motion.div
-      style={{
-        position: "absolute",
-        top: `${topPercent}%`,
-        left: side === 1 ? "28%" : "72%",
-        translateX: "-50%",
-        translateY: "-50%",
-        opacity,
-        scale,
-        color,
-        rotate: 180,
-      }}
-      className="dark:text-accent-green"
-    >
-      <FootIcon className={`h-4 w-4 ${side === 1 ? "" : "-scale-x-100"}`} />
-    </motion.div>
-  );
-}
-
-function MobileFootsteps({ progress }: { progress: ReturnType<typeof useMotionValue<number>> }) {
-  const steps = [
-    { topPercent: 12, side: 1, threshold: 0.1 },
-    { topPercent: 18, side: -1, threshold: 0.18 },
-    { topPercent: 24, side: 1, threshold: 0.26 },
-    { topPercent: 30, side: -1, threshold: 0.34 },
-    { topPercent: 36, side: 1, threshold: 0.42 },
-    { topPercent: 62, side: 1, threshold: 0.58 },
-    { topPercent: 68, side: -1, threshold: 0.66 },
-    { topPercent: 74, side: 1, threshold: 0.74 },
-    { topPercent: 80, side: -1, threshold: 0.82 },
-    { topPercent: 86, side: 1, threshold: 0.9 },
-  ];
-
-  return (
-    <div className="pointer-events-none absolute left-5 top-5 bottom-5 w-8 -translate-x-1/2 z-0 md:hidden">
-      <div className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 bg-gray-200 dark:bg-white/10" />
+      {/* Active footstep — animates and lights up with theme color on scroll */}
       <motion.div
-        style={{ scaleY: progress }}
-        className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 origin-top bg-[#8a0303]/40 dark:bg-accent-green/40"
-      />
-      {steps.map((s, idx) => (
-        <MobileStep key={idx} {...s} progress={progress} />
-      ))}
+        style={{
+          opacity,
+          scale,
+        }}
+        className="absolute inset-0 text-[#8a0303] dark:text-accent-green"
+      >
+        <FootIcon className={`h-5 w-5 sm:h-6 sm:w-6 ${side === 1 ? "" : "-scale-x-100"}`} />
+      </motion.div>
     </div>
   );
 }
@@ -2166,12 +2119,10 @@ function CareerNode({
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className={`relative z-10 mb-16 flex last:mb-0 ${
-        isRight ? "md:justify-end" : "md:justify-start"
+        isRight ? "lg:justify-end" : "lg:justify-start"
       }`}
     >
-      <div className={`flex items-start gap-3 sm:gap-5 w-full md:w-[47%] ${
-        isRight ? "flex-row" : "flex-row md:flex-row-reverse"
-      }`}>
+      <div className="flex flex-row items-start gap-5">
       {/* marker */}
       <div ref={markerRef} className="relative flex shrink-0 items-center justify-center">
         <motion.span
@@ -2201,7 +2152,7 @@ function CareerNode({
         initial={{ rotateY: 0 }}
         animate={{ rotateY: activated ? 360 : 0 }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className={`group relative w-full max-w-md overflow-hidden rounded-2xl border p-4 sm:p-6 shadow-sm hover:-translate-y-1 hover:shadow-lg ${cardBgClass} ${
+        className={`group relative w-full max-w-md overflow-hidden rounded-2xl border p-5 shadow-sm hover:-translate-y-1 hover:shadow-lg sm:p-6 ${cardBgClass} ${
           activated ? "" : "hover:border-[#8a0303]/40 dark:hover:border-accent-green/30 dark:hover:bg-white/[0.07]"
         }`}
       >
@@ -2482,7 +2433,7 @@ function FallingSpiderman({ x, y }: { x: number; y: number }) {
   return (
     <div
       ref={ref}
-      className="pointer-events-none absolute z-20 hidden -translate-x-1/2 md:block"
+      className="pointer-events-none absolute z-20 hidden -translate-x-1/2 lg:block"
       style={{ left: x, top: 0, width: 420, height: y }}
     >
       <AnimatePresence>
@@ -2551,10 +2502,9 @@ function Career() {
       if (!firstCardRef.current || !trackRef.current) return;
       const cardRect = firstCardRef.current.getBoundingClientRect();
       const trackRect = trackRef.current.getBoundingClientRect();
-      const isTablet = window.innerWidth >= 768 && window.innerWidth < 1280;
       setSpiderTarget({
-        x: isTablet ? trackRect.width * 0.72 : cardRect.right - trackRect.left - 220,
-        y: isTablet ? cardRect.bottom - trackRect.top + 340 : cardRect.bottom - trackRect.top + 710,
+        x: cardRect.right - trackRect.left - 220,
+        y: cardRect.bottom - trackRect.top + 710,
       });
     };
 
@@ -2636,27 +2586,7 @@ function Career() {
     }
   };
 
-  useEffect(() => {
-    computePath();
-    const handleResize = () => computePath();
-    window.addEventListener("resize", handleResize);
-
-    let ro: ResizeObserver | null = null;
-    if (typeof ResizeObserver !== "undefined" && trackRef.current) {
-      ro = new ResizeObserver(() => computePath());
-      ro.observe(trackRef.current);
-    }
-
-    const t1 = setTimeout(computePath, 300);
-    const t2 = setTimeout(computePath, 800);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      if (ro) ro.disconnect();
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, []);
+  useAnimationFrame(computePath);
 
   useEffect(() => {
     if (!pathRef.current) return;
@@ -2664,8 +2594,9 @@ function Career() {
     setPathLen(len);
     if (len === 0) return;
 
-    const spacing = 30; // px between each footstep
-    const sideOffset = 11; // px perpendicular offset for left/right foot
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+    const spacing = isMobile ? 26 : 30; // px between each footstep
+    const sideOffset = isMobile ? 9 : 11; // px perpendicular offset for left/right foot
     const count = Math.max(2, Math.floor(len / spacing));
     const marks: typeof footprints = [];
 
@@ -2716,20 +2647,17 @@ function Career() {
           <FallingSpiderman x={spiderTarget.x} y={spiderTarget.y} />
           {/* hidden path — geometry source only, never stroked */}
           {pathD && (
-            <svg className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full md:block" style={{ overflow: "visible" }}>
+            <svg className="pointer-events-none absolute inset-0 z-0 h-full w-full opacity-0" style={{ overflow: "visible" }}>
               <path ref={pathRef} d={pathD} fill="none" stroke="none" />
             </svg>
           )}
 
-          {/* footstep trail (tablet + desktop) */}
-          <div className="pointer-events-none absolute inset-0 z-0 hidden md:block">
+          {/* footstep trail (clearly shows footprints on mobile, tablet, and desktop) */}
+          <div className="pointer-events-none absolute inset-0 z-0 block">
             {footprints.map((f, i) => (
               <FootMark key={i} x={f.x} y={f.y} angle={f.angle} side={f.side} ratio={f.ratio} progress={smoothProgress} scrollDir={scrollDir} />
             ))}
           </div>
-
-          {/* visible footstep trail on mobile */}
-          <MobileFootsteps progress={smoothProgress} />
 
           {career.map((item, i) => (
             <CareerNode
@@ -2784,20 +2712,26 @@ const CONTACT_INFO = [
 
 function Contact() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [errorMessage, setErrorMessage] = useState("");
+  const [form, setForm] = useState({ name: "", email: "", message: "", hp_website: "" });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("sending");
+    setErrorMessage("");
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      if (!res.ok) throw new Error("Failed");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setErrorMessage(data.error || "Something went wrong — try again.");
+        throw new Error("Failed");
+      }
       setStatus("sent");
-      setForm({ name: "", email: "", message: "" });
+      setForm({ name: "", email: "", message: "", hp_website: "" });
     } catch {
       setStatus("error");
     }
@@ -2806,14 +2740,14 @@ function Contact() {
   return (
     <section
       id="contact"
-      className="relative overflow-hidden bg-[#F5F7F6] px-6 py-28 sm:px-10 lg:px-20 xl:px-32 dark:bg-ink"
+      className="relative overflow-hidden bg-[#F5F7F6] px-6 pt-6 sm:pt-8 lg:pt-10 pb-10 sm:pb-14 lg:pb-16 sm:px-10 lg:px-20 xl:px-32 dark:bg-ink"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6 }}
-        className="mb-14 max-w-2xl"
+        className="mb-6 sm:mb-8 max-w-2xl"
       >
         <div className="mb-3 font-mono text-xs text-[#8a0303] dark:text-accent-green">
           GET IN TOUCH
@@ -2915,9 +2849,22 @@ function Contact() {
           className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
         >
           <form onSubmit={handleSubmit} suppressHydrationWarning className="flex flex-col gap-4">
+            {/* Honeypot field — invisible to users, traps automated spam bots */}
+            <input
+              type="text"
+              name="hp_website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={form.hp_website}
+              onChange={(e) => setForm({ ...form, hp_website: e.target.value })}
+              className="absolute -left-[9999px] -top-[9999px] opacity-0 pointer-events-none"
+              aria-hidden="true"
+            />
+
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <input
                 required
+                maxLength={100}
                 placeholder="Your name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -2926,6 +2873,7 @@ function Contact() {
               <input
                 required
                 type="email"
+                maxLength={120}
                 placeholder="Your email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -2935,6 +2883,7 @@ function Contact() {
             <textarea
               required
               rows={6}
+              maxLength={3000}
               placeholder="What are you building?"
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
@@ -2950,7 +2899,7 @@ function Contact() {
             </button>
             {status === "error" && (
               <p className="text-sm text-red-500 dark:text-red-400">
-                Something went wrong — try again.
+                {errorMessage || "Something went wrong — try again."}
               </p>
             )}
           </form>
