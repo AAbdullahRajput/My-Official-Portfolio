@@ -92,6 +92,24 @@ export default function ArcadeMusicPlayer() {
   const [likedSongs, setLikedSongs] = useState<Song[]>([]);
   const [audioError, setAudioError] = useState<string | null>(null);
 
+  // Background play setting: true = keeps playing when Chrome is minimized; false = pauses on minimize
+  const [bgPlay, setBgPlay] = useState<boolean>(() => {
+    if (typeof window === "undefined") return true;
+    const saved = localStorage.getItem("arcade_bg_play");
+    return saved !== null ? saved === "1" : true;
+  });
+  const wasPlayingBeforeHideRef = useRef(false);
+
+  const toggleBgPlay = () => {
+    setBgPlay((prev) => {
+      const next = !prev;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("arcade_bg_play", next ? "1" : "0");
+      }
+      return next;
+    });
+  };
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const playPromiseRef = useRef<Promise<void> | null>(null);
   const currentSong = playlist[currentIndex] || FALLBACK_SONGS[0];
@@ -320,6 +338,70 @@ export default function ArcadeMusicPlayer() {
       setCurrentIndex((prev) => (prev - 1 + playlist.length) % playlist.length);
     }
   }, [playlist.length]);
+
+  // MediaSession API for lockscreen and background controls on mobile
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator) || !currentSong) return;
+
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: currentSong.title,
+        artist: currentSong.artist,
+        album: "404 Arcade Player",
+        artwork: [
+          {
+            src: currentSong.albumArt || "/images/profile.jpeg",
+            sizes: "512x512",
+            type: "image/jpeg",
+          },
+        ],
+      });
+
+      navigator.mediaSession.setActionHandler("play", () => safePlay());
+      navigator.mediaSession.setActionHandler("pause", () => safePause());
+      navigator.mediaSession.setActionHandler("previoustrack", () => handlePrev());
+      navigator.mediaSession.setActionHandler("nexttrack", () => handleNext());
+    } catch {}
+
+    return () => {
+      if ("mediaSession" in navigator) {
+        try {
+          navigator.mediaSession.setActionHandler("play", null);
+          navigator.mediaSession.setActionHandler("pause", null);
+          navigator.mediaSession.setActionHandler("previoustrack", null);
+          navigator.mediaSession.setActionHandler("nexttrack", null);
+        } catch {}
+      }
+    };
+  }, [currentSong, safePlay, safePause, handlePrev, handleNext]);
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && "mediaSession" in navigator) {
+      try {
+        navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
+      } catch {}
+    }
+  }, [isPlaying]);
+
+  // Chrome minimization listener: pause if bgPlay is false; resume on restore if was playing
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (!bgPlay && isPlaying) {
+          wasPlayingBeforeHideRef.current = true;
+          safePause();
+        }
+      } else {
+        if (!bgPlay && wasPlayingBeforeHideRef.current) {
+          wasPlayingBeforeHideRef.current = false;
+          safePlay();
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [bgPlay, isPlaying, safePause, safePlay]);
 
   // Toggle Like / Favorite
   const isCurrentLiked = likedSongs.some((s) => s.id === currentSong?.id);
@@ -576,6 +658,32 @@ export default function ArcadeMusicPlayer() {
                   </span>
                 )}
               </button>
+
+              {/* Background Play Toggle */}
+              <button
+                type="button"
+                onClick={toggleBgPlay}
+                data-cursor-hover
+                className={`relative flex h-7 w-7 items-center justify-center rounded-full transition-colors ${
+                  bgPlay
+                    ? "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-black shadow-sm"
+                    : "text-[#6b7280] hover:text-[#0b0e13] dark:text-[#9aa4b5] dark:hover:text-white"
+                }`}
+                aria-label={bgPlay ? "Disable background playback (pauses on minimize)" : "Enable background playback (plays on minimize)"}
+                title={bgPlay ? "Background Play: ON (Plays if Chrome is minimized)" : "Background Play: OFF (Pauses if Chrome is minimized)"}
+              >
+                {bgPlay ? (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                    <line x1="12" y1="18" x2="12.01" y2="18" />
+                  </svg>
+                ) : (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                    <line x1="2" y1="2" x2="22" y2="22" />
+                  </svg>
+                )}
+              </button>
             </div>
 
             {/* ── TAB 1: PLAYER VIEW ── */}
@@ -717,6 +825,32 @@ export default function ArcadeMusicPlayer() {
                     title={isLoop ? "Loop active" : "Enable loop"}
                   >
                     <FiRepeat className="h-4 w-4" />
+                  </button>
+
+                  {/* Background Play Toggle */}
+                  <button
+                    type="button"
+                    onClick={toggleBgPlay}
+                    data-cursor-hover
+                    className={`p-2 transition-colors ${
+                      bgPlay
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-[#9ca3af] hover:text-[#0b0e13] dark:text-white/40 dark:hover:text-white"
+                    }`}
+                    aria-label={bgPlay ? "Background playback enabled" : "Background playback disabled"}
+                    title={bgPlay ? "Background Play: ON (Plays if Chrome is minimized)" : "Background Play: OFF (Pauses if Chrome is minimized)"}
+                  >
+                    {bgPlay ? (
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                        <line x1="12" y1="18" x2="12.01" y2="18" />
+                      </svg>
+                    ) : (
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                        <line x1="2" y1="2" x2="22" y2="22" />
+                      </svg>
+                    )}
                   </button>
                 </div>
 

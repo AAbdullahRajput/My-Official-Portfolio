@@ -108,7 +108,15 @@ const TRUST_METRICS = [
 export default function PrivacyContent() {
   const [activeSection, setActiveSection] = useState<string>("overview");
   const [scrollPercent, setScrollPercent] = useState<number>(0);
-  const mobileNavRef = useRef<HTMLDivElement>(null);
+  const mobileNavScrollRef = useRef<HTMLDivElement>(null);
+
+  // Mark splash as seen so navigating from privacy to home or contact never replays splash
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("portfolio_splash_seen", "1");
+      sessionStorage.setItem("splash_done", "1");
+    }
+  }, []);
 
   // Scroll progress for reading percent & parallax
   const { scrollYProgress } = useScroll();
@@ -125,21 +133,21 @@ export default function PrivacyContent() {
     return () => unsubscribe();
   }, [scrollYProgress]);
 
-  // ScrollSpy for sections
+  // ScrollSpy for sections using viewport bounding rects
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 220;
+      let current = SECTIONS[0].id;
       for (const section of SECTIONS) {
         const el = document.getElementById(section.id);
         if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(section.id);
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= 260 && rect.bottom > 150) {
+            current = section.id;
             break;
           }
         }
       }
+      setActiveSection(current);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -147,17 +155,18 @@ export default function PrivacyContent() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Keep mobile nav active pill scrolled into view smoothly
+  // Keep mobile nav active pill scrolled into view horizontally ONLY (never touches window scroll)
   useEffect(() => {
-    if (mobileNavRef.current) {
-      const activeBtn = mobileNavRef.current.querySelector<HTMLButtonElement>(
+    if (mobileNavScrollRef.current) {
+      const container = mobileNavScrollRef.current;
+      const activeBtn = container.querySelector<HTMLButtonElement>(
         `button[data-section="${activeSection}"]`
       );
       if (activeBtn) {
-        activeBtn.scrollIntoView({
+        const left = activeBtn.offsetLeft - container.offsetWidth / 2 + activeBtn.offsetWidth / 2;
+        container.scrollTo({
+          left: Math.max(0, left),
           behavior: "smooth",
-          block: "nearest",
-          inline: "center",
         });
       }
     }
@@ -272,11 +281,13 @@ export default function PrivacyContent() {
 
         {/* ── Mobile/Tablet Sticky Quick Navigation Bar (anchors just beneath floating navbar) ── */}
         <div
-          ref={mobileNavRef}
           aria-label="Privacy sections navigation"
           className="sticky top-20 sm:top-[84px] z-30 mb-8 border-y border-gray-200/80 bg-[#F5F7F6]/90 py-2.5 backdrop-blur-md lg:hidden dark:border-white/[0.08] dark:bg-[#0b0e13]/90"
         >
-          <div className="no-scrollbar flex items-center gap-2 overflow-x-auto px-4 sm:px-6">
+          <div
+            ref={mobileNavScrollRef}
+            className="no-scrollbar flex items-center gap-2 overflow-x-auto px-4 sm:px-6"
+          >
             <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-[#6b7280] dark:text-[#9aa4b5]">
               Jump to:
             </span>

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal, flushSync } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import {
   FiGithub,
   FiMail,
@@ -46,6 +47,7 @@ const NAV_TOUR_STEPS = [
 ];
 
 const links = [
+  { label: "Home", href: "/" },
   { label: "Work", href: "#projects" },
   { label: "About", href: "#about" },
   { label: "Career", href: "#career" },
@@ -65,6 +67,39 @@ function smoothScrollTo(href: string) {
 }
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    e.preventDefault();
+    setMenuOpen(false);
+
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("portfolio_splash_seen", "1");
+      sessionStorage.setItem("splash_done", "1");
+    }
+
+    if (href === "/" || href === "#hero") {
+      if (pathname === "/") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        router.push("/");
+      }
+      return;
+    }
+
+    const targetId = href.replace("/#", "").replace("#", "");
+    if (pathname === "/") {
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } else {
+      router.push(`/#${targetId}`);
+    }
+  };
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dark, setDark] = useState(false);
@@ -404,7 +439,7 @@ export default function Navbar() {
           <a  key={link.href}
               href={link.href}
               data-cursor-hover
-              onClick={(e) => { e.preventDefault(); smoothScrollTo(link.href); }}
+              onClick={(e) => handleNavClick(e, link.href)}
               className="font-mono text-xs text-[#6b7280] transition-colors hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
             >
               {link.label}
@@ -546,11 +581,25 @@ export default function Navbar() {
           exit={{ opacity: 0, y: -10 }}
           className="mt-2 flex flex-col gap-1 rounded-2xl border border-[#8a0303]/15 bg-white px-6 py-4 shadow-lg dark:border-white/[0.08] dark:bg-ink/95 dark:backdrop-blur-md"
         >
+
+          <div className="mb-2 flex items-center justify-between border-b border-gray-100 pb-2.5 font-mono text-[11px] text-[#6b7280] dark:border-white/[0.06] dark:text-[#9aa4b5]">
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Route:</span>
+              <span className="font-semibold text-[#8a0303] dark:text-[#f2a93b]">
+                {pathname === "/" ? "Home Portfolio" : pathname === "/privacy" ? "Privacy Policy" : "404 Arcade"}
+              </span>
+            </span>
+            <span className="rounded bg-black/[0.04] px-1.5 py-0.5 text-[10px] uppercase font-semibold text-emerald-600 dark:bg-white/[0.06] dark:text-emerald-400">
+              Verified
+            </span>
+          </div>
+
           {links.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              onClick={(e) => { e.preventDefault(); setMenuOpen(false); smoothScrollTo(link.href); }}
+              onClick={(e) => handleNavClick(e, link.href)}
               className="py-2.5 font-mono text-sm text-[#6b7280] hover:text-[#8a0303] dark:text-text-muted dark:hover:text-accent-green"
             >
               {link.label}

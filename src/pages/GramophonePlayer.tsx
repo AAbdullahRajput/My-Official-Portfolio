@@ -25,6 +25,92 @@ export default function GramophonePlayer({ active = true }: { active?: boolean }
   const isHomePage = pathname === "/";
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const dockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wasPlayingBeforeHideRef = useRef(false);
+
+  // Background play setting: true = keeps playing when Chrome/phone is minimized; false = pauses on minimize
+  const [bgPlay, setBgPlay] = useState<boolean>(() => {
+    if (typeof window === "undefined") return true;
+    const saved = localStorage.getItem("gramo_bg_play");
+    return saved !== null ? saved === "1" : true;
+  });
+
+  const toggleBgPlay = () => {
+    setBgPlay((prev) => {
+      const next = !prev;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("gramo_bg_play", next ? "1" : "0");
+      }
+      return next;
+    });
+  };
+
+  // MediaSession API for mobile lockscreen & background controls
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
+
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: "Sunflower (Portfolio Theme)",
+        artist: "Post Malone & Swae Lee",
+        album: "Spider-Man Soundtrack",
+        artwork: [
+          { src: "/images/profile.jpeg", sizes: "512x512", type: "image/jpeg" },
+        ],
+      });
+
+      navigator.mediaSession.setActionHandler("play", () => {
+        audioRef.current?.play().catch(() => {});
+        setPlaying(true);
+        notifyGramophonePlaying();
+      });
+
+      navigator.mediaSession.setActionHandler("pause", () => {
+        audioRef.current?.pause();
+        setPlaying(false);
+      });
+    } catch {}
+
+    return () => {
+      if ("mediaSession" in navigator) {
+        try {
+          navigator.mediaSession.setActionHandler("play", null);
+          navigator.mediaSession.setActionHandler("pause", null);
+        } catch {}
+      }
+    };
+  }, []);
+
+  // Update MediaSession playback state
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && "mediaSession" in navigator) {
+      try {
+        navigator.mediaSession.playbackState = playing ? "playing" : "paused";
+      } catch {}
+    }
+  }, [playing]);
+
+  // Chrome minimization listener: pause if bgPlay is false; resume on restore if was playing
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (!bgPlay && playing && audioRef.current && !audioRef.current.paused) {
+          wasPlayingBeforeHideRef.current = true;
+          audioRef.current.pause();
+          setPlaying(false);
+        }
+      } else {
+        if (!bgPlay && wasPlayingBeforeHideRef.current && audioRef.current) {
+          wasPlayingBeforeHideRef.current = false;
+          audioRef.current.play().catch(() => {});
+          setPlaying(true);
+          notifyGramophonePlaying();
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [bgPlay, playing]);
 
   // Resize listener
   useEffect(() => {
@@ -326,6 +412,28 @@ export default function GramophonePlayer({ active = true }: { active?: boolean }
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
+                </button>
+                <button
+                  onClick={toggleBgPlay}
+                  className={`absolute -left-2 -bottom-2 flex h-6 w-6 items-center justify-center rounded-full border shadow-sm transition-transform hover:scale-110 ${
+                    bgPlay
+                      ? "border-emerald-500/50 bg-white text-emerald-600 shadow-emerald-500/20"
+                      : "border-gray-300 bg-white text-gray-400"
+                  }`}
+                  aria-label={bgPlay ? "Disable background playback (pauses on minimize)" : "Enable background playback (plays on minimize)"}
+                  title={bgPlay ? "Background Play: ON (Plays if Chrome is minimized)" : "Background Play: OFF (Pauses if Chrome is minimized)"}
+                >
+                  {bgPlay ? (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                      <line x1="12" y1="18" x2="12.01" y2="18" />
+                    </svg>
+                  ) : (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                      <line x1="2" y1="2" x2="22" y2="22" />
+                    </svg>
+                  )}
                 </button>
               </motion.div>
             )}
