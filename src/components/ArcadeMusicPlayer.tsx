@@ -204,6 +204,15 @@ export default function ArcadeMusicPlayer() {
     const audio = audioRef.current;
     if (!audio) return;
 
+    // Notify global audio coordinator that Arcade player is playing
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("portfolio-audio-event", {
+          detail: { action: "play", source: "arcade" },
+        })
+      );
+    }
+
     setAudioError(null);
     try {
       const promise = audio.play();
@@ -246,6 +255,18 @@ export default function ArcadeMusicPlayer() {
       setIsPlaying(false);
     }
   }, []);
+
+  // Listen for Gramophone playing to pause Arcade
+  useEffect(() => {
+    const handleAudioEvent = (e: Event) => {
+      const custom = e as CustomEvent<{ source: string; action: string }>;
+      if (custom.detail?.source === "gramophone" && custom.detail?.action === "play") {
+        safePause();
+      }
+    };
+    window.addEventListener("portfolio-audio-event", handleAudioEvent);
+    return () => window.removeEventListener("portfolio-audio-event", handleAudioEvent);
+  }, [safePause]);
 
   // Handle song change
   useEffect(() => {

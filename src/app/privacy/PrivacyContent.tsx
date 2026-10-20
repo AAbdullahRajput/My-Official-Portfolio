@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -110,13 +110,8 @@ export default function PrivacyContent() {
   const [scrollPercent, setScrollPercent] = useState<number>(0);
   const mobileNavRef = useRef<HTMLDivElement>(null);
 
-  // Scroll progress for reading bar & parallax
+  // Scroll progress for reading percent & parallax
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 220,
-    damping: 30,
-    restDelta: 0.001,
-  });
 
   // Parallax ambient glows
   const ambientY1 = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
@@ -186,12 +181,6 @@ export default function PrivacyContent() {
 
   return (
     <div className="relative min-h-screen bg-[#F5F7F6] text-[#0b0e13] selection:bg-[#8a0303]/15 selection:text-[#8a0303] dark:bg-[#0b0e13] dark:text-[#f1f2f4] dark:selection:bg-[#f2a93b]/20 dark:selection:text-[#f2a93b]">
-      {/* ── Fixed Reading Progress Bar ── */}
-      <motion.div
-        style={{ scaleX }}
-        className="fixed top-0 left-0 right-0 z-[120] h-1 origin-left bg-gradient-to-r from-[#8a0303] via-[#e53e3e] to-[#f2a93b] shadow-[0_0_12px_rgba(229,62,62,0.5)]"
-      />
-
       {/* ── Parallax Ambient Background Mesh ── */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <motion.div

@@ -1,24 +1,32 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 const DOCK_DELAY = 3000;
 const AUDIO_DELAY = 1500;
 
-export default function GramophonePlayer({ active }: { active: boolean }) {
+export default function GramophonePlayer({ active = true }: { active?: boolean }) {
   const [phase, setPhase] = useState<"hidden" | "paused" | "center" | "docking" | "docked" | "gone">(() => {
     if (typeof window === "undefined") return "hidden";
-    return localStorage.getItem("gramo_dismissed") === "1" ? "gone" : "hidden";
+    if (localStorage.getItem("gramo_dismissed") === "1") return "gone";
+    // If not on home page, start docked so there is no dark modal covering /privacy or /404
+    if (window.location.pathname !== "/") return "docked";
+    return "hidden";
   });
+
   const [muted, setMuted] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [showGif, setShowGif] = useState(false);
   const [gifSrc, setGifSrc] = useState("/gifs/gramophone.gif");
   const [isMobile, setIsMobile] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const dockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Resize listener
   useEffect(() => {
     const update = () => setIsMobile(window.innerWidth < 640);
     update();
@@ -26,11 +34,61 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
     return () => window.removeEventListener("resize", update);
   }, []);
 
+  // Auto-dock if navigating away from home page
   useEffect(() => {
-    if (!active || phase !== "hidden") return;
-    const t = setTimeout(() => setPhase("paused"), 300);
-    return () => clearTimeout(t);
-  }, [active, phase]);
+    if (pathname !== "/" && phase !== "docked" && phase !== "gone") {
+      setPhase("docked");
+    }
+  }, [pathname, phase]);
+
+  // Listen for splash screen finished on home page
+  useEffect(() => {
+    if (!isHomePage) {
+      if (phase === "hidden") {
+        setPhase("docked");
+      }
+      return;
+    }
+
+    // On home page, if active and already completed splash
+    if (active && phase === "hidden") {
+      const handleSplashDone = () => {
+        setPhase("paused");
+      };
+
+      // Check if already finished or listen
+      if (sessionStorage.getItem("splash_done") === "1") {
+        setPhase("paused");
+      } else {
+        window.addEventListener("splash-finished", handleSplashDone);
+        return () => window.removeEventListener("splash-finished", handleSplashDone);
+      }
+    }
+  }, [active, phase, isHomePage]);
+
+  // Audio coordination: Listen for 404 Arcade player playing
+  useEffect(() => {
+    const handleAudioEvent = (e: any) => {
+      if (e.detail?.source === "arcade" && e.detail?.action === "play") {
+        if (audioRef.current && !audioRef.current.paused) {
+          audioRef.current.pause();
+          setPlaying(false);
+        }
+      }
+    };
+    window.addEventListener("portfolio-audio-event", handleAudioEvent);
+    return () => window.removeEventListener("portfolio-audio-event", handleAudioEvent);
+  }, []);
+
+  function notifyGramophonePlaying() {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("portfolio-audio-event", {
+          detail: { action: "play", source: "gramophone" },
+        })
+      );
+    }
+  }
 
   function handlePlay() {
     setShowGif(true);
@@ -41,7 +99,9 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
         console.warn("Audio play failed:", err);
       });
       setPlaying(true);
+      notifyGramophonePlaying();
     }, AUDIO_DELAY);
+
     dockTimerRef.current = setTimeout(() => {
       setPhase("docking");
       setTimeout(() => setPhase("docked"), 1000);
@@ -55,12 +115,9 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
     }
   }
 
-    function handleAudioEnded() {
-    // no-op now that audio loops; kept in case loop is ever disabled
-  }
-
   function handleDismiss() {
     audioRef.current?.pause();
+    setPlaying(false);
     localStorage.setItem("gramo_dismissed", "1");
     setPhase("gone");
   }
@@ -76,11 +133,13 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
   const isPaused = phase === "paused";
   const isDocking = phase === "docking";
   const isDocked = phase === "docked";
-  const overlayVisible = isPaused || phase === "center" || isDocking;
+
+  // Only show fullscreen dark backdrop if on the home page and in introductory phase
+  const overlayVisible = isHomePage && (isPaused || phase === "center" || isDocking);
 
   return (
     <>
-      <audio ref={audioRef} src="/song/sunflower.mp3" loop onEnded={handleAudioEnded} />
+      <audio ref={audioRef} src="/song/sunflower.mp3" loop />
 
       <AnimatePresence>
         {overlayVisible && (
@@ -103,7 +162,7 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
       <AnimatePresence>
         {phase !== "gone" && (
           <>
-            {!isDocked && (
+            {!isDocked && isHomePage && (
               <motion.div
                 key="gramo-center"
                 className="fixed z-[9991] pointer-events-none"
@@ -134,9 +193,9 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
                   }}
                 />
 
-                                <motion.img
+                <motion.img
                   src={showGif ? gifSrc : "/gifs/gramophone-poster.png"}
-                  alt=""
+                  alt="Gramophone"
                   className="pointer-events-none w-full drop-shadow-2xl"
                   animate={
                     showGif
@@ -210,7 +269,7 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
                 />
                 <img
                   src={playing ? "/gifs/gramophone.gif" : "/gifs/gramophone-poster.png"}
-                  alt=""
+                  alt="Gramophone"
                   className="pointer-events-none w-full drop-shadow-2xl"
                 />
                 <button
@@ -222,9 +281,10 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
                     } else {
                       audioRef.current.play().catch(() => {});
                       setPlaying(true);
+                      notifyGramophonePlaying();
                     }
                   }}
-                  className="absolute -left-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm"
+                  className="absolute -left-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm transition-transform hover:scale-110"
                   aria-label={playing ? "Pause music" : "Play music"}
                 >
                   {playing ? (
@@ -240,10 +300,10 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
                 </button>
                 <button
                   onClick={toggleMute}
-                  className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm"
+                  className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm transition-transform hover:scale-110"
                   aria-label={muted ? "Unmute music" : "Mute music"}
                 >
-                                    {muted ? (
+                  {muted ? (
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M11 5 6 9H2v6h4l5 4V5Z" />
                       <line x1="23" y1="9" x2="17" y2="15" />
@@ -259,7 +319,7 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
                 </button>
                 <button
                   onClick={handleDismiss}
-                  className="absolute -right-2 -bottom-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm"
+                  className="absolute -right-2 -bottom-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white text-[#8a0303] shadow-sm transition-transform hover:scale-110"
                   aria-label="Close music player"
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -272,16 +332,17 @@ export default function GramophonePlayer({ active }: { active: boolean }) {
           </>
         )}
       </AnimatePresence>
+
       {phase === "gone" && (
         <motion.button
           className="fixed bottom-6 left-6 z-[9991] flex h-9 w-9 items-center justify-center rounded-full border border-[#8a0303]/40 bg-white/90 text-[#8a0303] shadow-md backdrop-blur-sm transition-all hover:scale-110 hover:bg-white"
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, delay: 2 }}
+          transition={{ duration: 0.4, delay: 1 }}
           onClick={() => {
             localStorage.removeItem("gramo_dismissed");
             setShowGif(false);
-            setPhase("paused");
+            setPhase("docked");
           }}
           aria-label="Play music again"
           title="Play music again"

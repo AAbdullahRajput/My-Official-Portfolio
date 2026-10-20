@@ -69,6 +69,23 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dark, setDark] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+
+  // Close mobile drawer on outside click or touch
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside, { passive: true });
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [menuOpen]);
 
   // Logo photo: hold to reveal, 1 click = scroll top, 2 clicks = home
   const [photoOpen, setPhotoOpen] = useState(false);
@@ -246,6 +263,7 @@ export default function Navbar() {
 
   return (
     <motion.header
+      ref={navRef}
       initial={{ y: -40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6 }}
@@ -509,6 +527,16 @@ export default function Navbar() {
           className="h-full w-full select-none object-contain object-top dark:invert"
         />
       </div>
+
+      {/* Mobile Menu Backdrop */}
+      {mounted && menuOpen && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-40 bg-black/25 backdrop-blur-[2px] sm:hidden"
+          onClick={() => setMenuOpen(false)}
+          aria-hidden="true"
+        />,
+        document.body
+      )}
 
       {/* Mobile Menu */}
       {menuOpen && (

@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, JetBrains_Mono, Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import TopReadingProgressBar from "@/components/TopReadingProgressBar";
+import GramophonePlayer from "@/pages/GramophonePlayer";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
 import SpiderWebBackground from "@/components/SpiderWebBackground";
@@ -97,8 +99,10 @@ export default function RootLayout({
         className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${inter.variable} ${cormorantGaramond.variable} font-body antialiased`}
         suppressHydrationWarning
       >
+        <TopReadingProgressBar />
         <CustomCursor />
         <SpiderWebBackground />
+        <GramophonePlayer active={true} />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

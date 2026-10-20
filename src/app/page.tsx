@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import SplashScreen from "@/components/SplashScreen";
-import GramophonePlayer from "@/pages/GramophonePlayer";
 import PersonalPortfolio from "@/pages/PersonalPortfolio";
 
 export default function Home() {
@@ -10,8 +9,17 @@ export default function Home() {
 
   return (
     <>
-      {!splashDone && <SplashScreen onFinish={() => setSplashDone(true)} />}
-      {splashDone && <GramophonePlayer active={true} />}
+      {!splashDone && (
+        <SplashScreen
+          onFinish={() => {
+            setSplashDone(true);
+            if (typeof window !== "undefined") {
+              sessionStorage.setItem("splash_done", "1");
+              window.dispatchEvent(new Event("splash-finished"));
+            }
+          }}
+        />
+      )}
       <PersonalPortfolio splashDone={splashDone} />
     </>
   );
