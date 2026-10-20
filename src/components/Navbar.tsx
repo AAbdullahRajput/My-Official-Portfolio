@@ -55,7 +55,12 @@ const links = [
 function smoothScrollTo(href: string) {
   const id = href.replace("#", "");
   const el = document.getElementById(id);
-  if (!el) return;
+  if (!el) {
+    if (typeof window !== "undefined") {
+      window.location.href = `/${href}`;
+    }
+    return;
+  }
   el.scrollIntoView({ behavior: "smooth" });
 }
 
@@ -318,6 +323,10 @@ export default function Navbar() {
             data-cursor-hover
             onClick={(e) => {
               e.preventDefault();
+              if (typeof window !== "undefined" && window.location.pathname !== "/") {
+                window.location.href = "/";
+                return;
+              }
               const atTop = window.scrollY < 10;
               if (atTop) {
                 window.location.href = "/";
