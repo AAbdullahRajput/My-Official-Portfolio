@@ -27,14 +27,63 @@ const cormorantGaramond = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Ahmad Abdullah — Full-Stack Developer",
+  metadataBase: new URL("https://ahmadabdullah.dev"),
+  title: {
+    default: "Ahmad Abdullah — Full-Stack Developer",
+    template: "%s | Ahmad Abdullah",
+  },
   description:
-    "Full-stack mobile & web engineer building connected systems with Flutter, Next.js, and Supabase.",
+    "Full-stack mobile & web engineer building connected systems with Flutter, React Native, Next.js, and Supabase.",
+  keywords: [
+    "Ahmad Abdullah",
+    "Full-Stack Developer",
+    "Flutter Developer",
+    "React Native Developer",
+    "Next.js Developer",
+    "Software Engineer",
+    "Mobile App Developer",
+    "Islamabad",
+    "Pakistan",
+  ],
+  authors: [{ name: "Ahmad Abdullah", url: "https://ahmadabdullah.dev" }],
+  creator: "Ahmad Abdullah",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://ahmadabdullah.dev",
+    siteName: "Ahmad Abdullah Portfolio",
+    title: "Ahmad Abdullah — Full-Stack Developer",
+    description:
+      "Full-stack mobile & web engineer building connected systems with Flutter, React Native, Next.js, and Supabase.",
+    images: [
+      {
+        url: "/images/profile.jpeg",
+        width: 800,
+        height: 800,
+        alt: "Ahmad Abdullah — Full-Stack Developer",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ahmad Abdullah — Full-Stack Developer",
+    description:
+      "Full-stack mobile & web engineer building connected systems with Flutter, React Native, Next.js, and Supabase.",
+    images: ["/images/profile.jpeg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F5F7F6" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0e13" },
+  ],
 };
 
 export default function RootLayout({

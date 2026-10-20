@@ -133,7 +133,7 @@ export default function PrivacyContent() {
   // ScrollSpy for sections
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 200;
+      const scrollPosition = window.scrollY + 220;
       for (const section of SECTIONS) {
         const el = document.getElementById(section.id);
         if (el) {
@@ -152,11 +152,27 @@ export default function PrivacyContent() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Keep mobile nav active pill scrolled into view smoothly
+  useEffect(() => {
+    if (mobileNavRef.current) {
+      const activeBtn = mobileNavRef.current.querySelector<HTMLButtonElement>(
+        `button[data-section="${activeSection}"]`
+      );
+      if (activeBtn) {
+        activeBtn.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
+    }
+  }, [activeSection]);
+
   // Smooth scroll to section
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
-      const topOffset = 100;
+      const topOffset = 130;
       const elementPosition = el.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - topOffset;
 
@@ -265,11 +281,11 @@ export default function PrivacyContent() {
           </div>
         </div>
 
-        {/* ── Mobile/Tablet Sticky Quick Navigation Bar ── */}
+        {/* ── Mobile/Tablet Sticky Quick Navigation Bar (anchors just beneath floating navbar) ── */}
         <div
           ref={mobileNavRef}
           aria-label="Privacy sections navigation"
-          className="sticky top-16 z-30 mb-8 border-y border-gray-200/80 bg-[#F5F7F6]/90 py-2.5 backdrop-blur-md lg:hidden dark:border-white/[0.08] dark:bg-[#0b0e13]/90"
+          className="sticky top-20 sm:top-[84px] z-30 mb-8 border-y border-gray-200/80 bg-[#F5F7F6]/90 py-2.5 backdrop-blur-md lg:hidden dark:border-white/[0.08] dark:bg-[#0b0e13]/90"
         >
           <div className="no-scrollbar flex items-center gap-2 overflow-x-auto px-4 sm:px-6">
             <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-[#6b7280] dark:text-[#9aa4b5]">
@@ -280,6 +296,7 @@ export default function PrivacyContent() {
               return (
                 <button
                   key={sec.id}
+                  data-section={sec.id}
                   onClick={() => scrollTo(sec.id)}
                   data-cursor-hover
                   className={`shrink-0 rounded-full px-3 py-1 font-mono text-xs font-medium transition-all ${
@@ -398,7 +415,7 @@ export default function PrivacyContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.45 }}
-                className="scroll-mt-32 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
+                className="scroll-mt-36 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
               >
                 <div className="mb-4 flex items-center gap-2.5">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#8a0303]/10 font-mono text-xs font-bold text-[#8a0303] dark:bg-[#f2a93b]/15 dark:text-[#f2a93b]">
@@ -452,7 +469,7 @@ export default function PrivacyContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.45 }}
-                className="scroll-mt-32 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
+                className="scroll-mt-36 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
               >
                 <div className="mb-4 flex items-center gap-2.5">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#8a0303]/10 font-mono text-xs font-bold text-[#8a0303] dark:bg-[#f2a93b]/15 dark:text-[#f2a93b]">
@@ -536,7 +553,7 @@ export default function PrivacyContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.45 }}
-                className="scroll-mt-32 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
+                className="scroll-mt-36 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
               >
                 <div className="mb-4 flex items-center gap-2.5">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#8a0303]/10 font-mono text-xs font-bold text-[#8a0303] dark:bg-[#f2a93b]/15 dark:text-[#f2a93b]">
@@ -600,7 +617,7 @@ export default function PrivacyContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.45 }}
-                className="scroll-mt-32 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
+                className="scroll-mt-36 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
               >
                 <div className="mb-4 flex items-center gap-2.5">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#8a0303]/10 font-mono text-xs font-bold text-[#8a0303] dark:bg-[#f2a93b]/15 dark:text-[#f2a93b]">
@@ -664,7 +681,7 @@ export default function PrivacyContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.45 }}
-                className="scroll-mt-32 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
+                className="scroll-mt-36 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
               >
                 <div className="mb-4 flex items-center gap-2.5">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#8a0303]/10 font-mono text-xs font-bold text-[#8a0303] dark:bg-[#f2a93b]/15 dark:text-[#f2a93b]">
@@ -742,7 +759,7 @@ export default function PrivacyContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.45 }}
-                className="scroll-mt-32 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
+                className="scroll-mt-36 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
               >
                 <div className="mb-4 flex items-center gap-2.5">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#8a0303]/10 font-mono text-xs font-bold text-[#8a0303] dark:bg-[#f2a93b]/15 dark:text-[#f2a93b]">
@@ -804,7 +821,7 @@ export default function PrivacyContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.45 }}
-                className="scroll-mt-32 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
+                className="scroll-mt-36 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
               >
                 <div className="mb-4 flex items-center gap-2.5">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#8a0303]/10 font-mono text-xs font-bold text-[#8a0303] dark:bg-[#f2a93b]/15 dark:text-[#f2a93b]">
@@ -890,7 +907,7 @@ export default function PrivacyContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.45 }}
-                className="scroll-mt-32 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
+                className="scroll-mt-36 rounded-3xl border border-gray-200/90 bg-white/90 p-6 shadow-sm backdrop-blur-md sm:p-8 dark:border-white/[0.08] dark:bg-white/[0.02]"
               >
                 <div className="mb-4 flex items-center gap-2.5">
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#8a0303]/10 font-mono text-xs font-bold text-[#8a0303] dark:bg-[#f2a93b]/15 dark:text-[#f2a93b]">
@@ -970,4 +987,3 @@ export default function PrivacyContent() {
     </div>
   );
 }
-
