@@ -5,7 +5,9 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useMotionValue, useMotionValueEvent, useMotionTemplate, useSpring, useTransform, useScroll, useAnimationFrame, useAnimation, animate, type Variants } from "framer-motion";
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import ScrollToTop from "@/components/ScrollToTop";
 import { FiGithub, FiMail } from "react-icons/fi";
 import { FaLinkedin } from "react-icons/fa";
 
@@ -2000,7 +2002,7 @@ function FootMark({
 }) {
   const opacity = useTransform(progress, [Math.max(ratio - 0.025, 0), ratio], [0, 1]);
   const scale = useTransform(progress, [Math.max(ratio - 0.025, 0), ratio], [0.4, 1]);
-  const rotation = angle + 90 + (scrollDir === 1 ? 180 : 0);
+  const rotation = scrollDir === 1 ? angle + 90 : angle - 90;
 
   return (
     <div
@@ -2010,6 +2012,7 @@ function FootMark({
         top: y,
         rotate: `${rotation}deg`,
         transform: "translate(-50%, -50%)",
+        transition: "rotate 0.35s ease-out",
       }}
       className="relative text-gray-300/80 dark:text-white/20"
     >
@@ -2918,6 +2921,7 @@ function Footer() {
     { label: "About", href: "#about" },
     { label: "Career", href: "#career" },
     { label: "Contact", href: "#contact" },
+    { label: "Privacy Policy", href: "/privacy" },
   ];
 
   return (
@@ -3068,9 +3072,19 @@ function Footer() {
           <p className="font-mono text-xs text-[#6b7280] dark:text-text-dim">
             &copy; {year} Ahmad Abdullah. All rights reserved.
           </p>
-          <p className="font-mono text-xs text-[#6b7280] dark:text-text-dim">
-            Islamabad, PK &middot; Available for freelance
-          </p>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/privacy"
+              data-cursor-hover
+              className="font-mono text-xs text-[#6b7280] transition-colors hover:text-[#8a0303] dark:text-text-dim dark:hover:text-accent-green"
+            >
+              Privacy Policy
+            </Link>
+            <span className="text-[#6b7280]/40 dark:text-text-dim/40">&middot;</span>
+            <p className="font-mono text-xs text-[#6b7280] dark:text-text-dim">
+              Islamabad, PK &middot; Available for freelance
+            </p>
+          </div>
         </div>
       </div>
     </footer>
@@ -3089,6 +3103,7 @@ export default function PersonalPortfolio({ splashDone = false }: { splashDone?:
       <Career />
       <Contact />
       <Footer />
+      <ScrollToTop />
     </main>
   );
 }
