@@ -31,13 +31,23 @@ const cormorantGaramond = Cormorant_Garamond({
 export const metadata: Metadata = {
   metadataBase: new URL("https://ahmadabdullah.dev"),
   title: {
-    default: "Ahmad Abdullah — Full-Stack Developer",
-    template: "%s | Ahmad Abdullah",
+    default: "Ahmad Abdullah Portfolio",
+    template: "%s | Ahmad Abdullah Portfolio",
   },
-  description:
-    "Full-stack mobile & web engineer building connected systems with Flutter, React Native, Next.js, and Supabase.",
+  description: "Ahmad Abdullah Portfolio.",
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: ["/favicon.ico"],
+  },
   keywords: [
     "Ahmad Abdullah",
+    "Ahmad Abdullah Portfolio",
     "Full-Stack Developer",
     "Flutter Developer",
     "React Native Developer",
@@ -54,23 +64,21 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://ahmadabdullah.dev",
     siteName: "Ahmad Abdullah Portfolio",
-    title: "Ahmad Abdullah — Full-Stack Developer",
-    description:
-      "Full-stack mobile & web engineer building connected systems with Flutter, React Native, Next.js, and Supabase.",
+    title: "Ahmad Abdullah Portfolio",
+    description: "Ahmad Abdullah Portfolio.",
     images: [
       {
         url: "/images/profile.jpeg",
         width: 800,
         height: 800,
-        alt: "Ahmad Abdullah — Full-Stack Developer",
+        alt: "Ahmad Abdullah Portfolio",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ahmad Abdullah — Full-Stack Developer",
-    description:
-      "Full-stack mobile & web engineer building connected systems with Flutter, React Native, Next.js, and Supabase.",
+    title: "Ahmad Abdullah Portfolio",
+    description: "Ahmad Abdullah Portfolio.",
     images: ["/images/profile.jpeg"],
   },
   robots: {

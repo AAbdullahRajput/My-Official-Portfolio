@@ -176,6 +176,11 @@ export default function NotFound() {
   const gameContainerRef = useRef<HTMLDivElement | null>(null);
   const audioRef = useRef<RetroAudio>(new RetroAudio());
 
+  // Set 404 Tab Title
+  useEffect(() => {
+    document.title = "404 | Ahmad Abdullah Portfolio";
+  }, []);
+
   // Game UI State
   const [score, setScore] = useState<number>(0);
   const [lives, setLives] = useState<number>(3);
