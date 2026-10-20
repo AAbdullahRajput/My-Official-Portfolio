@@ -8,13 +8,8 @@ const DOCK_DELAY = 3000;
 const AUDIO_DELAY = 1500;
 
 export default function GramophonePlayer({ active = true }: { active?: boolean }) {
-  const [phase, setPhase] = useState<"hidden" | "paused" | "center" | "docking" | "docked" | "gone">(() => {
-    if (typeof window === "undefined") return "hidden";
-    if (localStorage.getItem("gramo_dismissed") === "1") return "gone";
-    // If not on home page, start docked so there is no dark modal covering /privacy or /404
-    if (window.location.pathname !== "/") return "docked";
-    return "hidden";
-  });
+  const [mounted, setMounted] = useState(false);
+  const [phase, setPhase] = useState<"hidden" | "paused" | "center" | "docking" | "docked" | "gone">("hidden");
 
   const [muted, setMuted] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -28,11 +23,22 @@ export default function GramophonePlayer({ active = true }: { active?: boolean }
   const wasPlayingBeforeHideRef = useRef(false);
 
   // Background play setting: true = keeps playing when Chrome/phone is minimized; false = pauses on minimize
-  const [bgPlay, setBgPlay] = useState<boolean>(() => {
-    if (typeof window === "undefined") return true;
-    const saved = localStorage.getItem("gramo_bg_play");
-    return saved !== null ? saved === "1" : true;
-  });
+  const [bgPlay, setBgPlay] = useState(true);
+
+  // Set mounted and restore storage state on client after hydration
+  useEffect(() => {
+    setMounted(true);
+    if (typeof window !== "undefined") {
+      const savedBg = localStorage.getItem("gramo_bg_play");
+      if (savedBg !== null) setBgPlay(savedBg === "1");
+
+      if (localStorage.getItem("gramo_dismissed") === "1") {
+        setPhase("gone");
+      } else if (window.location.pathname !== "/") {
+        setPhase("docked");
+      }
+    }
+  }, []);
 
   const toggleBgPlay = () => {
     setBgPlay((prev) => {
@@ -214,7 +220,7 @@ export default function GramophonePlayer({ active = true }: { active?: boolean }
     };
   }, []);
 
-  if (phase === "hidden") return null;
+  if (!mounted || phase === "hidden") return null;
 
   const isPaused = phase === "paused";
   const isDocking = phase === "docking";

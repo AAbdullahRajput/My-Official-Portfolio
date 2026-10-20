@@ -5,18 +5,20 @@ import SplashScreen from "@/components/SplashScreen";
 import PersonalPortfolio from "@/pages/PersonalPortfolio";
 
 export default function Home() {
-  const [splashDone, setSplashDone] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    // Skip splash if already seen this session or if arriving with a target hash like #contact
+  const [mounted, setMounted] = useState(false);
+  const [splashDone, setSplashDone] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    // If splash was already seen this session or user navigated with a hash like #contact
     if (
       sessionStorage.getItem("portfolio_splash_seen") === "1" ||
       sessionStorage.getItem("splash_done") === "1" ||
       Boolean(window.location.hash)
     ) {
-      return true;
+      setSplashDone(true);
     }
-    return false;
-  });
+  }, []);
 
   // Mark splash as completed in session storage and broadcast event
   useEffect(() => {
@@ -52,7 +54,7 @@ export default function Home() {
 
   return (
     <>
-      {!splashDone && <SplashScreen onFinish={handleFinish} />}
+      {mounted && !splashDone && <SplashScreen onFinish={handleFinish} />}
       <PersonalPortfolio splashDone={splashDone} />
     </>
   );

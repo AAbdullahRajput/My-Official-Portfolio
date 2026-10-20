@@ -1,14 +1,20 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 
 export default function TopReadingProgressBar() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 220,
     damping: 30,
     restDelta: 0.001,
   });
+
+  if (!mounted) return null;
 
   return (
     <motion.div
@@ -17,4 +23,3 @@ export default function TopReadingProgressBar() {
     />
   );
 }
-
