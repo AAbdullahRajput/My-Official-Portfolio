@@ -93,6 +93,7 @@ export default function ArcadeMusicPlayer() {
   const [audioError, setAudioError] = useState<string | null>(null);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playPromiseRef = useRef<Promise<void> | null>(null);
   const currentSong = playlist[currentIndex] || FALLBACK_SONGS[0];
 
   // Load localStorage on mount & fetch fresh live tracks
@@ -198,21 +199,78 @@ export default function ArcadeMusicPlayer() {
     }
   }, [isLoop]);
 
+  // Safe Play & Pause methods handling Chrome/Safari Promise race conditions
+  const safePlay = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    setAudioError(null);
+    try {
+      const promise = audio.play();
+      if (promise !== undefined) {
+        playPromiseRef.current = promise;
+        promise
+          .then(() => {
+            playPromiseRef.current = null;
+            setIsPlaying(true);
+          })
+          .catch((err) => {
+            playPromiseRef.current = null;
+            // Ignore AbortError: triggered normally when user rapidly toggles pause/play
+            if (err.name !== "AbortError") {
+              console.warn("Playback error:", err);
+              setIsPlaying(false);
+            }
+          });
+      }
+    } catch {
+      playPromiseRef.current = null;
+    }
+  }, []);
+
+  const safePause = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (playPromiseRef.current) {
+      playPromiseRef.current
+        .then(() => {
+          audio.pause();
+          setIsPlaying(false);
+        })
+        .catch(() => {
+          setIsPlaying(false);
+        });
+    } else {
+      audio.pause();
+      setIsPlaying(false);
+    }
+  }, []);
+
   // Handle song change
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentSong || !currentSong.previewUrl) return;
 
     setAudioError(null);
-    audio.src = currentSong.previewUrl;
-    audio.load();
 
-    if (isPlaying) {
-      audio.play().catch(() => {
-        setIsPlaying(false);
-      });
+    const changeTrack = () => {
+      audio.pause();
+      audio.src = currentSong.previewUrl;
+      audio.load();
+      if (isPlaying) {
+        safePlay();
+      }
+    };
+
+    if (playPromiseRef.current) {
+      playPromiseRef.current
+        .then(changeTrack)
+        .catch(changeTrack);
+    } else {
+      changeTrack();
     }
-  }, [currentIndex, currentSong]);
+  }, [currentIndex, currentSong?.id, isPlaying, safePlay]);
 
   // Sync volume & mute
   useEffect(() => {
@@ -222,20 +280,10 @@ export default function ArcadeMusicPlayer() {
   }, [volume, isMuted]);
 
   const togglePlay = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
     if (isPlaying) {
-      audio.pause();
-      setIsPlaying(false);
+      safePause();
     } else {
-      setAudioError(null);
-      audio.play().then(() => {
-        setIsPlaying(true);
-      }).catch((err) => {
-        console.warn("Playback error:", err);
-        setIsPlaying(false);
-      });
+      safePlay();
     }
   };
 
